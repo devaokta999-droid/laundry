@@ -64,7 +64,7 @@
     <div class="col-lg-6 mx-auto">
         <div class="card-macos">
             <h3 class="text-center mb-4" style="color:#007aff;">
-                ✨ Tambah Layanan Baru
+                Tambah Layanan Baru
             </h3>
 
             {{-- ✅ Pesan sukses --}}
@@ -134,7 +134,7 @@
                 </div>
 
                 <button type="submit" class="btn-macos mb-3">
-                    💾 Simpan Layanan
+                    Simpan Layanan
                 </button>
 
                 <div class="text-center">

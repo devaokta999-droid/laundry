@@ -181,10 +181,10 @@ body {
 
             <h2 class="mt-4">Misi Kami</h2>
             <ul>
-                <li>🧺 Memberikan hasil laundry bersih, rapi, dan wangi.</li>
-                <li>🚚 Menyediakan layanan antar-jemput cepat dan tepat waktu.</li>
-                <li>🌿 Menggunakan bahan ramah lingkungan dan mesin modern.</li>
-                <li>🤝 Menjaga kepercayaan dan kenyamanan pelanggan sebagai prioritas utama.</li>
+                <li>Memberikan hasil laundry bersih, rapi, dan wangi.</li>
+                <li>Menyediakan layanan antar-jemput cepat dan tepat waktu.</li>
+                <li>Menggunakan bahan ramah lingkungan dan mesin modern.</li>
+                <li>Menjaga kepercayaan dan kenyamanan pelanggan sebagai prioritas utama.</li>
             </ul>
 
             <div style="margin-top:25px; border-top:1px solid #eee; padding-top:15px;">

@@ -88,23 +88,37 @@ body {
 .mac-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     border-radius: 50px;
-    padding: 0.8rem 1.6rem;
+    padding: 0.9rem 1.8rem;
     font-weight: 600;
     font-size: 1rem;
     color: white;
-    transition: 0.25s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    transition: 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-decoration: none;
+    background: linear-gradient(135deg, #007aff, #0071e3);
+    animation: pulse 3s infinite ease-in-out;
 }
+
+/* Jarak antar tombol lebih lega */
+.mac-btn + .mac-btn {
+    margin-top: 12px;
+}
+
+/* 🌊 Hover + efek pantulan halus */
 .mac-btn:hover {
     transform: translateY(-3px);
+    opacity: 0.95;
+    background: linear-gradient(135deg, #007aff, #0066d6);
 }
-.mac-btn.whatsapp {
-    background: linear-gradient(135deg, #34c759, #2ecf55);
-}
-.mac-btn.email {
-    background: linear-gradient(135deg, #007aff, #0071e3);
+
+/* 💖 Efek denyut (pulse animation) */
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,122,255,0.3); }
+    70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0,122,255,0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0,122,255,0); }
 }
 
 /* 🗺️ Map frame */
@@ -113,6 +127,8 @@ body {
     width: 100%;
     height: 400px;
     border-radius: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
 }
 
 /* 📱 Responsif */
@@ -127,7 +143,7 @@ body {
     {{-- 🌟 HEADER --}}
     <div class="mac-header">
         <h1>Hubungi Kami</h1>
-        <p>Kami siap membantu Anda dengan layanan terbaik setiap hari 💙</p>
+        <p>Kami siap membantu Anda dengan layanan terbaik setiap hari</p>
     </div>
 
     {{-- 💬 DUA KOLOM --}}
@@ -136,30 +152,46 @@ body {
         <div class="mac-card">
             <h2>Informasi Kontak</h2>
             <div class="mac-info">
-                <p><i class="fa-solid fa-phone"></i> Telepon / WhatsApp: <strong>{{ config('app.admin_whatsapp', '+62 853-3363-4884') }}</strong></p>
+                <p><i class="fa-solid fa-phone"></i> Telepon / Whatsapp: <strong>{{ config('app.admin_whatsapp', '+62 853-3363-4884') }}</strong></p>
                 <p><i class="fa-solid fa-envelope"></i> Email: <strong>hello@devalaundry.example</strong></p>
-                <p><i class="fa-brands fa-instagram text-pink-500"></i> Instagram: <a href="https://instagram.com/devalaundry" target="_blank" class="text-blue-600 hover:underline">@devalaundry</a></p>
-                <p><i class="fa-brands fa-facebook"></i> Facebook: <a href="https://facebook.com/devalaundry" target="_blank" class="text-blue-600 hover:underline">@devalaundry</a></p>
+                <p><i class="fa-brands fa-instagram"></i> Instagram: <strong>@devalaundry</strong></p>
+                <p><i class="fa-brands fa-facebook"></i> Facebook: <strong>@devalaundry</strong></p>
+                <p><i class="fa-brands fa-tiktok"></i> TikTok: <strong>@devalaundry.official</strong></p>
             </div>
 
             {{-- 🌟 Tombol Aksi --}}
-            <div class="mt-4 flex flex-wrap gap-3">
-                <a href="https://wa.me/{{ preg_replace('/\D/', '', config('app.admin_whatsapp', '6285333634884')) }}"
-                   target="_blank" class="mac-btn whatsapp">
+            <div class="mt-4 flex flex-col gap-3">
+                <a href="https://wa.me/{{ preg_replace('/\D/', '', config('app.admin_whatsapp', '+62 853-3363-4884')) }}"
+                   target="_blank" class="mac-btn">
                     <i class="fa-brands fa-whatsapp"></i> Chat via WhatsApp
                 </a>
-                <a href="mailto:hello@devalaundry.example" class="mac-btn email">
+                <a href="mailto:hello@devalaundry.example" class="mac-btn">
                     <i class="fa-solid fa-envelope"></i> Kirim Email
+                </a>
+                <a href="https://www.instagram.com/devasptr_?igsh=OWl5d28xbm11N3dn" target="_blank" class="mac-btn">
+                    <i class="fa-brands fa-instagram"></i> Instagram
+                </a>
+                <a href="https://facebook.com/devalaundry" target="_blank" class="mac-btn">
+                    <i class="fa-brands fa-facebook-f"></i> Facebook
+                </a>
+                <a href="https://www.tiktok.com/@devaja._?is_from_webapp=1&sender_device=pc" target="_blank" class="mac-btn">
+                    <i class="fa-brands fa-tiktok"></i> TikTok
                 </a>
             </div>
         </div>
 
         {{-- 🗺️ Lokasi Kami --}}
-        <div class="mac-card mac-map">
+        <div class="mac-card mac-map text-center">
             <h2>Lokasi Kami</h2>
             <iframe 
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d249.18494673429208!2d115.16754820472273!3d-8.513313035513681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd23b6ad9306f77%3A0x864fe1c076fac689!2sDeva%20Laundry!5e1!3m2!1sid!2sid!4v1761801207973!5m2!1sid!2sid"
                 allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+            {{-- 🗺️ Tombol menuju Google Maps --}}
+            <a href="https://maps.app.goo.gl/G1ERg4TJQhMLp2cm9"
+               target="_blank" class="mac-btn">
+                <i class="fa-solid fa-map-location-dot"></i> Lihat di Google Maps
+            </a>
         </div>
     </div>
 </div>

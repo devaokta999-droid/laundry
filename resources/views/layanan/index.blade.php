@@ -82,7 +82,7 @@
 <div class="container py-5">
     <div class="mac-card">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold" style="color:#007aff;">🧺 Daftar Layanan Deva Laundry</h3>
+            <h3 class="fw-bold" style="color:#007aff;">Daftar Layanan Deva Laundry</h3>
             <a href="{{ route('layanan.create') }}" class="btn-macos">
                 + Tambah Layanan
             </a>
@@ -127,13 +127,13 @@
                         <td><strong>Rp {{ number_format($service->price, 0, ',', '.') }}</strong></td>
                         <td>
                             <a href="{{ route('layanan.edit', $service->id) }}" class="btn-edit me-2">
-                                ✏️ Edit
+                                Edit
                             </a>
                             <form action="{{ route('layanan.destroy', $service->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn-delete" onclick="return confirm('Yakin ingin menghapus layanan ini?')">
-                                    🗑️ Hapus
+                                    Hapus
                                 </button>
                             </form>
                         </td>

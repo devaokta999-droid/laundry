@@ -215,10 +215,10 @@
         </div>
 
         <nav class="nav flex-column">
-            <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">🏠 Beranda</a>
-            <a href="{{ route('about') }}" class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}">ℹ️ Tentang</a>
-            <a href="{{ route('layanan.index') }}" class="nav-link {{ request()->routeIs('layanan.index') ? 'active' : '' }}">🧺 Layanan</a>
-            <a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">📞 Kontak</a>
+            <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
+            <a href="{{ route('about') }}" class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}">Tentang</a>
+            <a href="{{ route('layanan.index') }}" class="nav-link {{ request()->routeIs('layanan.index') ? 'active' : '' }}">Layanan</a>
+            <a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">Kontak</a>
 
             @auth
                 @php $role = auth()->user()->role; @endphp
@@ -227,17 +227,17 @@
                 {{-- 🧾 Kasir Area --}}
                 @if($role === 'kasir')
                     <a href="{{ route('admin.cashier.index') }}" class="btn-cashier mb-3">
-                        💵 Buka Kasir
+                        Kasir
                     </a>
                 @endif
 
                 {{-- 🔹 Admin & Deva --}}
                 @if(in_array($role, ['admin', 'deva']))
                     <a href="{{ route('admin.cashier.index') }}" class="nav-link {{ request()->routeIs('admin.cashier.index') ? 'active' : '' }}">
-                        💵 Kasir
+                        Kasir
                     </a>
                     <a href="{{ route('admin.transactions.index') }}" class="nav-link {{ request()->routeIs('admin.transactions.index') ? 'active' : '' }}">
-                        📜 Transaksi
+                        Transaksi
                     </a>
                 @endif
             @endauth
@@ -273,7 +273,7 @@
     @yield('content')
 
     <footer>
-        © {{ date('Y') }} Deva Laundry — macOS UI Theme
+        © {{ date('Y') }} Deva Laundry — cuci cepat dan bersih
     </footer>
 </div>
 
