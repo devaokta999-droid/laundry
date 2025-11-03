@@ -167,7 +167,7 @@ body {
 <div class="mac-container">
     {{-- 🪞 Header --}}
     <div class="mac-header">
-        <img src="{{ asset('images/hero-laundry.png') }}" alt="Logo Deva Laundry">
+        <img src="{{ asset('images/header.png') }}" alt="Logo Deva Laundry">
         <h1>Tentang Deva Laundry</h1>
         <p>Bersih • Rapi • Wangi • Tepat Waktu</p>
     </div>

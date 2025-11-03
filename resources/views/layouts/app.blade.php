@@ -12,7 +12,7 @@
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet">
 
     <!-- Icon -->
-    <link rel="icon" type="image/png" href="{{ asset('images/lgo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/header.png') }}">
 
     <style>
         :root {
@@ -210,7 +210,7 @@
 <div class="sidebar" id="macSidebar">
     <div>
         <div class="sidebar-header mb-4">
-            <img src="{{ asset('images/lgo.png') }}" alt="Logo" width="60" class="mb-2 rounded-3 shadow-sm">
+            <img src="{{ asset('images/header.png') }}" alt="Logo" width="60" class="mb-2 rounded-3 shadow-sm">
             <h4>Deva Laundry</h4>
         </div>
 
