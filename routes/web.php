@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ServiceController;
@@ -12,7 +13,7 @@ use App\Http\Middleware\RoleMiddleware;
 
 /*
 |--------------------------------------------------------------------------
-| 🌐 PUBLIC AREA
+| 🌐 PUBLIC AREA (Akses untuk semua pengguna)
 |--------------------------------------------------------------------------
 */
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -40,10 +41,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 /*
 |--------------------------------------------------------------------------
-| 👤 CUSTOMER AREA
+| 👤 CUSTOMER AREA (User login biasa)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+    // Kelola layanan pribadi (CRUD)
     Route::resource('/layanan', LayananController::class);
 });
 
@@ -51,37 +53,79 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 | 🧾 ADMIN / KASIR / DEVA AREA (Tanpa Kernel)
 |--------------------------------------------------------------------------
+|
+| - Admin bisa melihat semua transaksi, mengelola layanan, kasir, dll.
+| - Middleware role dijalankan manual via app(RoleMiddleware::class)
+| - Tidak memerlukan penambahan kernel di Http/Kernel.php
+|--------------------------------------------------------------------------
 */
 Route::prefix('admin')
     ->name('admin.')
     ->middleware('auth')
     ->group(function () {
-        // 🔹 Gunakan closure di dalam group, bukan di middleware array
-        Route::group([], function () {
 
-            // 🧰 Kelola Layanan
-            Route::get('services', function (\Illuminate\Http\Request $request) {
-                app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
-                return app(ServiceController::class)->index();
-            })->name('services.index');
+        /*
+        |-------------------------------
+        | 💼 Kelola Layanan Laundry
+        |-------------------------------
+        */
+        Route::get('services', function (Request $request) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
+            return app(ServiceController::class)->index();
+        })->name('services.index');
 
-            Route::resource('services', ServiceController::class)->except(['show']);
+        Route::get('services/create', function (Request $request) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'deva');
+            return app(ServiceController::class)->create();
+        })->name('services.create');
 
-            // 📜 Transaksi
-            Route::get('transactions', function (\Illuminate\Http\Request $request) {
-                app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
-                return app(TransactionController::class)->index();
-            })->name('transactions.index');
+        Route::post('services', function (Request $request) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'deva');
+            return app(ServiceController::class)->store($request);
+        })->name('services.store');
 
-            // 💵 Kasir
-            Route::get('cashier', function (\Illuminate\Http\Request $request) {
-                app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
-                return app(CashierController::class)->index();
-            })->name('cashier.index');
+        Route::get('services/{id}/edit', function (Request $request, $id) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'deva');
+            return app(ServiceController::class)->edit($id);
+        })->name('services.edit');
 
-            Route::post('cashier/print', function (\Illuminate\Http\Request $request) {
-                app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
-                return app(CashierController::class)->print($request);
-            })->name('cashier.print');
-        });
+        Route::put('services/{id}', function (Request $request, $id) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'deva');
+            return app(ServiceController::class)->update($request, $id);
+        })->name('services.update');
+
+        Route::delete('services/{id}', function (Request $request, $id) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'deva');
+            return app(ServiceController::class)->destroy($id);
+        })->name('services.destroy');
+
+        /*
+        |-------------------------------
+        | 💵 Kasir - Transaksi Penjualan
+        |-------------------------------
+        */
+        Route::get('cashier', function (Request $request) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
+            return app(CashierController::class)->index();
+        })->name('cashier.index');
+
+        Route::post('cashier/store', function (Request $request) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
+            return app(CashierController::class)->store($request);
+        })->name('cashier.store');
+
+        Route::post('cashier/print', function (Request $request) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
+            return app(CashierController::class)->print($request);
+        })->name('cashier.print');
+
+        /*
+        |-------------------------------
+        | 📜 Riwayat Transaksi
+        |-------------------------------
+        */
+        Route::get('transactions', function (Request $request) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'deva');
+            return app(TransactionController::class)->index();
+        })->name('transactions.index');
     });

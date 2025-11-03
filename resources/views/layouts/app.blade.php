@@ -40,7 +40,7 @@
             align-items: flex-start;
         }
 
-        /* 🍏 Floating Glass Sidebar */
+        /* 🍏 Sidebar */
         .sidebar {
             position: fixed;
             top: 30px;
@@ -89,16 +89,29 @@
             color: var(--mac-accent);
         }
 
+        /* 🧾 Tombol Kasir */
+        .btn-cashier {
+            background: linear-gradient(180deg, #007aff, #0051cc);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,122,255,0.3);
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-cashier:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(180deg, #0a84ff, #0066ff);
+        }
+
         .sidebar .btn {
             border-radius: 12px;
             width: 100%;
             font-weight: 600;
-        }
-
-        .btn-primary {
-            background: linear-gradient(180deg, #0a84ff, #0066ff);
-            border: none;
-            box-shadow: 0 2px 12px rgba(0,122,255,0.3);
         }
 
         .btn-outline-primary {
@@ -127,7 +140,7 @@
             box-shadow: 0 3px 10px rgba(0,122,255,0.4);
         }
 
-        /* 🖥 Content Area */
+        /* 🖥 Content */
         .content-wrapper {
             flex: 1;
             padding: 3rem;
@@ -142,7 +155,6 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* 🌙 Footer */
         footer {
             text-align: center;
             font-size: 0.9rem;
@@ -155,7 +167,7 @@
             margin-top: 2rem;
         }
 
-        /* 📱 Responsive Sidebar */
+        /* 📱 Responsive */
         @media (max-width: 992px) {
             .sidebar {
                 transform: translateX(-120%);
@@ -180,7 +192,6 @@
             }
         }
 
-        /* ✨ Small Fade-Out Transition for Links */
         .fade-out {
             animation: fadeOut 0.4s ease forwards;
         }
@@ -192,7 +203,7 @@
 </head>
 <body>
 
-<!-- 📱 Sidebar Toggle Button -->
+<!-- 📱 Sidebar Toggle -->
 <button class="sidebar-toggle" id="sidebarToggle">☰</button>
 
 <!-- 🍏 Sidebar -->
@@ -204,26 +215,23 @@
         </div>
 
         <nav class="nav flex-column">
-            <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
-            <a href="{{ route('about') }}" class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}">Tentang</a>
-            <a href="{{ route('layanan.index') }}" class="nav-link {{ request()->routeIs('layanan.index') ? 'active' : '' }}">Layanan</a>
-            <a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">Kontak</a>
+            <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">🏠 Beranda</a>
+            <a href="{{ route('about') }}" class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}">ℹ️ Tentang</a>
+            <a href="{{ route('layanan.index') }}" class="nav-link {{ request()->routeIs('layanan.index') ? 'active' : '' }}">🧺 Layanan</a>
+            <a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">📞 Kontak</a>
 
             @auth
-                @php
-                    $role = auth()->user()->role;
-                @endphp
-
+                @php $role = auth()->user()->role; @endphp
                 <hr>
 
-                {{-- 🔹 Jika role = kasir, tampilkan tombol Dummy Kasir --}}
+                {{-- 🧾 Kasir Area --}}
                 @if($role === 'kasir')
-                    <a href="#" class="nav-link text-primary fw-bold">
-                        🧾 Kasir Dummy
+                    <a href="{{ route('admin.cashier.index') }}" class="btn-cashier mb-3">
+                        💵 Buka Kasir
                     </a>
                 @endif
 
-                {{-- 🔹 Jika role = admin atau deva, tampilkan menu admin --}}
+                {{-- 🔹 Admin & Deva --}}
                 @if(in_array($role, ['admin', 'deva']))
                     <a href="{{ route('admin.cashier.index') }}" class="nav-link {{ request()->routeIs('admin.cashier.index') ? 'active' : '' }}">
                         💵 Kasir
@@ -243,7 +251,7 @@
         @else
             <div class="dropdown">
                 <button class="btn btn-outline-primary dropdown-toggle w-100" data-bs-toggle="dropdown">
-                     {{ auth()->user()->name }}
+                    👤 {{ auth()->user()->name }}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end w-100">
                     <li><a class="dropdown-item" href="{{ route('layanan.index') }}">Layanan Saya</a></li>
@@ -265,7 +273,7 @@
     @yield('content')
 
     <footer>
-        © {{ date('Y') }} Deva Laundry
+        © {{ date('Y') }} Deva Laundry — macOS UI Theme
     </footer>
 </div>
 

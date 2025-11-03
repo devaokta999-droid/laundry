@@ -3,129 +3,168 @@
 @section('title', 'Hubungi Kami - Deva Laundry')
 
 @section('content')
-<!-- 🌈 iOS Premium Split Frame Background -->
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 py-16 px-6 flex items-center justify-center">
-    <div class="max-w-6xl w-full space-y-8">
+<style>
+/* 🌈 macOS Clean Style */
+body {
+    background: linear-gradient(135deg, #eaf3ff, #ffffff);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #333;
+}
 
-        <!-- 🌟 Header -->
-        <div class="bg-white/60 backdrop-blur-2xl rounded-3xl shadow-lg border border-white/30 text-center p-10 transition-all duration-500 hover:shadow-blue-200/50">
-            <h1 class="text-4xl md:text-5xl font-extrabold text-blue-700 tracking-tight mb-3">Hubungi Kami</h1>
-            <p class="text-gray-600 text-lg">Kami siap membantu Anda setiap saat dengan pelayanan terbaik 💙</p>
+/* 🧊 Container utama */
+.mac-container {
+    max-width: 1100px;
+    margin: 80px auto;
+    padding: 20px;
+}
+
+/* 🌟 Header */
+.mac-header {
+    text-align: center;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(14px);
+    border-radius: 22px;
+    padding: 50px 20px;
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    margin-bottom: 50px;
+    transition: all 0.3s ease;
+}
+.mac-header:hover {
+    box-shadow: 0 10px 36px rgba(0,0,0,0.08);
+}
+.mac-header h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #007aff;
+}
+.mac-header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* 💬 Dua kolom */
+.mac-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 30px;
+}
+
+/* 📬 Kartu isi */
+.mac-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 35px 30px;
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+.mac-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.mac-card h2 {
+    font-size: 1.6rem;
+    color: #007aff;
+    margin-bottom: 20px;
+}
+
+/* 🔗 Info kontak */
+.mac-info p {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.05rem;
+    color: #444;
+    margin-bottom: 12px;
+}
+.mac-info i {
+    font-size: 1.3rem;
+    color: #007aff;
+}
+
+/* 🌐 Tombol iOS Style */
+.mac-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 50px;
+    padding: 0.8rem 1.6rem;
+    font-weight: 600;
+    font-size: 1rem;
+    color: white;
+    transition: 0.25s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+.mac-btn:hover {
+    transform: translateY(-3px);
+}
+.mac-btn.whatsapp {
+    background: linear-gradient(135deg, #34c759, #2ecf55);
+}
+.mac-btn.email {
+    background: linear-gradient(135deg, #007aff, #0071e3);
+}
+
+/* 🗺️ Map frame */
+.mac-map iframe {
+    border: 0;
+    width: 100%;
+    height: 400px;
+    border-radius: 18px;
+}
+
+/* 📱 Responsif */
+@media (max-width: 768px) {
+    .mac-header h1 {
+        font-size: 2.2rem;
+    }
+}
+</style>
+
+<div class="mac-container">
+    {{-- 🌟 HEADER --}}
+    <div class="mac-header">
+        <h1>Hubungi Kami</h1>
+        <p>Kami siap membantu Anda dengan layanan terbaik setiap hari 💙</p>
+    </div>
+
+    {{-- 💬 DUA KOLOM --}}
+    <div class="mac-grid">
+        {{-- 💎 Informasi Kontak --}}
+        <div class="mac-card">
+            <h2>Informasi Kontak</h2>
+            <div class="mac-info">
+                <p><i class="fa-solid fa-phone"></i> Telepon / WhatsApp: <strong>{{ config('app.admin_whatsapp', '+62 853-3363-4884') }}</strong></p>
+                <p><i class="fa-solid fa-envelope"></i> Email: <strong>hello@devalaundry.example</strong></p>
+                <p><i class="fa-brands fa-instagram text-pink-500"></i> Instagram: <a href="https://instagram.com/devalaundry" target="_blank" class="text-blue-600 hover:underline">@devalaundry</a></p>
+                <p><i class="fa-brands fa-facebook"></i> Facebook: <a href="https://facebook.com/devalaundry" target="_blank" class="text-blue-600 hover:underline">@devalaundry</a></p>
+            </div>
+
+            {{-- 🌟 Tombol Aksi --}}
+            <div class="mt-4 flex flex-wrap gap-3">
+                <a href="https://wa.me/{{ preg_replace('/\D/', '', config('app.admin_whatsapp', '6285333634884')) }}"
+                   target="_blank" class="mac-btn whatsapp">
+                    <i class="fa-brands fa-whatsapp"></i> Chat via WhatsApp
+                </a>
+                <a href="mailto:hello@devalaundry.example" class="mac-btn email">
+                    <i class="fa-solid fa-envelope"></i> Kirim Email
+                </a>
+            </div>
         </div>
 
-        <!-- 🧩 Dua Frame Terpisah -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-            <!-- 💎 Frame 1: Informasi Kontak -->
-            <div class="bg-white/70 backdrop-blur-2xl rounded-3xl shadow-xl border border-white/30 p-8 md:p-10 transition-transform duration-500 hover:scale-[1.02] hover:shadow-blue-200/50">
-                <h2 class="text-2xl font-semibold text-blue-600 mb-5">Informasi Kontak</h2>
-
-                <div class="space-y-4 text-gray-700 leading-relaxed">
-                    <p class="flex items-center gap-3">
-                        <i class="fa-solid fa-phone text-blue-600 text-xl"></i>
-                        <span>Telepon / WhatsApp:
-                            <strong>{{ config('app.admin_whatsapp', '+62 853-3363-4884') }}</strong>
-                        </span>
-                    </p>
-
-                    <p class="flex items-center gap-3">
-                        <i class="fa-solid fa-envelope text-blue-600 text-xl"></i>
-                        <span>Email: <strong>hello@devalaundry.example</strong></span>
-                    </p>
-
-                    <p class="flex items-center gap-3">
-                        <i class="fa-brands fa-instagram text-pink-500 text-xl"></i>
-                        <span>Instagram:
-                            <a href="https://instagram.com/devalaundry" target="_blank" class="text-blue-600 hover:underline">@devalaundry</a>
-                        </span>
-                    </p>
-
-                    <p class="flex items-center gap-3">
-                        <i class="fa-brands fa-facebook text-blue-700 text-xl"></i>
-                        <span>Facebook:
-                            <a href="https://facebook.com/devalaundry" target="_blank" class="text-blue-600 hover:underline">@devalaundry</a>
-                        </span>
-                    </p>
-                </div>
-
-                <!-- 🌟 Tombol Aksi -->
-                <div class="mt-10 flex flex-wrap gap-4">
-                    <!-- WhatsApp -->
-                    <a href="https://wa.me/{{ preg_replace('/\D/', '', config('app.admin_whatsapp', '6285333634884')) }}"
-                       target="_blank"
-                       class="ios-btn bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-200">
-                        <i class="fa-brands fa-whatsapp text-xl"></i>
-                        Chat via WhatsApp
-                    </a>
-
-                    <!-- Email -->
-                    <a href="mailto:hello@devalaundry.example"
-                       class="ios-btn bg-blue-500 hover:bg-blue-600 text-white shadow-lg shadow-blue-200">
-                        <i class="fa-solid fa-envelope text-xl"></i>
-                        Chat via Email
-                    </a>
-                </div>
-            </div>
-
-            <!-- 💎 Frame 2: Lokasi Peta -->
-            <div class="bg-white/70 backdrop-blur-2xl rounded-3xl shadow-xl border border-white/30 overflow-hidden transition-transform duration-500 hover:scale-[1.02] hover:shadow-blue-200/50">
-                <h2 class="text-2xl font-semibold text-blue-600 px-8 pt-8 mb-4">Lokasi Kami</h2>
-                <div class="relative">
-                    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-blue-50/30 z-10 pointer-events-none rounded-b-3xl"></div>
-                    <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d249.18494673429208!2d115.16754820472273!3d-8.513313035513681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd23b6ad9306f77%3A0x864fe1c076fac689!2sDeva%20Laundry!5e1!3m2!1sid!2sid!4v1761801207973!5m2!1sid!2sid"
-                        width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"
-                        class="rounded-b-3xl">
-                    </iframe>
-                </div>
-            </div>
+        {{-- 🗺️ Lokasi Kami --}}
+        <div class="mac-card mac-map">
+            <h2>Lokasi Kami</h2>
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d249.18494673429208!2d115.16754820472273!3d-8.513313035513681!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd23b6ad9306f77%3A0x864fe1c076fac689!2sDeva%20Laundry!5e1!3m2!1sid!2sid!4v1761801207973!5m2!1sid!2sid"
+                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
     </div>
 </div>
 
-<!-- 💅 Style Kustom iOS Premium Split Edition -->
-<style>
-    /* 🌈 Efek Denyut Tombol */
-    @keyframes pulse {
-        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59,130,246,0.4); }
-        70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(59,130,246,0); }
-        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(59,130,246,0); }
-    }
-
-    .ios-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 0.9rem 1.6rem;
-        border-radius: 9999px;
-        font-weight: 600;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        animation: pulse 2.5s infinite;
-        backdrop-filter: blur(10px);
-    }
-
-    .ios-btn:hover {
-        transform: translateY(-3px) scale(1.05);
-        animation: none;
-    }
-
-    /* 🌤️ Efek Premium Card Hover */
-    .bg-white\/70:hover {
-        background-color: rgba(255, 255, 255, 0.85);
-    }
-
-    /* 🌙 Bayangan Lembut iOS */
-    .shadow-xl {
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
-    }
-
-    /* 💠 Transisi Halus */
-    .transition-transform {
-        transition: transform 0.4s ease, box-shadow 0.4s ease;
-    }
-</style>
-
+{{-- 🔗 FontAwesome Icons --}}
 @push('scripts')
 <script src="https://kit.fontawesome.com/a2b1f3b59d.js" crossorigin="anonymous"></script>
 @endpush

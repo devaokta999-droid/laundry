@@ -3,112 +3,231 @@
 @section('title', 'Tentang Kami - Deva Laundry')
 
 @section('content')
-<!-- 🌈 Background gaya macOS Pro -->
-<div class="min-h-screen bg-gradient-to-br from-[#eef2ff] via-[#f8fbff] to-[#dfe8ff] py-20 px-6">
+<style>
+/* 🌈 macOS Modern Clean Style */
+body {
+    background: linear-gradient(135deg, #eaf3ff, #ffffff);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #333;
+}
 
-    <div class="max-w-6xl mx-auto bg-white/30 backdrop-blur-2xl border border-white/40 
-                shadow-[0_8px_32px_rgba(31,38,135,0.1)] rounded-[3rem] p-10 md:p-16 
-                transition-all duration-700 hover:shadow-[0_12px_45px_rgba(31,38,135,0.2)]">
+/* 🧊 Container utama */
+.mac-container {
+    max-width: 1100px;
+    margin: 80px auto;
+    padding: 20px;
+}
 
-        <!-- 🪞 Header -->
-        <div class="text-center mb-16">
-            <img src="{{ asset('images/hero-laundry.png') }}" 
-                 alt="Logo Deva Laundry"
-                 class="mx-auto mb-6 w-32 md:w-40 drop-shadow-2xl transition-transform duration-700 hover:scale-110 hover:rotate-1">
-            
-            <h1 class="text-5xl font-extrabold bg-gradient-to-r from-blue-700 via-blue-600 to-sky-500 
-                       bg-clip-text text-transparent tracking-tight mb-4">
-                Tentang Deva Laundry
-            </h1>
-            <p class="text-gray-600 text-lg font-medium tracking-wide">
-                Bersih • Rapi • Wangi • Tepat Waktu
-            </p>
+/* 🪞 Header */
+.mac-header {
+    text-align: center;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(14px);
+    border-radius: 22px;
+    padding: 50px 20px;
+    border: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+    margin-bottom: 50px;
+    transition: all 0.3s ease;
+}
+.mac-header:hover {
+    box-shadow: 0 10px 36px rgba(0,0,0,0.08);
+}
+.mac-header img {
+    width: 500px;
+    margin-bottom: 20px;
+    transition: transform 0.4s ease;
+}
+.mac-header img:hover {
+    transform: scale(1.08);
+}
+.mac-header h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: #007aff;
+}
+.mac-header p {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* 🧩 Dua kolom utama */
+.mac-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 30px;
+}
+
+/* 📜 Card */
+.mac-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 35px 30px;
+    border: 1px solid rgba(255,255,255,0.5);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+}
+.mac-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.mac-card h2 {
+    font-size: 1.6rem;
+    color: #007aff;
+    margin-bottom: 18px;
+}
+.mac-card ul {
+    padding-left: 20px;
+}
+.mac-card li {
+    margin-bottom: 8px;
+    color: #444;
+}
+
+/* 💎 Tombol */
+.mac-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 50px;
+    padding: 0.8rem 1.6rem;
+    font-weight: 600;
+    font-size: 1rem;
+    color: white;
+    background: linear-gradient(135deg, #007aff, #0071e3);
+    transition: 0.25s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+.mac-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* 👥 Tim Kami */
+.mac-team {
+    margin-top: 80px;
+    text-align: center;
+}
+.mac-team h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #007aff;
+    margin-bottom: 35px;
+}
+.mac-team-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+}
+.mac-member {
+    background: rgba(255,255,255,0.85);
+    border-radius: 18px;
+    padding: 20px;
+    width: 210px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.5);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+.mac-member:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.mac-member img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid rgba(255,255,255,0.8);
+    margin-bottom: 10px;
+}
+.mac-member h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+}
+.mac-member p {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* 📱 Responsif */
+@media (max-width: 768px) {
+    .mac-header h1 {
+        font-size: 2.2rem;
+    }
+    .mac-card {
+        padding: 25px 20px;
+    }
+}
+</style>
+
+<div class="mac-container">
+    {{-- 🪞 Header --}}
+    <div class="mac-header">
+        <img src="{{ asset('images/hero-laundry.png') }}" alt="Logo Deva Laundry">
+        <h1>Tentang Deva Laundry</h1>
+        <p>Bersih • Rapi • Wangi • Tepat Waktu</p>
+    </div>
+
+    {{-- 🧩 Dua Kolom --}}
+    <div class="mac-grid">
+        {{-- Kolom Kiri --}}
+        <div class="mac-card">
+            <h2>Visi Kami</h2>
+            <p>Menjadi penyedia layanan laundry terpercaya di Bali yang berfokus pada kebersihan, kecepatan pelayanan, dan kepuasan pelanggan dengan standar profesional.</p>
+
+            <h2 class="mt-4">Misi Kami</h2>
+            <ul>
+                <li>🧺 Memberikan hasil laundry bersih, rapi, dan wangi.</li>
+                <li>🚚 Menyediakan layanan antar-jemput cepat dan tepat waktu.</li>
+                <li>🌿 Menggunakan bahan ramah lingkungan dan mesin modern.</li>
+                <li>🤝 Menjaga kepercayaan dan kenyamanan pelanggan sebagai prioritas utama.</li>
+            </ul>
+
+            <div style="margin-top:25px; border-top:1px solid #eee; padding-top:15px;">
+                <h3 style="color:#007aff; font-weight:600;">📍 Lokasi Kami</h3>
+                <p>Jl. Wisnu Marga No. Belayu, Peken, Kec. Marga, Kabupaten Tabanan, Bali 82181</p>
+            </div>
         </div>
 
-        <!-- 🧩 Konten Utama -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
+        {{-- Kolom Kanan --}}
+        <div class="mac-card">
+            <h2>Kenapa Pilih Deva Laundry?</h2>
+            <p>Deva Laundry hadir untuk mempermudah hidup Anda. Kami mengutamakan kecepatan, ketepatan, dan kualitas layanan premium untuk setiap pelanggan.</p>
+            <p>Dengan peralatan modern, sistem kerja profesional, serta tim berpengalaman, kami memastikan pakaian Anda bersih sempurna, harum, dan terawat seperti baru setiap kali dicuci.</p>
 
-            <!-- Kolom Kiri -->
-            <div class="bg-white/60 backdrop-blur-lg rounded-[2rem] shadow-inner border border-white/40 p-8 
-                        hover:shadow-xl transition-all duration-500">
-                <h2 class="text-2xl font-bold text-blue-600 mb-4">Visi Kami</h2>
-                <p class="text-gray-700 leading-relaxed mb-8">
-                    Menjadi layanan laundry terpercaya dan terbaik di kota, dengan fokus pada kualitas hasil, keramahan pelayanan, dan inovasi berkelanjutan.
-                </p>
-
-                <h2 class="text-2xl font-bold text-blue-600 mb-4">Misi Kami</h2>
-                <ul class="space-y-3 text-gray-700 font-medium">
-                    <li>Mencuci dengan bersih, rapi, dan wangi.</li>
-                    <li>Pengantaran cepat & tepat waktu.</li>
-                    <li>Menggunakan bahan ramah lingkungan.</li>
-                    <li>Menjaga kepercayaan pelanggan sebagai prioritas utama.</li>
-                </ul>
-
-                <div class="mt-8 border-t border-gray-200 pt-6">
-                    <h3 class="text-xl font-bold text-blue-600 mb-1">Lokasi Kami</h3>
-                    <p class="text-gray-700">Jl. Wisnu Marga No.Belayu, Peken, Kec. Marga, Kabupaten Tabanan, Bali 82181</p>
-                </div>
-            </div>
-
-            <!-- Kolom Kanan -->
-            <div class="flex flex-col justify-center text-gray-700 leading-relaxed">
-                <h2 class="text-3xl font-bold text-blue-600 mb-5">Kenapa Pilih Kami?</h2>
-                <p class="mb-6">
-                    Deva Laundry hadir untuk mempermudah hidup Anda. Kami mengutamakan kecepatan, ketepatan,
-                    dan kualitas layanan premium untuk setiap pelanggan.
-                </p>
-                <p class="mb-8">
-                    Dengan peralatan modern, sistem kerja profesional, serta tim berpengalaman, kami memastikan
-                    pakaian Anda bersih sempurna, harum, dan terawat seperti baru setiap kali dicuci.
-                </p>
-
-                <a href="{{ route('contact') }}"
-                   class="inline-flex items-center gap-3 px-8 py-3 
-                          bg-gradient-to-r from-blue-600 via-blue-500 to-sky-400 
-                          text-white rounded-full shadow-md 
-                          hover:shadow-2xl hover:scale-105 active:scale-95 
-                          transition-all duration-300 font-semibold">
+            <div class="mt-4">
+                <a href="{{ route('contact') }}" class="mac-btn">
                     <i class="fa-solid fa-phone"></i> Hubungi Kami
                 </a>
             </div>
         </div>
+    </div>
 
-        <!-- ✨ Tim Profesional -->
-        <div class="mt-28 text-center">
-            <h2 class="text-4xl font-extrabold text-blue-700 mb-14 tracking-tight">
-                Tim Profesional Kami
-            </h2>
-
-            <div class="flex flex-wrap justify-center gap-10 md:gap-14">
-                @foreach ([ 
-                    ['img' => 'foto1.png', 'nama' => 'Deva Saputra', 'jabatan' => 'Owner & Founder', 'desc' => 'Membangun Deva Laundry dengan visi pelayanan terbaik dan inovasi berkelanjutan.'],
-                    ['img' => 'foto2.png', 'nama' => 'Rano Utama', 'jabatan' => 'Customer Service', 'desc' => 'Selalu siap melayani pelanggan dengan ramah dan cepat tanggap setiap hari.'],
-                    ['img' => 'foto3.png', 'nama' => 'Bayu Pratama', 'jabatan' => 'Supervisor Laundry', 'desc' => 'Mengawasi setiap proses pencucian agar hasil selalu maksimal dan tepat waktu.']
-                ] as $tim)
-                <div class="group bg-white/40 backdrop-blur-2xl rounded-[1.5rem] border border-white/50 shadow-lg 
-                            hover:shadow-[0_8px_25px_rgba(31,38,135,0.25)] hover:bg-white/60 
-                            p-6 w-52 md:w-56 text-center transition-all duration-500 transform hover:-translate-y-1">
-
-                    <!-- 🖼️ Foto Tim (kecil & melingkar) -->
-                    <div class="relative w-20 h-20 mx-auto mb-5">
-                        <img src="{{ asset('images/' . $tim['img']) }}" 
-                             alt="{{ $tim['nama'] }}"
-                             class="w-20 h-20 rounded-full object-cover shadow-lg 
-                                    transition-transform duration-500 group-hover:scale-110 border-4 border-white/80">
-                        <div class="absolute inset-0 rounded-full bg-gradient-to-tr from-blue-300/20 to-transparent"></div>
-                    </div>
-
-                    <h4 class="text-lg font-semibold text-gray-800">{{ $tim['nama'] }}</h4>
-                    <p class="text-blue-600 font-medium text-sm mb-1">{{ $tim['jabatan'] }}</p>
-                    <p class="text-gray-600 text-xs leading-snug">{{ $tim['desc'] }}</p>
-                </div>
-                @endforeach
+    {{-- 👥 Tim Kami --}}
+    <div class="mac-team">
+        <h2>Tim Profesional Kami</h2>
+        <div class="mac-team-grid">
+            @foreach ([ 
+                ['img' => 'owner.jpg', 'nama' => 'Deva okta', 'jabatan' => 'Owner & Founder', 'desc' => 'Membangun Deva Laundry dengan visi pelayanan terbaik dan inovasi berkelanjutan.'],
+                ['img' => 'team2.jpg', 'nama' => 'Rano Utama', 'jabatan' => 'Customer Service', 'desc' => 'Siap melayani pelanggan dengan ramah dan cepat setiap hari.'],
+                ['img' => 'team3.jpg', 'nama' => 'Bayu Pratama', 'jabatan' => 'Supervisor Laundry', 'desc' => 'Mengawasi setiap proses pencucian agar hasil selalu maksimal dan tepat waktu.']
+            ] as $tim)
+            <div class="mac-member">
+                <img src="{{ asset('images/' . $tim['img']) }}" alt="{{ $tim['nama'] }}">
+                <h4>{{ $tim['nama'] }}</h4>
+                <p style="color:#007aff; font-weight:500;">{{ $tim['jabatan'] }}</p>
+                <p style="font-size:0.85rem;">{{ $tim['desc'] }}</p>
             </div>
+            @endforeach
         </div>
     </div>
 </div>
 
-<!-- FontAwesome -->
+{{-- 🔗 FontAwesome Icons --}}
 @push('scripts')
 <script src="https://kit.fontawesome.com/a2b1f3b59d.js" crossorigin="anonymous"></script>
 @endpush

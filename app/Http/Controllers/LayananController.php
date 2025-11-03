@@ -7,22 +7,26 @@ use App\Models\Service;
 
 class LayananController extends Controller
 {
+    /**
+     * Terapkan middleware auth agar hanya user login yang bisa akses.
+     */
     public function __construct()
     {
-        $this->middleware('auth'); // hanya user login
+        $this->middleware('auth');
     }
 
     /**
-     * Tampilkan semua layanan.
+     * 🧺 Tampilkan daftar semua layanan laundry.
      */
     public function index()
     {
-        $services = Service::all();
+        $services = Service::orderBy('created_at', 'desc')->get();
+
         return view('layanan.index', compact('services'));
     }
 
     /**
-     * Form tambah layanan baru.
+     * ➕ Form untuk menambah layanan baru.
      */
     public function create()
     {
@@ -30,7 +34,7 @@ class LayananController extends Controller
     }
 
     /**
-     * Simpan layanan baru ke database.
+     * 💾 Simpan layanan baru ke database.
      */
     public function store(Request $request)
     {
@@ -46,11 +50,11 @@ class LayananController extends Controller
             'price' => $request->price,
         ]);
 
-        return redirect()->route('layanan.index')->with('success', 'Layanan berhasil ditambahkan!');
+        return redirect()->route('layanan.index')->with('success', '✅ Layanan berhasil ditambahkan!');
     }
 
     /**
-     * Form edit layanan.
+     * ✏️ Form untuk mengedit layanan.
      */
     public function edit($id)
     {
@@ -59,7 +63,7 @@ class LayananController extends Controller
     }
 
     /**
-     * Update data layanan.
+     * 🔄 Update data layanan di database.
      */
     public function update(Request $request, $id)
     {
@@ -76,17 +80,17 @@ class LayananController extends Controller
             'price' => $request->price,
         ]);
 
-        return redirect()->route('layanan.index')->with('success', 'Layanan berhasil diperbarui!');
+        return redirect()->route('layanan.index')->with('success', '✅ Layanan berhasil diperbarui!');
     }
 
     /**
-     * Hapus layanan.
+     * 🗑️ Hapus layanan dari database.
      */
     public function destroy($id)
     {
         $service = Service::findOrFail($id);
         $service->delete();
 
-        return redirect()->route('layanan.index')->with('success', 'Layanan berhasil dihapus!');
+        return redirect()->route('layanan.index')->with('success', '🗑️ Layanan berhasil dihapus!');
     }
 }
