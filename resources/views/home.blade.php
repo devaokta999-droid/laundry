@@ -205,7 +205,7 @@ body {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Pesan Sekarang
             </a>
-            <a target="_blank" href="https://wa.me/{{ preg_replace('/\D/', '', config('app.admin_whatsapp', '6285333634884')) }}?text=Halo%20Deva%20Laundry" class="mac-btn btn-ghost mac-btn">
+            <a target="_blank" href="https://wa.me/{{ preg_replace('/\D/', '', config('app.admin_whatsapp', '6285333634884')) }}?text=Halo%20Deva%20Laundry%20Aku%20Mau%20Pesan" class="mac-btn btn-ghost mac-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 10-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 22l-4.35-1.74" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Hubungi Kami
             </a>
@@ -259,7 +259,7 @@ body {
             <a href="https://facebook.com/devalaundry" target="_blank" title="Facebook" rel="noopener">
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook" class="social-logo">
             </a>
-            <a href="https://instagram.com/devalaundry" target="_blank" title="Instagram" rel="noopener">
+            <a href="https://www.instagram.com/devasptr_?igsh=OWl5d28xbm11N3dn" target="_blank" title="Instagram" rel="noopener">
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram" class="social-logo">
             </a>
             <a href="https://www.tiktok.com/@devalaundry.official" target="_blank" title="TikTok" rel="noopener">
@@ -271,12 +271,12 @@ body {
             <a href="mailto:hello@devalaundry.example" title="Email" rel="noopener">
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/gmail.svg" alt="Email" class="social-logo">
             </a>
-            <a href="https://www.google.com/maps/place/Deva+Laundry/" target="_blank" title="Lokasi" rel="noopener">
+            <a href="https://maps.app.goo.gl/z7jsgdWsD8JC4MFo8" target="_blank" title="Lokasi" rel="noopener">
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlemaps.svg" alt="Maps" class="social-logo">
             </a>
         </div>
         <div class="copyright">
-            © {{ date('Y') }} <strong>Deva Laundry</strong> — Made with 💙 by 
+            © {{ date('Y') }} <strong>Deva Laundry</strong> — Made with  by 
             <a href="#" style="color:rgba(255,255,255,0.95);text-decoration:underline;">Deva Studio</a>
         </div>
     </footer>
