@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CashierController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\LayananController;
+use App\Http\Controllers\NotaController;
 use App\Http\Middleware\RoleMiddleware;
 
 /*
@@ -128,4 +129,37 @@ Route::prefix('admin')
             app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'deva');
             return app(TransactionController::class)->index();
         })->name('transactions.index');
+
+        /*
+        |-------------------------------
+        | 🧾 Nota Digital Laundry Satuan
+        |-------------------------------
+        | Akses hanya untuk Admin, Kasir, Deva
+        */
+        Route::get('nota', function (Request $request) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
+            return app(NotaController::class)->index();
+        })->name('nota.index');
+
+        Route::post('nota/store', function (Request $request) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
+            return app(NotaController::class)->store($request);
+        })->name('nota.store');
+
+        // 🖨️ Cetak & Unduh PDF Nota
+        Route::get('nota/{id}/print', function (Request $request, $id) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
+            return app(NotaController::class)->print($id);
+        })->name('nota.print');
+
+        /*
+        |-------------------------------
+        | 🔍 (Opsional) Lihat Detail Nota
+        |-------------------------------
+        */
+        Route::get('nota/{id}', function (Request $request, $id) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
+            $nota = \App\Models\Nota::with('items.item')->findOrFail($id);
+            return view('admin.nota.show', compact('nota'));
+        })->name('nota.show');
     });

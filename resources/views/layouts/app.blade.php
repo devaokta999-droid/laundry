@@ -239,6 +239,18 @@
                     <a href="{{ route('admin.transactions.index') }}" class="nav-link {{ request()->routeIs('admin.transactions.index') ? 'active' : '' }}">
                         Transaksi
                     </a>
+
+                    {{-- 🧾 Nota --}}
+                    <a href="{{ route('admin.nota.index') }}" class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">
+                        Nota
+                    </a>
+                @endif
+
+                {{-- ✅ Kasir juga bisa akses Nota --}}
+                @if($role === 'kasir')
+                    <a href="{{ route('admin.nota.index') }}" class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">
+                        Nota
+                    </a>
                 @endif
             @endauth
         </nav>
@@ -302,4 +314,4 @@
 
 @stack('scripts')
 </body>
-</html>
+</html> 
