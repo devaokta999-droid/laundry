@@ -273,7 +273,7 @@
     @yield('content')
 
     <footer>
-        © {{ date('Y') }} Deva Laundry — cuci cepat dan bersih
+        © {{ date('Y') }} Deva Laundry Est 2014
     </footer>
 </div>
 

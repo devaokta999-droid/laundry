@@ -26,12 +26,12 @@ body {
 }
 .mac-hero h1 {
     font-weight: 800;
-    font-size: 2.8rem;
+    font-size: 7rem;
     margin: 0;
     letter-spacing: -0.6px;
 }
 .mac-hero p.lead {
-    font-size: 1.15rem;
+    font-size: 1.20rem;
     margin-top: 12px;
     opacity: 0.95;
 }
@@ -198,8 +198,8 @@ body {
 {{-- ---------- HERO ---------- --}}
 <div class="container">
     <div class="mac-hero">
-        <h1>Deva Laundry</h1>
-        <p class="lead">Cuci Bersih, Wangi, dan Cepat — Solusi Pakaian Kamu!</p>
+        <h1>DEVA LAUNDRY</h1>
+        <p class="lead">Cuci Bersih, Wangi,Cepat dan Rapi — Solusi Pakaian Kamu!</p>
         <div class="cta">
             <a href="{{ route('order.create') }}" class="mac-btn btn-primary mac-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -266,12 +266,12 @@ body {
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok" class="social-logo">
             </a>
             <a href="https://wa.me/{{ preg_replace('/\D/', '', config('app.admin_whatsapp', '6285333634884')) }}" target="_blank" title="WhatsApp" rel="noopener">
-                <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg" alt="WhatsApp" class="social-logo">
+                <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg" alt="Whatsapp" class="social-logo">
             </a>
             <a href="mailto:hello@devalaundry.example" title="Email" rel="noopener">
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/gmail.svg" alt="Email" class="social-logo">
             </a>
-            <a href="https://maps.app.goo.gl/z7jsgdWsD8JC4MFo8" target="_blank" title="Lokasi" rel="noopener">
+            <a href="https://maps.app.goo.gl/z7jsgdWsD8JC4MFo8" target="_blank" title="Lokasi kami" rel="noopener">
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlemaps.svg" alt="Maps" class="social-logo">
             </a>
         </div>
