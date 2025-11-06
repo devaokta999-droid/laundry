@@ -64,13 +64,13 @@
                 </div>
                 <div class="mb-2">
                     <label class="fw-semibold">Uang Muka (Rp)</label>
-                    <input type="number" name="uang_muka" id="uang_muka" class="form-control" value="0">
+                    <input type="number" name="uang_muka" id="uang_muka" class="form-control" value="0" min="0">
                 </div>
                 <div class="mb-2">
                     <label class="fw-semibold">Sisa Pembayaran (Rp)</label>
                     <input type="text" id="sisa" class="form-control" readonly>
                 </div>
-                <button class="btn btn-success w-100 mt-3 fw-semibold" id="submitNota">Simpan Nota</button>
+                <button type="submit" class="btn btn-success w-100 mt-3 fw-semibold" id="submitNota">Simpan Nota</button>
             </div>
         </div>
     </form>
@@ -128,6 +128,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const notaBody = document.getElementById('notaBody');
+
+    // daftar default item (bisa kamu ganti / ambil dari server)
     const itemList = [
         { name: 'Baju Kaos', price: 1000 },
         { name: 'Celana', price: 2000 },
@@ -137,56 +139,56 @@ document.addEventListener('DOMContentLoaded', function () {
         { name: 'Bed Cover', price: 5000 },
         { name: 'Handuk', price: 1500 },
         { name: 'Sarung', price: 1500 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'Kaos Kaki', price: 1000 },
-        { name: 'setrika baju dewasa', price: 1000 },
-        { name: 'setrika baju anak', price: 1000 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
+        { name: 'Sarung', price: 1500 },
         { name: 'Sepatu', price: 3000 },
     ];
 
-    // ✅ Generate tabel awal
-    itemList.forEach((item, index) => addRow(item.name, item.price, '', index + 1));
+    // === Inisialisasi: buat beberapa baris dropdown default untuk mempercepat input ===
+    // (Jika kamu ingin kosong awal, ganti loop ini atau hapus)
+    itemList.forEach((item, index) => addDropdownRow(item.name, item.price, '', index + 1));
 
-    // ✅ Tambah baris baru manual
-    document.getElementById('addRow').addEventListener('click', () => addRow());
-
-    function addRow(name = '', price = '', qty = '', no = null) {
+    // Tambah baris dropdown (pakai itemList)
+    function addDropdownRow(name = '', price = '', qty = '', no = null) {
         const rowCount = notaBody.rows.length + 1;
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${no ?? rowCount}</td>
             <td>
-                <select name="items[${rowCount}][name]" class="form-select item-name">
+                <select name="items[${rowCount}][name]" class="form-select item-name" required>
                     ${itemList.map(i => `<option value="${i.name}" ${i.name === name ? 'selected' : ''}>${i.name}</option>`).join('')}
                 </select>
             </td>
-            <td><input type="number" name="items[${rowCount}][price]" class="form-control item-price" value="${price || 0}" min="0" readonly></td>
-            <td><input type="number" name="items[${rowCount}][quantity]" class="form-control item-qty" value="${qty || 0}" min="0"></td>
+            <td><input type="number" name="items[${rowCount}][price]" class="form-control item-price" value="${price || 0}" min="0" readonly required></td>
+            <td><input type="number" name="items[${rowCount}][quantity]" class="form-control item-qty" value="${qty || 0}" min="0" required></td>
             <td><input type="text" class="form-control subtotal" readonly></td>
             <td><button type="button" class="btn btn-danger btn-sm removeRow">x</button></td>
         `;
@@ -194,68 +196,146 @@ document.addEventListener('DOMContentLoaded', function () {
         recalc();
     }
 
-    // ✅ Update harga otomatis dari dropdown
+    // Tombol "Tambah Item Baru" --> baris kosong yang boleh diisi nama & harga manual
+    document.getElementById('addRow').addEventListener('click', () => {
+        const rowCount = notaBody.rows.length + 1;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${rowCount}</td>
+            <td>
+                <input type="text" name="items[${rowCount}][name]" class="form-control" placeholder="Masukkan jenis item baru" required>
+            </td>
+            <td>
+                <input type="number" name="items[${rowCount}][price]" class="form-control item-price" placeholder="Harga (Rp)" min="0" required>
+            </td>
+            <td>
+                <input type="number" name="items[${rowCount}][quantity]" class="form-control item-qty" placeholder="Jumlah" min="0" required>
+            </td>
+            <td><input type="text" class="form-control subtotal" readonly></td>
+            <td><button type="button" class="btn btn-danger btn-sm removeRow">x</button></td>
+        `;
+        notaBody.appendChild(tr);
+        recalc();
+    });
+
+    // Ketika dropdown item berubah -> set harga otomatis
     notaBody.addEventListener('change', e => {
         if (e.target.classList.contains('item-name')) {
             const selected = itemList.find(i => i.name === e.target.value);
-            e.target.closest('tr').querySelector('.item-price').value = selected ? selected.price : 0;
+            const priceInput = e.target.closest('tr').querySelector('.item-price');
+            if (priceInput) priceInput.value = selected ? selected.price : 0;
             recalc();
         }
     });
 
-    // ✅ Hitung total & subtotal
+    // Hitung subtotal, total, total qty, sisa
     function recalc() {
         let total = 0, totalQty = 0;
         notaBody.querySelectorAll('tr').forEach(tr => {
-            const qty = parseInt(tr.querySelector('.item-qty').value) || 0;
-            const price = parseInt(tr.querySelector('.item-price').value) || 0;
+            const qtyInput = tr.querySelector('.item-qty');
+            const priceInput = tr.querySelector('.item-price');
+            const subtotalEl = tr.querySelector('.subtotal');
+
+            const qty = parseInt(qtyInput?.value || 0);
+            const price = parseInt(priceInput?.value || 0);
             const subtotal = qty * price;
-            tr.querySelector('.subtotal').value = subtotal;
+
+            if (subtotalEl) subtotalEl.value = subtotal;
             total += subtotal;
             totalQty += qty;
         });
+
         document.getElementById('total').value = total;
         document.getElementById('total_qty').value = totalQty;
         const uangMuka = parseInt(document.getElementById('uang_muka').value || 0);
-        document.getElementById('sisa').value = total - uangMuka;
+        document.getElementById('sisa').value = Math.max(0, total - uangMuka);
     }
 
-    // ✅ Listener input realtime
+    // Input listener realtime (qty & price)
     notaBody.addEventListener('input', e => {
-        if (e.target.classList.contains('item-qty')) recalc();
+        if (e.target.classList.contains('item-qty') || e.target.classList.contains('item-price')) recalc();
     });
     document.getElementById('uang_muka').addEventListener('input', recalc);
 
-    // ✅ Hapus baris
+    // Hapus baris
     notaBody.addEventListener('click', e => {
         if (e.target.classList.contains('removeRow')) {
             e.target.closest('tr').remove();
+            // re-numbering nomor baris supaya rapi setelah hapus
+            renumberRows();
             recalc();
         }
     });
 
-    // ✅ Validasi sebelum submit
+    // Renumber rows -> update nomor dan name indexes so server menerima items[...] array sequentially
+    function renumberRows() {
+        const trs = notaBody.querySelectorAll('tr');
+        trs.forEach((tr, idx) => {
+            const newIndex = idx + 1;
+            // nomor kolom (td pertama)
+            tr.querySelector('td:first-child').textContent = newIndex;
+
+            // update name attributes for inputs/selects inside row
+            tr.querySelectorAll('input, select').forEach(el => {
+                // extract the input type suffix: e.g. items[3][name] -> [name]
+                const attrName = el.getAttribute('name');
+                if (!attrName) return;
+                const match = attrName.match(/items\[\d+\]\[(.+)\]/);
+                if (match) {
+                    const key = match[1]; // name, price, quantity
+                    el.setAttribute('name', `items[${newIndex}][${key}]`);
+                }
+            });
+        });
+    }
+
+    // Sebelum submit: - hapus baris yang qty <= 0 (agar backend tidak menolak)
+    //               - renumber rows agar nama array berurutan
     document.getElementById('notaForm').addEventListener('submit', function (e) {
-        let totalQty = 0;
-        notaBody.querySelectorAll('.item-qty').forEach(input => totalQty += parseInt(input.value || 0));
-        if (totalQty <= 0) {
+        // validasi minimal 1 item dengan qty >= 1
+        const rows = Array.from(notaBody.querySelectorAll('tr'));
+        let hasValid = false;
+        rows.forEach(tr => {
+            const qty = parseInt(tr.querySelector('.item-qty')?.value || 0);
+            if (qty > 0) hasValid = true;
+        });
+
+        if (!hasValid) {
             e.preventDefault();
-            alert('❌ Tidak dapat menyimpan nota kosong! Isi jumlah pakaian terlebih dahulu.');
+            alert('❌ Tidak dapat menyimpan nota kosong! Isi minimal 1 item dengan jumlah >= 1.');
+            return;
         }
+
+        // Hapus baris yang qty <= 0 (tidak akan dikirim ke server)
+        rows.forEach(tr => {
+            const qty = parseInt(tr.querySelector('.item-qty')?.value || 0);
+            if (qty <= 0) tr.remove();
+        });
+
+        // renumber agar items[1], items[2], ... berurutan
+        renumberRows();
+
+        // recalc satu kali lagi sebelum submit
+        recalc();
+
+        // setelah ini form akan submit normal (POST) ke route admin.nota.store
     });
 
-    // ✅ Fitur Pencarian Riwayat Laundry (Nama & Tanggal)
+    // Pencarian riwayat (filter)
     const searchInput = document.getElementById('searchNota');
-    const rows = document.querySelectorAll('#tableRiwayat tbody tr');
+    const rowsRiwayat = document.querySelectorAll('#tableRiwayat tbody tr');
     searchInput.addEventListener('input', function() {
         const keyword = this.value.toLowerCase();
-        rows.forEach(row => {
+        rowsRiwayat.forEach(row => {
             const nama = row.querySelector('.nama-customer')?.textContent.toLowerCase() || '';
             const tglMasuk = row.querySelector('.tgl-masuk')?.textContent.toLowerCase() || '';
             const tglKeluar = row.querySelector('.tgl-keluar')?.textContent.toLowerCase() || '';
             row.style.display = (nama.includes(keyword) || tglMasuk.includes(keyword) || tglKeluar.includes(keyword)) ? '' : 'none';
         });
     });
+
+    // inisialisasi hitung awal
+    recalc();
 });
 </script>
 @endsection
