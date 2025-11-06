@@ -34,26 +34,30 @@
             </div>
         </div>
 
-        {{-- ✅ Tabel Input Item --}}
+        {{-- ✅ Daftar Jenis Pakaian --}}
         <table class="table table-bordered align-middle text-center" id="notaTable">
             <thead class="table-primary">
                 <tr>
                     <th>No</th>
                     <th>Jenis Pakaian</th>
+                    <th>Harga (Rp)</th>
                     <th>Jumlah</th>
-                    <th>Harga Satuan (Rp)</th>
-                    <th>Total (Rp)</th>
+                    <th>Subtotal (Rp)</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody id="notaBody"></tbody>
         </table>
 
-        <button type="button" id="addRow" class="btn btn-outline-primary mb-3"> + Tambah Item</button>
+        <button type="button" id="addRow" class="btn btn-outline-primary mb-3">+ Tambah Item Baru</button>
 
         {{-- ✅ Total & Uang Muka --}}
         <div class="row text-end">
             <div class="col-md-4 offset-md-8">
+                <div class="mb-2">
+                    <label class="fw-semibold">Total Banyak Pakaian</label>
+                    <input type="text" id="total_qty" class="form-control" readonly>
+                </div>
                 <div class="mb-2">
                     <label class="fw-semibold">Jumlah Total (Rp)</label>
                     <input type="text" id="total" name="total" class="form-control" readonly>
@@ -66,17 +70,20 @@
                     <label class="fw-semibold">Sisa Pembayaran (Rp)</label>
                     <input type="text" id="sisa" class="form-control" readonly>
                 </div>
-                <button class="btn btn-success w-100 mt-3 fw-semibold">Simpan Nota</button>
+                <button class="btn btn-success w-100 mt-3 fw-semibold" id="submitNota">Simpan Nota</button>
             </div>
         </div>
     </form>
 
     {{-- ✅ Riwayat Nota --}}
     <hr class="my-5">
-    <h4 class="text-primary fw-bold mb-3">Riwayat Nota Laundry</h4>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="text-primary fw-bold mb-0">Riwayat Nota Laundry</h4>
+        <input type="text" id="searchNota" class="form-control w-25" placeholder="🔍 Cari nama pelanggan atau tanggal...">
+    </div>
 
     <div class="table-responsive">
-        <table class="table table-striped align-middle text-center">
+        <table class="table table-striped align-middle text-center" id="tableRiwayat">
             <thead class="table-light">
                 <tr>
                     <th>#</th>
@@ -94,24 +101,9 @@
                 @forelse($notas as $n)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $n->customer_name }}</td>
-
-                    <td>
-                        @if($n->tgl_masuk)
-                            {{ \Carbon\Carbon::parse($n->tgl_masuk)->format('Y-m-d') }}
-                        @else
-                            -
-                        @endif
-                    </td>
-
-                    <td>
-                        @if($n->tgl_keluar)
-                            {{ \Carbon\Carbon::parse($n->tgl_keluar)->format('Y-m-d') }}
-                        @else
-                            -
-                        @endif
-                    </td>
-
+                    <td class="nama-customer">{{ $n->customer_name }}</td>
+                    <td class="tgl-masuk">{{ $n->tgl_masuk ? \Carbon\Carbon::parse($n->tgl_masuk)->format('Y-m-d') : '-' }}</td>
+                    <td class="tgl-keluar">{{ $n->tgl_keluar ? \Carbon\Carbon::parse($n->tgl_keluar)->format('Y-m-d') : '-' }}</td>
                     <td>{{ number_format($n->total, 0, ',', '.') }}</td>
                     <td>{{ number_format($n->uang_muka, 0, ',', '.') }}</td>
                     <td>{{ number_format($n->sisa, 0, ',', '.') }}</td>
@@ -135,104 +127,134 @@
 {{-- ✅ Script Dinamis --}}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    let rowCount = 0;
-
-    // ✅ Daftar item pakaian satuan beserta harga (bisa kamu ubah sesuka hati)
+    const notaBody = document.getElementById('notaBody');
     const itemList = [
-        { name: 'baju Kaos', price: 1000 },
+        { name: 'Baju Kaos', price: 1000 },
         { name: 'Celana', price: 2000 },
         { name: 'Kemeja', price: 2500 },
         { name: 'Jaket', price: 3000 },
         { name: 'Sprei', price: 4000 },
         { name: 'Bed Cover', price: 5000 },
         { name: 'Handuk', price: 1500 },
-        { name: 'celana panjang', price: 1500 },
-        { name: 'kemeja', price: 1500 },
-        { name: 'kaos kaki', price: 1500 },
-        { name: 'selimut', price: 1500 },
-        { name: 'kamen', price: 1500 },
-        { name: 'udeng', price: 1500 },
-        { name: 'sapari', price: 1500 },
-        { name: 'boneka', price: 1500 },
-        { name: 'sepatu', price: 1500 },
-        { name: 'baju dalam', price: 1500 },
-        { name: 'celana dalam', price: 1500 },
-        { name: 'setrika baju anak', price: 1500 },
-        { name: 'setrika baju dewasa', price: 1500 },
-        { name: 'cuci saja', price: 1500 },
-        { name: 'hodie', price: 1500 },
-        { name: 'baju kaos dewasa', price: 1500 },
-        { name: 'baju anak', price: 1500 },
-        { name: 'Sarung', price: 1500 }
+        { name: 'Sarung', price: 1500 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'Kaos Kaki', price: 1000 },
+        { name: 'setrika baju dewasa', price: 1000 },
+        { name: 'setrika baju anak', price: 1000 },
+        { name: 'Sepatu', price: 3000 },
     ];
 
-    // ✅ Fungsi menghitung total
+    // ✅ Generate tabel awal
+    itemList.forEach((item, index) => addRow(item.name, item.price, '', index + 1));
+
+    // ✅ Tambah baris baru manual
+    document.getElementById('addRow').addEventListener('click', () => addRow());
+
+    function addRow(name = '', price = '', qty = '', no = null) {
+        const rowCount = notaBody.rows.length + 1;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${no ?? rowCount}</td>
+            <td>
+                <select name="items[${rowCount}][name]" class="form-select item-name">
+                    ${itemList.map(i => `<option value="${i.name}" ${i.name === name ? 'selected' : ''}>${i.name}</option>`).join('')}
+                </select>
+            </td>
+            <td><input type="number" name="items[${rowCount}][price]" class="form-control item-price" value="${price || 0}" min="0" readonly></td>
+            <td><input type="number" name="items[${rowCount}][quantity]" class="form-control item-qty" value="${qty || 0}" min="0"></td>
+            <td><input type="text" class="form-control subtotal" readonly></td>
+            <td><button type="button" class="btn btn-danger btn-sm removeRow">x</button></td>
+        `;
+        notaBody.appendChild(tr);
+        recalc();
+    }
+
+    // ✅ Update harga otomatis dari dropdown
+    notaBody.addEventListener('change', e => {
+        if (e.target.classList.contains('item-name')) {
+            const selected = itemList.find(i => i.name === e.target.value);
+            e.target.closest('tr').querySelector('.item-price').value = selected ? selected.price : 0;
+            recalc();
+        }
+    });
+
+    // ✅ Hitung total & subtotal
     function recalc() {
-        let total = 0;
-        document.querySelectorAll('.subtotal').forEach(el => {
-            total += parseInt(el.value || 0);
+        let total = 0, totalQty = 0;
+        notaBody.querySelectorAll('tr').forEach(tr => {
+            const qty = parseInt(tr.querySelector('.item-qty').value) || 0;
+            const price = parseInt(tr.querySelector('.item-price').value) || 0;
+            const subtotal = qty * price;
+            tr.querySelector('.subtotal').value = subtotal;
+            total += subtotal;
+            totalQty += qty;
         });
         document.getElementById('total').value = total;
+        document.getElementById('total_qty').value = totalQty;
         const uangMuka = parseInt(document.getElementById('uang_muka').value || 0);
         document.getElementById('sisa').value = total - uangMuka;
     }
 
-    // ✅ Tambah baris item baru
-    document.getElementById('addRow').addEventListener('click', function () {
-        rowCount++;
-
-        // Buat dropdown item
-        let options = `<option value="">-- Pilih Jenis Pakaian --</option>`;
-        itemList.forEach(i => {
-            options += `<option value="${i.name}" data-price="${i.price}">${i.name}</option>`;
-        });
-
-        const row = `
-        <tr>
-            <td>${rowCount}</td>
-            <td>
-                <select name="items[${rowCount}][name]" class="form-select item-select" required>
-                    ${options}
-                </select>
-            </td>
-            <td><input type="number" name="items[${rowCount}][quantity]" class="form-control qty" min="1" value="1"></td>
-            <td><input type="number" name="items[${rowCount}][price]" class="form-control price" readonly></td>
-            <td><input type="text" name="items[${rowCount}][subtotal]" class="form-control subtotal" readonly></td>
-            <td><button type="button" class="btn btn-danger btn-sm removeRow">x</button></td>
-        </tr>`;
-        document.getElementById('notaBody').insertAdjacentHTML('beforeend', row);
+    // ✅ Listener input realtime
+    notaBody.addEventListener('input', e => {
+        if (e.target.classList.contains('item-qty')) recalc();
     });
+    document.getElementById('uang_muka').addEventListener('input', recalc);
 
-    // ✅ Ganti item → otomatis isi harga
-    document.body.addEventListener('change', function (e) {
-        if (e.target.classList.contains('item-select')) {
-            const price = e.target.options[e.target.selectedIndex].getAttribute('data-price') || 0;
-            const row = e.target.closest('tr');
-            row.querySelector('.price').value = price;
-            const qty = parseInt(row.querySelector('.qty').value || 1);
-            row.querySelector('.subtotal').value = price * qty;
-            recalc();
-        }
-    });
-
-    // ✅ Ubah jumlah → hitung ulang subtotal
-    document.body.addEventListener('input', function (e) {
-        if (e.target.classList.contains('qty')) {
-            const row = e.target.closest('tr');
-            const qty = parseInt(row.querySelector('.qty').value || 0);
-            const price = parseInt(row.querySelector('.price').value || 0);
-            row.querySelector('.subtotal').value = qty * price;
-            recalc();
-        }
-        if (e.target.id === 'uang_muka') recalc();
-    });
-
-    // ✅ Hapus baris item
-    document.body.addEventListener('click', function (e) {
+    // ✅ Hapus baris
+    notaBody.addEventListener('click', e => {
         if (e.target.classList.contains('removeRow')) {
             e.target.closest('tr').remove();
             recalc();
         }
+    });
+
+    // ✅ Validasi sebelum submit
+    document.getElementById('notaForm').addEventListener('submit', function (e) {
+        let totalQty = 0;
+        notaBody.querySelectorAll('.item-qty').forEach(input => totalQty += parseInt(input.value || 0));
+        if (totalQty <= 0) {
+            e.preventDefault();
+            alert('❌ Tidak dapat menyimpan nota kosong! Isi jumlah pakaian terlebih dahulu.');
+        }
+    });
+
+    // ✅ Fitur Pencarian Riwayat Laundry (Nama & Tanggal)
+    const searchInput = document.getElementById('searchNota');
+    const rows = document.querySelectorAll('#tableRiwayat tbody tr');
+    searchInput.addEventListener('input', function() {
+        const keyword = this.value.toLowerCase();
+        rows.forEach(row => {
+            const nama = row.querySelector('.nama-customer')?.textContent.toLowerCase() || '';
+            const tglMasuk = row.querySelector('.tgl-masuk')?.textContent.toLowerCase() || '';
+            const tglKeluar = row.querySelector('.tgl-keluar')?.textContent.toLowerCase() || '';
+            row.style.display = (nama.includes(keyword) || tglMasuk.includes(keyword) || tglKeluar.includes(keyword)) ? '' : 'none';
+        });
     });
 });
 </script>

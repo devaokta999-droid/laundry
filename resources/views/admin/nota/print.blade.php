@@ -2,8 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nota Laundry - {{ $nota->customer_name }}</title>
+    <title>Struk Laundry - {{ $nota->customer_name }}</title>
     <style>
         @font-face {
             font-family: 'SF Pro Display';
@@ -12,146 +11,130 @@
 
         body {
             font-family: 'SF Pro Display', Arial, sans-serif;
-            margin: 0;
+            font-size: 11px;
+            width: 80mm;
+            margin: 0 auto;
             padding: 0;
             color: #000;
             background: #fff;
         }
 
-        /* =============================
-           KONTAINER UTAMA NOTA
-        ============================== */
         .nota-container {
             width: 100%;
-            max-width: 10.5cm;
-            min-height: auto;
-            margin: 0 auto;
-            border: 2px solid #007bff;
-            border-radius: 10px;
-            padding: 18px;
+            padding: 8px;
             box-sizing: border-box;
+            border: 1px dashed #007bff;
         }
 
-        /* =============================
-           HEADER
-        ============================== */
+        /* HEADER */
         .header {
             text-align: center;
-            border-bottom: 2px solid #007bff;
-            padding-bottom: 6px;
-            margin-bottom: 10px;
+            border-bottom: 1px dashed #007bff;
+            padding-bottom: 5px;
+            margin-bottom: 6px;
         }
 
         .header img {
-            width: 60px;
-            margin-bottom: 5px;
+            width: 45px;
+            height: 45px;
+            object-fit: contain;
+            margin-bottom: 3px;
         }
 
         .header h2 {
             margin: 0;
-            font-size: 1.2rem;
             color: #007bff;
-            font-weight: bold;
+            font-size: 13px;
+            font-weight: 800;
         }
 
         .header p {
-            font-size: 0.7rem;
             margin: 0;
+            font-size: 10px;
+            color: #333;
             line-height: 1.2;
         }
 
-        /* =============================
-           INFO PELANGGAN
-        ============================== */
-        .info-table {
-            width: 100%;
-            font-size: 0.75rem;
-            margin-bottom: 10px;
+        /* INFO */
+        .info {
+            font-size: 10px;
+            margin-bottom: 6px;
         }
 
-        .info-table td {
-            padding: 2px 0;
+        .info strong {
+            color: #007bff;
+        }
+
+        /* TABEL ITEM */
+        table.items {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+        }
+
+        table.items th {
+            border-bottom: 1px solid #007bff;
+            text-align: left;
+            padding: 3px 0;
+            color: #007bff;
+        }
+
+        table.items td {
+            padding: 3px 0;
             vertical-align: top;
         }
 
-        /* =============================
-           TABEL ITEM
-        ============================== */
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.7rem;
-            margin-top: 5px;
-        }
-
-        .items-table th {
-            background: #007bff;
-            color: #fff;
-            text-align: center;
-            padding: 4px;
-            font-weight: 600;
-            border: 1px solid #007bff;
-        }
-
-        .items-table td {
-            border: 1px solid #007bff;
-            padding: 4px;
-            text-align: center;
-        }
-
-        .items-table td.text-left {
-            text-align: left;
-            padding-left: 6px;
-        }
-
-        /* =============================
-           RINGKASAN TOTAL
-        ============================== */
-        .summary {
-            margin-top: 10px;
-            width: 100%;
-            font-size: 0.75rem;
-        }
-
-        .summary td {
-            padding: 3px 0;
-        }
-
-        .summary td:first-child {
-            width: 60%;
-        }
-
-        /* =============================
-           TANDA TANGAN
-        ============================== */
-        .signature {
-            margin-top: 20px;
+        td.qty, td.price, td.total {
             text-align: right;
+            white-space: nowrap;
+        }
+
+        /* TOTAL */
+        .total {
+            border-top: 1px dashed #007bff;
+            margin-top: 6px;
+            padding-top: 4px;
+            font-size: 10px;
+        }
+
+        .total td {
+            padding: 2px 0;
+        }
+
+        .total .label {
+            text-align: left;
+        }
+
+        .total .value {
+            text-align: right;
+        }
+
+        /* SIGNATURE */
+        .signature {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 10px;
         }
 
         .signature p {
             margin: 2px 0;
-            font-size: 0.75rem;
         }
 
-        /* =============================
-           FOOTER
-        ============================== */
+        /* FOOTER */
         .footer {
-            margin-top: 20px;
-            border-top: 1px solid #007bff;
+            margin-top: 10px;
+            border-top: 1px dashed #007bff;
             text-align: center;
-            font-size: 0.7rem;
-            color: #555;
-            padding-top: 5px;
+            font-size: 9px;
+            color: #333;
+            padding-top: 4px;
+            line-height: 1.4;
         }
 
-        /* =============================
-           PRINT & PAGE SETTINGS
-        ============================== */
+        /* PRINT */
         @page {
-            size: auto;
-            margin: 0.5cm;
+            size: 80mm auto;
+            margin: 0;
         }
 
         @media print {
@@ -161,99 +144,87 @@
                 print-color-adjust: exact;
             }
             .nota-container {
-                border: 2px solid #007bff;
-                border-radius: 10px;
-                box-shadow: none;
-                width: 100%;
-                max-width: 10.5cm;
-                page-break-inside: avoid;
-            }
-            .footer {
-                page-break-after: avoid;
+                border: none;
             }
         }
     </style>
 </head>
 <body>
 <div class="nota-container">
-    <!-- Header -->
+    <!-- HEADER -->
     <div class="header">
-        <img src="{{ public_path('images/header.png') }}" alt="Logo Laundry">
+        <img src="{{ public_path('images/hero-laundry.png') }}" alt="Logo Laundry">
         <h2>DEVA LAUNDRY</h2>
-        <p>Jl. Wisnu Marga No. Belayu, Pekan, Kec. Marga, Kabupaten Tabanan</p>
-        <p>Telp: 085-338-148841 | Est. 2014</p>
+        <p>Jl. Wisnu Marga No. Belayu, Tabanan</p>
+        <p>Telp: 0853-3363-4884</p>
+        <p><strong>Est. 2014</strong></p>
     </div>
 
-    <!-- Info Pelanggan -->
-    <table class="info-table">
-        <tr>
-            <td><strong>Nama Pelanggan:</strong> {{ $nota->customer_name }}</td>
-            <td><strong>Tgl Masuk:</strong> {{ \Carbon\Carbon::parse($nota->tgl_masuk)->format('d/m/Y') }}</td>
-        </tr>
-        <tr>
-            <td><strong>Alamat:</strong> {{ $nota->customer_address ?? '-' }}</td>
-            <td><strong>Tgl Keluar:</strong>
-                {{ $nota->tgl_keluar ? \Carbon\Carbon::parse($nota->tgl_keluar)->format('d/m/Y') : '-' }}
-            </td>
-        </tr>
-    </table>
+    <!-- INFO -->
+    <div class="info">
+        <p><strong>Nama:</strong> {{ $nota->customer_name }}</p>
+        <p><strong>Alamat:</strong> {{ $nota->customer_address ?? '-' }}</p>
+        <p><strong>Tgl Masuk:</strong> {{ \Carbon\Carbon::parse($nota->tgl_masuk)->format('d/m/Y') }}</p>
+        <p><strong>Tgl Keluar:</strong> {{ $nota->tgl_keluar ? \Carbon\Carbon::parse($nota->tgl_keluar)->format('d/m/Y') : '-' }}</p>
+    </div>
 
-    <!-- Tabel Item -->
-    <table class="items-table">
+    <!-- ITEM -->
+    <table class="items">
         <thead>
         <tr>
-            <th>No</th>
-            <th>Pelayanan</th>
-            <th>Jumlah</th>
-            <th>Harga (Rp)</th>
-            <th>Total (Rp)</th>
+            <th style="width: 5%;">No</th>
+            <th style="width: 45%;">Item</th>
+            <th style="width: 15%;" class="qty">Qty</th>
+            <th style="width: 15%;" class="price">Harga</th>
+            <th style="width: 20%;" class="total">Total</th>
         </tr>
         </thead>
         <tbody>
         @forelse($nota->items as $i => $item)
             <tr>
                 <td>{{ $i + 1 }}</td>
-                <td class="text-left">{{ $item->name }}</td>
-                <td>{{ $item->quantity }}</td>
-                <td>{{ number_format($item->price, 0, ',', '.') }}</td>
-                <td>{{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                <td>{{ $item->item->name ?? '-' }}</td>
+                <td class="qty">{{ $item->quantity }}</td>
+                <td class="price">{{ number_format($item->price, 0, ',', '.') }}</td>
+                <td class="total">{{ number_format($item->subtotal, 0, ',', '.') }}</td>
             </tr>
         @empty
             <tr>
-                <td colspan="5" style="text-align:center; color:#666;">Belum ada item pelayanan.</td>
+                <td colspan="5" style="text-align:center; color:#777;">Tidak ada item.</td>
             </tr>
         @endforelse
         </tbody>
     </table>
 
-    <!-- Ringkasan Total -->
-    <table class="summary">
+    <!-- TOTAL -->
+    <table class="total" width="100%">
         <tr>
-            <td style="text-align: right;"><strong>Jumlah Total:</strong></td>
-            <td><strong>Rp {{ number_format($nota->total, 0, ',', '.') }}</strong></td>
+            <td class="label">Total</td>
+            <td class="value">Rp {{ number_format($nota->total, 0, ',', '.') }}</td>
         </tr>
         <tr>
-            <td style="text-align: right;">Uang Muka:</td>
-            <td>Rp {{ number_format($nota->uang_muka, 0, ',', '.') }}</td>
+            <td class="label">Uang Muka</td>
+            <td class="value">Rp {{ number_format($nota->uang_muka, 0, ',', '.') }}</td>
         </tr>
         <tr>
-            <td style="text-align: right;">Sisa Pembayaran:</td>
-            <td>Rp {{ number_format($nota->sisa, 0, ',', '.') }}</td>
+            <td class="label">Sisa</td>
+            <td class="value">Rp {{ number_format($nota->sisa, 0, ',', '.') }}</td>
         </tr>
     </table>
 
-    <!-- Tanda Tangan -->
+    <!-- SIGNATURE -->
     <div class="signature">
         <p>Tabanan, {{ now()->format('d M Y') }}</p>
-        <br><br>
-        <p><strong>{{ auth()->user()->name }}</strong></p>
+        <br>
+        <p><strong>{{ $nota->user->name ?? 'Kasir' }}</strong></p>
         <p><em>Kasir</em></p>
     </div>
 
-    <!-- Footer -->
+    <!-- FOOTER -->
     <div class="footer">
-        Terima kasih telah menggunakan layanan <strong>Deva Laundry</strong><br>
-        Kami menjaga kualitas, kebersihan, dan ketepatan waktu cucian Anda 💙
+        Terima kasih telah menggunakan <strong>DEVA LAUNDRY</strong> 💧<br>
+        “Kebersihan & Ketepatan Waktu adalah Prioritas Kami.”<br>
+        <small>Jangan lupa ambil nota ini saat pengambilan cucian.</small>
     </div>
 </div>
 </body>
