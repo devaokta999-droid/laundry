@@ -153,10 +153,10 @@
 <div class="nota-container">
     <!-- HEADER -->
     <div class="header">
-        <img src="{{ public_path('images/hero-laundry.png') }}" alt="Logo Laundry">
+        <img src="{{ public_path('images/header.png') }}" alt="Logo Laundry">
         <h2>DEVA LAUNDRY</h2>
         <p>Jl. Wisnu Marga No. Belayu, Tabanan</p>
-        <p>Telp: 0853-3363-4884</p>
+        <p>Telp:+62 821-4703-7006</p>
         <p><strong>Est. 2014</strong></p>
     </div>
 
@@ -164,7 +164,6 @@
     <div class="info">
         <p><strong>Nama:</strong> {{ $nota->customer_name }}</p>
         <p><strong>Alamat:</strong> {{ $nota->customer_address ?? '-' }}</p>
-        <p><strong>Tgl Masuk:</strong> {{ \Carbon\Carbon::parse($nota->tgl_masuk)->format('d/m/Y') }}</p>
         <p><strong>Tgl Keluar:</strong> {{ $nota->tgl_keluar ? \Carbon\Carbon::parse($nota->tgl_keluar)->format('d/m/Y') : '-' }}</p>
     </div>
 
@@ -214,7 +213,7 @@
 
     <!-- SIGNATURE -->
     <div class="signature">
-        <p>Tabanan, {{ now()->format('d M Y') }}</p>
+        <p>Tabanan,belayu {{ now()->format('d M Y') }}</p>
         <br>
         <p><strong>{{ $nota->user->name ?? 'Kasir' }}</strong></p>
         <p><em>Kasir</em></p>
@@ -222,7 +221,7 @@
 
     <!-- FOOTER -->
     <div class="footer">
-        Terima kasih telah menggunakan <strong>DEVA LAUNDRY</strong> 💧<br>
+        Terima kasih telah menggunakan <strong>DEVA LAUNDRY</strong> <br>
         “Kebersihan & Ketepatan Waktu adalah Prioritas Kami.”<br>
         <small>Jangan lupa ambil nota ini saat pengambilan cucian.</small>
     </div>

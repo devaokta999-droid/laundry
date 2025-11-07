@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container mt-4">
-    <h3 class="mb-4 text-primary fw-bold">🧾 Nota Deva Laundry Satuan Digital</h3>
+    <h3 class="mb-4 text-primary fw-bold"> Nota Deva Laundry Satuan Digital</h3>
 
     {{-- ✅ Notifikasi sukses & error --}}
     @if(session('success'))
@@ -23,10 +23,6 @@
             <div class="col-md-4">
                 <label class="fw-semibold">Alamat</label>
                 <input type="text" name="customer_address" class="form-control">
-            </div>
-            <div class="col-md-2">
-                <label class="fw-semibold">Tanggal Masuk</label>
-                <input type="text" class="form-control" value="{{ now()->format('Y-m-d') }}" readonly>
             </div>
             <div class="col-md-2">
                 <label class="fw-semibold">Tanggal Keluar</label>
@@ -88,7 +84,6 @@
                 <tr>
                     <th>#</th>
                     <th>Nama Pelanggan</th>
-                    <th>Tanggal Masuk</th>
                     <th>Tanggal Keluar</th>
                     <th>Total (Rp)</th>
                     <th>Uang Muka</th>
@@ -102,7 +97,6 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td class="nama-customer">{{ $n->customer_name }}</td>
-                    <td class="tgl-masuk">{{ $n->tgl_masuk ? \Carbon\Carbon::parse($n->tgl_masuk)->format('Y-m-d') : '-' }}</td>
                     <td class="tgl-keluar">{{ $n->tgl_keluar ? \Carbon\Carbon::parse($n->tgl_keluar)->format('Y-m-d') : '-' }}</td>
                     <td>{{ number_format($n->total, 0, ',', '.') }}</td>
                     <td>{{ number_format($n->uang_muka, 0, ',', '.') }}</td>
@@ -328,9 +322,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const keyword = this.value.toLowerCase();
         rowsRiwayat.forEach(row => {
             const nama = row.querySelector('.nama-customer')?.textContent.toLowerCase() || '';
-            const tglMasuk = row.querySelector('.tgl-masuk')?.textContent.toLowerCase() || '';
             const tglKeluar = row.querySelector('.tgl-keluar')?.textContent.toLowerCase() || '';
-            row.style.display = (nama.includes(keyword) || tglMasuk.includes(keyword) || tglKeluar.includes(keyword)) ? '' : 'none';
+            row.style.display = (nama.includes(keyword) || tglKeluar.includes(keyword)) ? '' : 'none';
         });
     });
 

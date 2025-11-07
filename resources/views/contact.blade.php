@@ -152,7 +152,7 @@ body {
         <div class="mac-card">
             <h2>Informasi Kontak</h2>
             <div class="mac-info">
-                <p><i class="fa-solid fa-phone"></i> Telepon / Whatsapp: <strong>{{ config('app.admin_whatsapp', '+62 853-3363-4884') }}</strong></p>
+                <p><i class="fa-solid fa-phone"></i> Telepon / Whatsapp: <strong>{{ config('app.admin_whatsapp', '+62 821-4703-7006') }}</strong></p>
                 <p><i class="fa-solid fa-envelope"></i> Email: <strong>hello@devalaundry.example</strong></p>
                 <p><i class="fa-brands fa-instagram"></i> Instagram: <strong>@devalaundry</strong></p>
                 <p><i class="fa-brands fa-facebook"></i> Facebook: <strong>@devalaundry</strong></p>
@@ -161,7 +161,7 @@ body {
 
             {{-- 🌟 Tombol Aksi --}}
             <div class="mt-4 flex flex-col gap-3">
-                <a href="https://wa.me/{{ preg_replace('/\D/', '', config('app.admin_whatsapp', '+62 853-3363-4884')) }}"
+                <a href="https://wa.me/{{ preg_replace('/\D/', '', config('app.admin_whatsapp', '+62 821-4703-7006')) }}"
                    target="_blank" class="mac-btn">
                     <i class="fa-brands fa-whatsapp"></i> Chat via WhatsApp
                 </a>
