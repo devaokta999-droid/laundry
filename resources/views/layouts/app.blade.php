@@ -36,8 +36,8 @@
             overflow-x: hidden;
             min-height: 100vh;
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            justify-content: flex-start;
+            align-items: stretch;
         }
 
         /* 🍏 Sidebar */
@@ -46,7 +46,7 @@
             top: 30px;
             left: 30px;
             width: 260px;
-            height: 95vh;
+            height: calc(100vh - 60px);
             backdrop-filter: var(--mac-blur);
             background: var(--mac-glass-bg);
             border: 1px solid var(--mac-border);
@@ -144,27 +144,15 @@
         .content-wrapper {
             flex: 1;
             padding: 3rem;
-            animation: fadeIn 0.6s ease;
-            min-height: 100vh;
             margin-left: 320px;
-            max-width: 100%;
+            width: calc(100% - 320px);
+            min-height: 100vh;
+            animation: fadeIn 0.6s ease;
         }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.98); }
             to { opacity: 1; transform: scale(1); }
-        }
-
-        footer {
-            text-align: center;
-            font-size: 0.9rem;
-            padding: 1rem;
-            color: #555;
-            backdrop-filter: blur(30px);
-            background: rgba(255,255,255,0.5);
-            border-top: 1px solid var(--mac-border);
-            border-radius: 20px 20px 0 0;
-            margin-top: 2rem;
         }
 
         /* 📱 Responsive */
@@ -188,6 +176,7 @@
 
             .content-wrapper {
                 margin-left: 0;
+                width: 100%;
                 padding: 2rem 1rem;
             }
         }
@@ -239,8 +228,6 @@
                     <a href="{{ route('admin.transactions.index') }}" class="nav-link {{ request()->routeIs('admin.transactions.index') ? 'active' : '' }}">
                         Transaksi
                     </a>
-
-                    {{-- 🧾 Nota --}}
                     <a href="{{ route('admin.nota.index') }}" class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">
                         Nota
                     </a>
@@ -283,10 +270,6 @@
 <!-- 🧊 Main Content -->
 <div class="content-wrapper" id="page-content">
     @yield('content')
-
-    <footer>
-        © {{ date('Y') }} Deva Laundry Est 2014
-    </footer>
 </div>
 
 <!-- JS -->
@@ -314,4 +297,4 @@
 
 @stack('scripts')
 </body>
-</html> 
+</html>
