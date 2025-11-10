@@ -213,7 +213,7 @@
 
     <!-- SIGNATURE -->
     <div class="signature">
-        <p>Tabanan,belayu {{ now()->format('d M Y') }}</p>
+        <p>Tabanan, Belayu {{ now()->format('d M Y') }}</p>
         <br>
         <p><strong>{{ $nota->user->name ?? 'Kasir' }}</strong></p>
         <p><em>Kasir</em></p>
@@ -226,5 +226,15 @@
         <small>Jangan lupa ambil nota ini saat pengambilan cucian.</small>
     </div>
 </div>
+
+{{-- 🔥 Tambahkan auto print hanya jika halaman diakses lewat browser biasa --}}
+@if (!request()->has('pdf'))
+<script>
+    window.onload = function() {
+        window.print();
+    };
+</script>
+@endif
+
 </body>
 </html>

@@ -83,16 +83,59 @@ class NotaController extends Controller
     }
 
     /**
-     * Mencetak nota dalam format PDF.
+     * Mencetak nota dalam format PDF (download file).
      */
     public function print($id)
     {
         $nota = Nota::with(['items.item', 'user'])->findOrFail($id);
 
-        // Gunakan view admin.nota.print yang sudah bergaya fisik
+        // Gunakan view admin.nota.print (desain cetak PDF)
         $pdf = Pdf::loadView('admin.nota.print', compact('nota'))
             ->setPaper('A5', 'portrait');
 
         return $pdf->download('Nota-' . $nota->id . '.pdf');
+    }
+
+    /**
+     * Menampilkan view print-friendly yang otomatis memanggil window.print()
+     */
+    public function printToPrinter($id)
+    {
+        $nota = Nota::with('items.item')->findOrFail($id);
+
+        // View admin.nota.print_direct adalah halaman HTML yang langsung memicu window.print()
+        return view('admin.nota.print', compact('nota'));
+    }
+
+    /**
+     * Tandai nota sebagai lunas (set uang_muka = total, sisa = 0)
+     * Mengembalikan JSON (bisa dipanggil via AJAX)
+     */
+    public function markLunas(Request $request, $id)
+    {
+        $nota = Nota::findOrFail($id);
+
+        // Jika sisa sudah 0, tidak perlu diupdate lagi
+        $sisa = (int) $nota->sisa;
+        if ($sisa <= 0) {
+            return response()->json([
+                'message' => 'Nota sudah lunas.',
+                'nota' => $nota
+            ], 200);
+        }
+
+        // Update: set uang_muka menjadi total, sisa jadi 0
+        $nota->uang_muka = $nota->total;
+        $nota->sisa = 0;
+
+        // Jika ingin mencatat user yang menandai lunas, tambahkan di sini misal:
+        // $nota->lunas_by = Auth::id();
+
+        $nota->save();
+
+        return response()->json([
+            'message' => 'Berhasil menandai nota sebagai lunas.',
+            'nota' => $nota
+        ], 200);
     }
 }

@@ -94,18 +94,32 @@
             </thead>
             <tbody>
                 @forelse($notas as $n)
-                <tr>
+                <tr data-nota-id="{{ $n->id }}">
                     <td>{{ $loop->iteration }}</td>
                     <td class="nama-customer">{{ $n->customer_name }}</td>
                     <td class="tgl-keluar">{{ $n->tgl_keluar ? \Carbon\Carbon::parse($n->tgl_keluar)->format('Y-m-d') : '-' }}</td>
-                    <td>{{ number_format($n->total, 0, ',', '.') }}</td>
-                    <td>{{ number_format($n->uang_muka, 0, ',', '.') }}</td>
-                    <td>{{ number_format($n->sisa, 0, ',', '.') }}</td>
+                    <td class="cell-total">{{ number_format($n->total, 0, ',', '.') }}</td>
+                    <td class="cell-uang-muka">{{ number_format($n->uang_muka, 0, ',', '.') }}</td>
+                    <td class="cell-sisa">{{ number_format($n->sisa, 0, ',', '.') }}</td>
                     <td>{{ $n->user->name ?? '-' }}</td>
                     <td>
+                        {{-- Tombol Print langsung (kiri dari Cetak PDF) --}}
+                        <a href="{{ route('admin.nota.print_direct', $n->id) }}" class="btn btn-sm btn-secondary" target="_blank" title="Cetak langsung ke printer">
+                            Print
+                        </a>
+
+                        {{-- Tombol Cetak PDF (sudah ada, jangan dihapus) --}}
                         <a href="{{ route('admin.nota.print', $n->id) }}" class="btn btn-sm btn-primary" target="_blank">
                             Cetak PDF
                         </a>
+
+                        {{-- Tombol Lunas (di sebelah kanan Cetak PDF) --}}
+                        <button type="button"
+                                class="btn btn-sm btn-success btn-lunas"
+                                data-id="{{ $n->id }}"
+                                @if($n->sisa <= 0) disabled @endif>
+                            @if($n->sisa <= 0) Lunas @else Tandai Lunas @endif
+                        </button>
                     </td>
                 </tr>
                 @empty
@@ -328,6 +342,73 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // inisialisasi hitung awal
     recalc();
+
+    // ==========================
+    // Tombol LUNAS (AJAX + disable after click)
+    // ==========================
+    const csrfToken = '{{ csrf_token() }}';
+    document.querySelectorAll('.btn-lunas').forEach(btn => {
+        btn.addEventListener('click', async function () {
+            if (!confirm('Tandai nota ini sebagai LUNAS? Tindakan ini akan mengatur uang muka = total dan sisa = 0.')) return;
+
+            const notaId = this.dataset.id;
+            const self = this;
+            // disable segera untuk mencegah double click
+            self.disabled = true;
+            self.textContent = 'Memproses...';
+
+            try {
+                const res = await fetch("{{ url('admin/nota') }}/" + notaId + "/lunas", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    // update UI row: sisa => 0, uang_muka => total
+                    const row = document.querySelector('tr[data-nota-id="'+notaId+'"]');
+                    if (row) {
+                        const totalCell = row.querySelector('.cell-total');
+                        const uangMukaCell = row.querySelector('.cell-uang-muka');
+                        const sisaCell = row.querySelector('.cell-sisa');
+
+                        // parse angka dari cell total (dalam format number_format Indonesian) -> kita harus ambil raw total dari response jika ada
+                        if (data.nota) {
+                            // server mengembalikan nota; tampilkan formatted numbers
+                            const formatter = new Intl.NumberFormat('id-ID');
+                            uangMukaCell.textContent = formatter.format(data.nota.uang_muka || 0);
+                            sisaCell.textContent = formatter.format(data.nota.sisa || 0);
+                        } else if (totalCell) {
+                            // fallback: set sisa 0, uang_muka sama dengan total (mencoba parse totalCell)
+                            const totalText = totalCell.textContent.replace(/\./g,'').replace(/,/g,'');
+                            const totalVal = parseInt(totalText) || 0;
+                            uangMukaCell.textContent = new Intl.NumberFormat('id-ID').format(totalVal);
+                            sisaCell.textContent = new Intl.NumberFormat('id-ID').format(0);
+                        }
+                    }
+
+                    self.textContent = 'Lunas';
+                    self.disabled = true;
+                    alert(data.message || 'Nota berhasil ditandai lunas.');
+                } else {
+                    // gagal
+                    self.disabled = false;
+                    self.textContent = 'Tandai Lunas';
+                    alert(data.message || 'Gagal menandai lunas. Coba lagi.');
+                }
+            } catch (err) {
+                console.error(err);
+                self.disabled = false;
+                self.textContent = 'Tandai Lunas';
+                alert('Terjadi kesalahan jaringan. Coba lagi.');
+            }
+        });
+    });
 });
 </script>
 @endsection

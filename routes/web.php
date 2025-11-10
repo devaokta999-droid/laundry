@@ -162,4 +162,16 @@ Route::prefix('admin')
             $nota = \App\Models\Nota::with('items.item')->findOrFail($id);
             return view('admin.nota.show', compact('nota'));
         })->name('nota.show');
+
+        /*
+        |-------------------------------
+        | 🖨️ Print Direct & Tandai Lunas
+        |-------------------------------
+        */
+        Route::get('nota/{nota}/print-direct', [NotaController::class, 'printToPrinter'])
+            ->name('nota.print_direct');
+
+        Route::post('nota/{nota}/lunas', [NotaController::class, 'markLunas'])
+            ->name('nota.lunas');
     });
+
