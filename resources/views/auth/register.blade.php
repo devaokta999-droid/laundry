@@ -17,27 +17,58 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: 20px;
     }
 
-    /* 🌤️ Register Card (macOS glass effect) */
-    .register-card {
+    /* 🌤️ Container with image and form side by side */
+    .register-container {
+        display: flex;
         background: rgba(255, 255, 255, 0.25);
         backdrop-filter: blur(16px) saturate(180%);
         -webkit-backdrop-filter: blur(16px) saturate(180%);
         border-radius: 24px;
         border: 1px solid rgba(255, 255, 255, 0.3);
         box-shadow: 0 10px 40px rgba(31, 38, 135, 0.25);
-        padding: 60px 60px 50px;
+        overflow: hidden;
+        max-width: 900px;
         width: 100%;
-        max-width: 460px;
-        text-align: center;
         transition: all 0.3s ease;
         animation: fadeIn 0.8s ease;
     }
 
-    .register-card:hover {
+    .register-container:hover {
         box-shadow: 0 12px 50px rgba(0, 0, 0, 0.25);
         transform: translateY(-3px);
+    }
+
+    /* 🧍‍♀️ Left side - full image with border */
+    .register-illustration {
+        flex: 1;
+        background: linear-gradient(135deg, #e0e7ff, #f3f4f6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 0;
+        overflow: hidden;
+        border-right: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .register-illustration img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0;
+    }
+
+    /* 🌤️ Right side - form */
+    .register-card {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.55);
+        padding: 60px 60px 50px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     /* 🍎 Logo */
@@ -49,9 +80,9 @@
     }
 
     .register-logo img {
-        width: 120px;
+        width: 100px;
         height: auto;
-        max-height: 120px;
+        max-height: 100px;
         border-radius: 20px;
         object-fit: contain;
         background: white;
@@ -69,9 +100,15 @@
     .register-card h3 {
         font-weight: 600;
         color: #1a1a1a;
-        margin-bottom: 30px;
+        margin-bottom: 15px;
         letter-spacing: 0.5px;
         font-size: 1.5rem;
+    }
+
+    .register-card p {
+        color: #555;
+        font-size: 0.9rem;
+        margin-bottom: 25px;
     }
 
     /* 📧 Input fields */
@@ -88,6 +125,26 @@
         border-color: #007aff;
         box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25);
         background: rgba(255, 255, 255, 0.9);
+    }
+
+    /* 🔒 Password input group */
+    .password-wrapper {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 1.2rem;
+        color: #555;
+        transition: color 0.2s ease;
+    }
+
+    .password-toggle:hover {
+        color: #007aff;
     }
 
     /* 🔘 Button */
@@ -132,60 +189,111 @@
         }
     }
 
-    /* Responsive */
-    @media (max-width: 576px) {
-        .register-card {
+    /* 📱 Responsive */
+    @media (max-width: 768px) {
+        .register-container {
+            flex-direction: column;
             max-width: 90%;
+        }
+
+        .register-illustration {
+            padding: 0;
+            border-right: none;
+        }
+
+        .register-illustration img {
+            height: 220px;
+            object-fit: cover;
+        }
+
+        .register-card {
             padding: 40px 30px;
         }
 
         .register-logo img {
-            width: 90px;
-            max-height: 90px;
+            width: 80px;
+            max-height: 80px;
         }
     }
 </style>
 
+{{-- Tambahkan link Bootstrap Icons --}}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
 <div class="register-page-wrapper">
-    <div class="register-card">
-        {{-- 🍎 Logo Deva Laundry --}}
-        <div class="register-logo">
-            <img src="{{ asset('images/header.png') }}" alt="Deva Laundry Logo">
+    <div class="register-container">
+
+        {{-- 🧍‍♀️ Left Illustration --}}
+        <div class="register-illustration">
+            <img src="{{ asset('images/lg.jpeg') }}" alt="Register Illustration">
         </div>
 
-        <h3>Create Your Deva Laundry Account</h3>
-
-        {{-- 🔥 Pesan error --}}
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                {{ $errors->first() }}
-            </div>
-        @endif
-
-        <form method="POST" action="{{ url('register') }}">
-            @csrf
-
-            <div class="mb-3 text-start">
-                <label class="form-label fw-semibold">Name</label>
-                <input type="text" class="form-control" name="name" value="{{ old('name') }}" required>
+        {{-- 💻 Right Register Form --}}
+        <div class="register-card">
+            {{-- 🍎 Logo Deva Laundry --}}
+            <div class="register-logo">
+                <img src="{{ asset('images/header.png') }}" alt="Deva Laundry ">
             </div>
 
-            <div class="mb-3 text-start">
-                <label class="form-label fw-semibold">Email</label>
-                <input type="email" class="form-control" name="email" value="{{ old('email') }}" required>
+            <h3>Create Your Deva Laundry Account</h3>
+            <p>Join the family of freshness and simplicity.</p>
+
+            {{-- 🔥 Pesan error --}}
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            <form method="POST" action="{{ url('register') }}">
+                @csrf
+
+                <div class="mb-3 text-start">
+                    <label class="form-label fw-semibold">Name</label>
+                    <input type="text" class="form-control" name="name" value="{{ old('name') }}" required>
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label class="form-label fw-semibold">Email</label>
+                    <input type="email" class="form-control" name="email" value="{{ old('email') }}" required>
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label class="form-label fw-semibold">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <span class="password-toggle" onclick="togglePassword()">
+                            <i class="bi bi-eye"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Register</button>
+            </form>
+
+            <div class="register-footer">
+                © {{ date('Y') }} Deva Laundry — macOS Premium UI
             </div>
-
-            <div class="mb-3 text-start">
-                <label class="form-label fw-semibold">Password</label>
-                <input type="password" class="form-control" name="password" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary w-100">Register</button>
-        </form>
-
-        <div class="register-footer">
-            © {{ date('Y') }} Deva Laundry 
         </div>
+
     </div>
 </div>
+
+{{-- 👁️ Script untuk Show/Hide Password --}}
+<script>
+    function togglePassword() {
+        const passwordField = document.getElementById('password');
+        const toggleIcon = document.querySelector('.password-toggle i');
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleIcon.classList.remove('bi-eye-slash');
+            toggleIcon.classList.add('bi-eye');
+        } else {
+            passwordField.type = 'password';
+            toggleIcon.classList.remove('bi-eye');
+            toggleIcon.classList.add('bi-eye-slash');
+        }
+    }
+</script>
 @endsection

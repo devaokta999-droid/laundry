@@ -17,30 +17,74 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        padding: 20px;
     }
 
-    /* 🌤️ Login Card (macOS glass effect) */
-    .login-card {
+    /* 🌤️ Container with image and form side by side */
+    .login-container {
+        display: flex;
         background: rgba(255, 255, 255, 0.25);
         backdrop-filter: blur(16px) saturate(180%);
         -webkit-backdrop-filter: blur(16px) saturate(180%);
         border-radius: 24px;
         border: 1px solid rgba(255, 255, 255, 0.3);
         box-shadow: 0 10px 40px rgba(31, 38, 135, 0.25);
-        padding: 60px 60px 50px;
+        overflow: hidden;
+        max-width: 900px;
         width: 100%;
-        max-width: 460px;
-        text-align: center;
         transition: all 0.3s ease;
         animation: fadeIn 0.8s ease;
     }
 
-    .login-card:hover {
+    .login-container:hover {
         box-shadow: 0 12px 50px rgba(0, 0, 0, 0.25);
         transform: translateY(-3px);
     }
 
-    /* 🍎 Logo (full display, not cropped) */
+    /* 🧍‍♂️ Left side - illustration */
+    .login-illustration {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-right: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .login-illustration img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border: none;
+        border-radius: 0;
+        transition: transform 0.6s ease;
+    }
+
+    .login-illustration::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top right, rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
+        pointer-events: none;
+    }
+
+    .login-illustration img:hover {
+        transform: scale(1.05);
+    }
+
+    /* 🌤️ Right side - form */
+    .login-card {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.55);
+        padding: 60px 60px 50px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* 🍎 Logo */
     .login-logo {
         display: flex;
         justify-content: center;
@@ -49,11 +93,11 @@
     }
 
     .login-logo img {
-        width: 120px;
-        height: auto; /* ✅ biar proporsional */
-        max-height: 120px; /* ✅ biar gak terlalu besar */
+        width: 100px;
+        height: auto;
+        max-height: 100px;
         border-radius: 20px;
-        object-fit: contain; /* ✅ biar gambar tidak kepotong */
+        object-fit: contain;
         background: white;
         padding: 5px;
         box-shadow: 0 6px 30px rgba(0, 122, 255, 0.35);
@@ -69,9 +113,15 @@
     .login-card h3 {
         font-weight: 600;
         color: #1a1a1a;
-        margin-bottom: 30px;
+        margin-bottom: 15px;
         letter-spacing: 0.5px;
         font-size: 1.5rem;
+    }
+
+    .login-card p {
+        color: #555;
+        font-size: 0.9rem;
+        margin-bottom: 25px;
     }
 
     /* 📧 Input fields */
@@ -82,12 +132,35 @@
         padding: 12px 14px;
         font-size: 1rem;
         transition: all 0.2s ease;
+        width: 100%;
     }
 
     .form-control:focus {
         border-color: #007aff;
         box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.25);
         background: rgba(255, 255, 255, 0.9);
+    }
+
+    /* 👁️ Password field wrapper */
+    .password-wrapper {
+        position: relative;
+    }
+
+    .password-toggle {
+        position: absolute;
+        top: 50%;
+        right: 14px;
+        transform: translateY(-50%);
+        cursor: pointer;
+        width: 22px;
+        height: 22px;
+        opacity: 0.75;
+        transition: all 0.3s ease;
+    }
+
+    .password-toggle:hover {
+        opacity: 1;
+        transform: translateY(-50%) scale(1.1);
     }
 
     /* 🔘 Button */
@@ -113,74 +186,107 @@
         font-size: 0.9rem;
     }
 
-    /* 🍎 Subtle footer text */
+    /* 🍎 Footer */
     .login-footer {
         margin-top: 25px;
         color: #555;
         font-size: 0.85rem;
     }
 
-    /* ✨ Fade animation */
+    /* ✨ Animation */
     @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Responsive */
-    @media (max-width: 576px) {
-        .login-card {
+    /* 📱 Responsive */
+    @media (max-width: 768px) {
+        .login-container {
+            flex-direction: column;
             max-width: 90%;
+        }
+
+        .login-illustration {
+            height: 240px;
+            border-right: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .login-illustration img {
+            object-fit: cover;
+        }
+
+        .login-card {
             padding: 40px 30px;
         }
 
         .login-logo img {
-            width: 90px;
-            max-height: 90px;
+            width: 80px;
+            max-height: 80px;
         }
     }
 </style>
 
 <div class="login-page-wrapper">
-    <div class="login-card">
-        {{-- 🍎 Logo Deva Laundry --}}
-        <div class="login-logo">
-            <img src="{{ asset('images/header.png') }}" alt="Deva Laundry Logo">
+    <div class="login-container">
+
+        {{-- 🧍‍♂️ Left Illustration --}}
+        <div class="login-illustration">
+            <img src="{{ asset('images/lg.jpeg') }}" alt="Login Illustration">
         </div>
 
-        <h3>Sign in to Deva Laundry</h3>
-
-        {{-- 🔥 Pesan error --}}
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                {{ $errors->first() }}
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('login') }}">
-            @csrf
-
-            <div class="mb-3 text-start">
-                <label class="form-label fw-semibold">Email</label>
-                <input type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus>
+        {{-- 💻 Right Login Form --}}
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="{{ asset('images/header.png') }}" alt="Deva Laundry Logo">
             </div>
 
-            <div class="mb-3 text-start">
-                <label class="form-label fw-semibold">Password</label>
-                <input type="password" class="form-control" name="password" required>
+            <h3>Sign In</h3>
+            <p>Unlock your world.</p>
+
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+
+                <div class="mb-3 text-start">
+                    <label class="form-label fw-semibold">Email</label>
+                    <input type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus>
+                </div>
+
+                <div class="mb-3 text-start">
+                    <label class="form-label fw-semibold">Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" class="form-control" id="password" name="password" required>
+                        <img src="{{ asset('images/eye-closed.png') }}" id="togglePassword" class="password-toggle" alt="Toggle Password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Sign In</button>
+            </form>
+
+            <div class="login-footer">
+                © {{ date('Y') }} Deva Laundry — macOS Premium UI
             </div>
-
-            <button type="submit" class="btn btn-primary w-100">Login</button>
-        </form>
-
-        <div class="login-footer">
-            © {{ date('Y') }} Deva Laundry — macOS Premium UI
         </div>
     </div>
 </div>
+
+{{-- 👁️ JavaScript for toggle --}}
+<script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordField = document.getElementById('password');
+
+    togglePassword.addEventListener('click', function () {
+        const isPassword = passwordField.type === 'password';
+        passwordField.type = isPassword ? 'text' : 'password';
+        togglePassword.src = isPassword 
+            ? "{{ asset('images/eye-open.png') }}" 
+            : "{{ asset('images/eye-close.png') }}";
+    });
+</script>
 @endsection
