@@ -20,7 +20,7 @@
         padding: 20px;
     }
 
-    /* 🌤️ Container with image and form side by side */
+    /* 🌤️ Container */
     .register-container {
         display: flex;
         background: rgba(255, 255, 255, 0.25);
@@ -41,7 +41,7 @@
         transform: translateY(-3px);
     }
 
-    /* 🧍‍♀️ Left side - full image with border */
+    /* 🧍‍♀️ Left side */
     .register-illustration {
         flex: 1;
         background: linear-gradient(135deg, #e0e7ff, #f3f4f6);
@@ -57,10 +57,9 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-radius: 0;
     }
 
-    /* 🌤️ Right side - form */
+    /* 💻 Right form */
     .register-card {
         flex: 1;
         background: rgba(255, 255, 255, 0.55);
@@ -127,7 +126,7 @@
         background: rgba(255, 255, 255, 0.9);
     }
 
-    /* 🔒 Password input group */
+    /* 🔒 Password field */
     .password-wrapper {
         position: relative;
     }
@@ -170,23 +169,36 @@
         font-size: 0.9rem;
     }
 
-    /* 🍎 Subtle footer text */
+    /* 🩶 Login link */
+    .login-link {
+        margin-top: 18px;
+        font-size: 0.88rem;
+        color: #555;
+    }
+
+    .login-link a {
+        color: #007aff;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .login-link a:hover {
+        color: #004ec2;
+        text-decoration: underline;
+    }
+
+    /* 🍎 Footer */
     .register-footer {
         margin-top: 25px;
         color: #555;
         font-size: 0.85rem;
     }
 
-    /* ✨ Fade animation */
+    /* ✨ Animation */
     @keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 
     /* 📱 Responsive */
@@ -197,13 +209,8 @@
         }
 
         .register-illustration {
-            padding: 0;
+            height: 240px;
             border-right: none;
-        }
-
-        .register-illustration img {
-            height: 220px;
-            object-fit: cover;
         }
 
         .register-card {
@@ -217,7 +224,7 @@
     }
 </style>
 
-{{-- Tambahkan link Bootstrap Icons --}}
+{{-- Bootstrap Icons --}}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
 <div class="register-page-wrapper">
@@ -225,20 +232,19 @@
 
         {{-- 🧍‍♀️ Left Illustration --}}
         <div class="register-illustration">
-            <img src="{{ asset('images/lg.jpeg') }}" alt="Register Illustration">
+            <img src="{{ asset('images/picture.jpg') }}" alt="Register Illustration">
         </div>
 
         {{-- 💻 Right Register Form --}}
         <div class="register-card">
-            {{-- 🍎 Logo Deva Laundry --}}
+            {{-- 🍎 Logo --}}
             <div class="register-logo">
-                <img src="{{ asset('images/header.png') }}" alt="Deva Laundry ">
+                <img src="{{ asset('images/header.png') }}" alt="Deva Laundry Logo">
             </div>
 
             <h3>Create Your Deva Laundry Account</h3>
             <p>Join the family of freshness and simplicity.</p>
 
-            {{-- 🔥 Pesan error --}}
             @if ($errors->any())
                 <div class="alert alert-danger">
                     {{ $errors->first() }}
@@ -271,15 +277,21 @@
                 <button type="submit" class="btn btn-primary w-100">Register</button>
             </form>
 
+            {{-- 🔗 Login link --}}
+            <div class="login-link">
+                Already have an account?
+                <a href="{{ route('login') }}">Sign in here</a>
+            </div>
+
             <div class="register-footer">
-                © {{ date('Y') }} Deva Laundry — macOS Premium UI
+                © {{ date('Y') }} Deva Laundry
             </div>
         </div>
 
     </div>
 </div>
 
-{{-- 👁️ Script untuk Show/Hide Password --}}
+{{-- 👁️ Script for Show/Hide Password --}}
 <script>
     function togglePassword() {
         const passwordField = document.getElementById('password');
@@ -287,12 +299,12 @@
 
         if (passwordField.type === 'password') {
             passwordField.type = 'text';
-            toggleIcon.classList.remove('bi-eye-slash');
-            toggleIcon.classList.add('bi-eye');
-        } else {
-            passwordField.type = 'password';
             toggleIcon.classList.remove('bi-eye');
             toggleIcon.classList.add('bi-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            toggleIcon.classList.remove('bi-eye-slash');
+            toggleIcon.classList.add('bi-eye');
         }
     }
 </script>

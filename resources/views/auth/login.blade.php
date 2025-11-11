@@ -20,7 +20,7 @@
         padding: 20px;
     }
 
-    /* 🌤️ Container with image and form side by side */
+    /* 🌤️ Container */
     .login-container {
         display: flex;
         background: rgba(255, 255, 255, 0.25);
@@ -41,14 +41,14 @@
         transform: translateY(-3px);
     }
 
-    /* 🧍‍♂️ Left side - illustration */
+    /* 🧍‍♂️ Left side */
     .login-illustration {
         flex: 1;
-        position: relative;
-        overflow: hidden;
+        background: linear-gradient(135deg, #e0e7ff, #f3f4f6);
         display: flex;
         justify-content: center;
         align-items: center;
+        overflow: hidden;
         border-right: 1px solid rgba(255, 255, 255, 0.3);
     }
 
@@ -56,24 +56,10 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border: none;
         border-radius: 0;
-        transition: transform 0.6s ease;
     }
 
-    .login-illustration::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top right, rgba(0, 0, 0, 0.05), rgba(255, 255, 255, 0.1));
-        pointer-events: none;
-    }
-
-    .login-illustration img:hover {
-        transform: scale(1.05);
-    }
-
-    /* 🌤️ Right side - form */
+    /* 💻 Right side - form */
     .login-card {
         flex: 1;
         background: rgba(255, 255, 255, 0.55);
@@ -152,15 +138,13 @@
         right: 14px;
         transform: translateY(-50%);
         cursor: pointer;
-        width: 22px;
-        height: 22px;
-        opacity: 0.75;
-        transition: all 0.3s ease;
+        font-size: 1.2rem;
+        color: #555;
+        transition: color 0.2s ease;
     }
 
     .password-toggle:hover {
-        opacity: 1;
-        transform: translateY(-50%) scale(1.1);
+        color: #007aff;
     }
 
     /* 🔘 Button */
@@ -184,6 +168,25 @@
     .alert {
         border-radius: 12px;
         font-size: 0.9rem;
+    }
+
+    /* 🩶 Register link */
+    .register-link {
+        margin-top: 18px;
+        font-size: 0.88rem;
+        color: #555;
+    }
+
+    .register-link a {
+        color: #007aff;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+
+    .register-link a:hover {
+        color: #004ec2;
+        text-decoration: underline;
     }
 
     /* 🍎 Footer */
@@ -212,10 +215,6 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        .login-illustration img {
-            object-fit: cover;
-        }
-
         .login-card {
             padding: 40px 30px;
         }
@@ -227,12 +226,15 @@
     }
 </style>
 
+{{-- Bootstrap Icons --}}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
 <div class="login-page-wrapper">
     <div class="login-container">
 
         {{-- 🧍‍♂️ Left Illustration --}}
         <div class="login-illustration">
-            <img src="{{ asset('images/lg.jpeg') }}" alt="Login Illustration">
+            <img src="{{ asset('images/picture.jpg') }}" alt="Login Illustration">
         </div>
 
         {{-- 💻 Right Login Form --}}
@@ -241,8 +243,8 @@
                 <img src="{{ asset('images/header.png') }}" alt="Deva Laundry Logo">
             </div>
 
-            <h3>Sign In</h3>
-            <p>Unlock your world.</p>
+            <h3>Welcome Back</h3>
+            <p>Login to continue your clean journey.</p>
 
             @if ($errors->any())
                 <div class="alert alert-danger">
@@ -262,31 +264,43 @@
                     <label class="form-label fw-semibold">Password</label>
                     <div class="password-wrapper">
                         <input type="password" class="form-control" id="password" name="password" required>
-                        <img src="{{ asset('images/eye-closed.png') }}" id="togglePassword" class="password-toggle" alt="Toggle Password">
+                        <span class="password-toggle" onclick="togglePassword()">
+                            <i class="bi bi-eye"></i>
+                        </span>
                     </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100">Sign In</button>
             </form>
 
+            {{-- 🔗 Register link --}}
+            <div class="register-link">
+                Don’t have an account?
+                <a href="{{ route('register') }}">Register here</a>
+            </div>
+
             <div class="login-footer">
-                © {{ date('Y') }} Deva Laundry — macOS Premium UI
+                © {{ date('Y') }} Deva Laundry 
             </div>
         </div>
     </div>
 </div>
 
-{{-- 👁️ JavaScript for toggle --}}
+{{-- 👁️ JavaScript for toggle password --}}
 <script>
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordField = document.getElementById('password');
+    function togglePassword() {
+        const passwordField = document.getElementById('password');
+        const toggleIcon = document.querySelector('.password-toggle i');
 
-    togglePassword.addEventListener('click', function () {
-        const isPassword = passwordField.type === 'password';
-        passwordField.type = isPassword ? 'text' : 'password';
-        togglePassword.src = isPassword 
-            ? "{{ asset('images/eye-open.png') }}" 
-            : "{{ asset('images/eye-close.png') }}";
-    });
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleIcon.classList.remove('bi-eye');
+            toggleIcon.classList.add('bi-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            toggleIcon.classList.remove('bi-eye-slash');
+            toggleIcon.classList.add('bi-eye');
+        }
+    }
 </script>
 @endsection
