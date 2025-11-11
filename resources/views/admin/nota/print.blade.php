@@ -162,6 +162,9 @@
 
     <!-- INFO -->
     <div class="info">
+        {{-- 🧾 Tambahan: Nomor Nota Otomatis --}}
+        <p><strong>No. Nota:</strong> {{ $nota->no_nota ?? 'INV-' . str_pad($nota->id, 5, '0', STR_PAD_LEFT) }}</p>
+
         <p><strong>Nama:</strong> {{ $nota->customer_name }}</p>
         <p><strong>Alamat:</strong> {{ $nota->customer_address ?? '-' }}</p>
         <p><strong>Tgl Keluar:</strong> {{ $nota->tgl_keluar ? \Carbon\Carbon::parse($nota->tgl_keluar)->format('d/m/Y') : '-' }}</p>
@@ -208,6 +211,15 @@
         <tr>
             <td class="label">Sisa</td>
             <td class="value">Rp {{ number_format($nota->sisa, 0, ',', '.') }}</td>
+        </tr>
+
+        <!-- 🧺 Tambahan: Total Semua Item -->
+        @php
+            $totalQty = $nota->items->sum('quantity');
+        @endphp
+        <tr style="border-top:1px dashed #007bff;">
+            <td class="label"><strong>Total Item</strong></td>
+            <td class="value"><strong>{{ $totalQty }} Pcs</strong></td>
         </tr>
     </table>
 

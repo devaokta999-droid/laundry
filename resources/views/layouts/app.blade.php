@@ -215,29 +215,22 @@
 
                 {{-- 🧾 Kasir Area --}}
                 @if($role === 'kasir')
-                    <a href="{{ route('admin.cashier.index') }}" class="btn-cashier mb-3">
-                        Kasir
-                    </a>
+                    <a href="{{ route('admin.cashier.index') }}" class="btn-cashier mb-3">Kasir</a>
                 @endif
 
                 {{-- 🔹 Admin & Deva --}}
                 @if(in_array($role, ['admin', 'deva']))
-                    <a href="{{ route('admin.cashier.index') }}" class="nav-link {{ request()->routeIs('admin.cashier.index') ? 'active' : '' }}">
-                        Kasir
-                    </a>
-                    <a href="{{ route('admin.transactions.index') }}" class="nav-link {{ request()->routeIs('admin.transactions.index') ? 'active' : '' }}">
-                        Transaksi
-                    </a>
-                    <a href="{{ route('admin.nota.index') }}" class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">
-                        Nota
-                    </a>
+                    <a href="{{ route('admin.cashier.index') }}" class="nav-link {{ request()->routeIs('admin.cashier.index') ? 'active' : '' }}">Kasir</a>
+                    <a href="{{ route('admin.transactions.index') }}" class="nav-link {{ request()->routeIs('admin.transactions.index') ? 'active' : '' }}">Transaksi</a>
+                    <a href="{{ route('admin.nota.index') }}" class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">Nota</a>
+                    {{-- 📊 Tambahan: Menu Laporan --}}
+                    <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">Laporan</a>
                 @endif
 
-                {{-- ✅ Kasir juga bisa akses Nota --}}
+                {{-- ✅ Kasir juga bisa akses Nota & Laporan --}}
                 @if($role === 'kasir')
-                    <a href="{{ route('admin.nota.index') }}" class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">
-                        Nota
-                    </a>
+                    <a href="{{ route('admin.nota.index') }}" class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">Nota</a>
+                    <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">Laporan</a>
                 @endif
             @endauth
         </nav>

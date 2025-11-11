@@ -46,18 +46,15 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
-    // Kelola layanan pribadi (CRUD)
     Route::resource('/layanan', LayananController::class);
 });
 
 /*
 |--------------------------------------------------------------------------
-| 🧾 ADMIN / KASIR / DEVA AREA (Tanpa Kernel)
+| 🧾 ADMIN / KASIR / DEVA AREA
 |--------------------------------------------------------------------------
-|
-| - Admin bisa melihat semua transaksi, mengelola layanan, kasir, dll.
+| - Admin bisa melihat semua transaksi, kelola layanan, nota, kasir, dll.
 | - Middleware role dijalankan manual via app(RoleMiddleware::class)
-| - Tidak memerlukan penambahan kernel di Http/Kernel.php
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')
@@ -151,35 +148,33 @@ Route::prefix('admin')
             return app(NotaController::class)->print($id);
         })->name('nota.print');
 
-        /*
-        |-------------------------------
-        | 🔍 Lihat Detail Nota
-        |-------------------------------
-        */
+        // 🔍 Detail Nota
         Route::get('nota/{id}', function (Request $request, $id) {
             app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
             $nota = \App\Models\Nota::with('items.item')->findOrFail($id);
             return view('admin.nota.show', compact('nota'));
         })->name('nota.show');
 
-        /*
-        |-------------------------------
-        | 🖨️ Print Direct & Tandai Lunas
-        |-------------------------------
-        */
+        // 🖨️ Print Direct
         Route::get('nota/{nota}/print-direct', [NotaController::class, 'printToPrinter'])
             ->name('nota.print_direct');
 
+        // 💰 Tandai Lunas
         Route::post('nota/{nota}/lunas', [NotaController::class, 'markLunas'])
             ->name('nota.lunas');
+
+        // 🗑️ Hapus Nota
+        Route::delete('nota/{id}', [NotaController::class, 'destroy'])
+            ->name('nota.destroy');
+
+        // 📊 Laporan Keuangan
+        Route::get('laporan', [NotaController::class, 'laporan'])
+            ->name('laporan');
     });
 
 /*
 |--------------------------------------------------------------------------
-| ✅ Route Public Tambahan untuk Show Nota
-|--------------------------------------------------------------------------
-| Dipakai jika tombol "Show Nota" di luar prefix /admin
+| ✅ Route Public Tambahan (Show Nota di luar admin)
 |--------------------------------------------------------------------------
 */
 Route::get('/nota/{id}/show', [NotaController::class, 'show'])->name('nota.show');
-Route::delete('/admin/nota/{id}', [NotaController::class, 'destroy'])->name('admin.nota.destroy');

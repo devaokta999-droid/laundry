@@ -41,7 +41,6 @@ class NotaController extends Controller
 
         DB::beginTransaction();
         try {
-            // Hitung total harga
             $total = 0;
             foreach ($r->items as $row) {
                 $total += $row['price'] * $row['quantity'];
@@ -50,7 +49,6 @@ class NotaController extends Controller
             $uangMuka = $r->uang_muka ?? 0;
             $sisa = $total - $uangMuka;
 
-            // Simpan nota utama
             $nota = Nota::create([
                 'user_id' => Auth::id(),
                 'customer_name' => $r->customer_name,
@@ -62,7 +60,6 @@ class NotaController extends Controller
                 'sisa' => $sisa,
             ]);
 
-            // Simpan item satuan
             foreach ($r->items as $row) {
                 $item = ItemLaundry::firstOrCreate(
                     ['name' => $row['name']],
@@ -87,13 +84,11 @@ class NotaController extends Controller
     }
 
     /**
-     * 🖨️ Cetak nota dalam format PDF (download file).
+     * 🖨️ Cetak nota dalam format PDF.
      */
     public function print($id)
     {
         $nota = Nota::with(['items.item', 'user'])->findOrFail($id);
-
-        // Gunakan view admin.nota.print (desain cetak PDF)
         $pdf = Pdf::loadView('admin.nota.print', compact('nota'))
             ->setPaper('A5', 'portrait');
 
@@ -101,24 +96,21 @@ class NotaController extends Controller
     }
 
     /**
-     * 🖨️ Menampilkan halaman siap cetak (print-friendly, auto window.print()).
+     * 🖨️ Tampilan print HTML langsung.
      */
     public function printToPrinter($id)
     {
         $nota = Nota::with('items.item')->findOrFail($id);
-
-        // View print HTML langsung
         return view('admin.nota.print', compact('nota'));
     }
 
     /**
-     * 💰 Tandai nota sebagai lunas (via AJAX).
+     * 💰 Tandai nota sebagai lunas (AJAX).
      */
     public function markLunas(Request $request, $id)
     {
         $nota = Nota::findOrFail($id);
 
-        // Jika sudah lunas, jangan update lagi
         if ((int) $nota->sisa <= 0) {
             return response()->json([
                 'message' => 'Nota sudah lunas.',
@@ -138,7 +130,7 @@ class NotaController extends Controller
     }
 
     /**
-     * 🔍 Menampilkan detail nota (untuk tombol "Show Nota").
+     * 🔍 Detail nota.
      */
     public function show($id)
     {
@@ -147,18 +139,46 @@ class NotaController extends Controller
     }
 
     /**
-     * 🗑️ Menghapus nota dan item terkait.
+     * 🗑️ Hapus nota dan item terkait.
      */
     public function destroy($id)
     {
         $nota = Nota::findOrFail($id);
-
-        // Hapus semua item terkait
         $nota->items()->delete();
-
-        // Hapus nota
         $nota->delete();
 
         return redirect()->route('admin.nota.index')->with('success', 'Nota berhasil dihapus.');
+    }
+
+    /**
+     * 📊 Laporan keuangan harian, mingguan, bulanan, tahunan.
+     */
+    public function laporan()
+    {
+        $today = now();
+        $startOfWeek = $today->copy()->startOfWeek();
+        $startOfMonth = $today->copy()->startOfMonth();
+        $startOfYear = $today->copy()->startOfYear();
+
+        // 🔹 Pendapatan
+        $harian = Nota::whereDate('created_at', today())->sum('total');
+        $mingguan = Nota::whereBetween('created_at', [$startOfWeek, now()])->sum('total');
+        $bulanan = Nota::whereBetween('created_at', [$startOfMonth, now()])->sum('total');
+        $tahunan = Nota::whereBetween('created_at', [$startOfYear, now()])->sum('total');
+
+        // 🔹 Jumlah nota
+        $nota_harian = Nota::whereDate('created_at', today())->count();
+        $nota_mingguan = Nota::whereBetween('created_at', [$startOfWeek, now()])->count();
+        $nota_bulanan = Nota::whereBetween('created_at', [$startOfMonth, now()])->count();
+        $nota_tahunan = Nota::whereBetween('created_at', [$startOfYear, now()])->count();
+
+        // 🔹 Semua data nota
+        $notas = Nota::latest()->get();
+
+        return view('admin.laporan', compact(
+            'harian', 'mingguan', 'bulanan', 'tahunan',
+            'nota_harian', 'nota_mingguan', 'nota_bulanan', 'nota_tahunan',
+            'notas'
+        ));
     }
 }
