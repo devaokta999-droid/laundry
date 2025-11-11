@@ -13,17 +13,18 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class NotaController extends Controller
 {
     /**
-     * Menampilkan daftar nota.
+     * 🧾 Menampilkan daftar nota.
      */
     public function index()
     {
         $notas = Nota::with('items.item')->latest()->get();
         $items = ItemLaundry::orderBy('name')->get();
+
         return view('admin.nota.index', compact('notas', 'items'));
     }
 
     /**
-     * Menyimpan data nota baru.
+     * 💾 Menyimpan data nota baru.
      */
     public function store(Request $r)
     {
@@ -40,6 +41,7 @@ class NotaController extends Controller
 
         DB::beginTransaction();
         try {
+            // Hitung total harga
             $total = 0;
             foreach ($r->items as $row) {
                 $total += $row['price'] * $row['quantity'];
@@ -48,6 +50,7 @@ class NotaController extends Controller
             $uangMuka = $r->uang_muka ?? 0;
             $sisa = $total - $uangMuka;
 
+            // Simpan nota utama
             $nota = Nota::create([
                 'user_id' => Auth::id(),
                 'customer_name' => $r->customer_name,
@@ -59,6 +62,7 @@ class NotaController extends Controller
                 'sisa' => $sisa,
             ]);
 
+            // Simpan item satuan
             foreach ($r->items as $row) {
                 $item = ItemLaundry::firstOrCreate(
                     ['name' => $row['name']],
@@ -83,7 +87,7 @@ class NotaController extends Controller
     }
 
     /**
-     * Mencetak nota dalam format PDF (download file).
+     * 🖨️ Cetak nota dalam format PDF (download file).
      */
     public function print($id)
     {
@@ -97,45 +101,64 @@ class NotaController extends Controller
     }
 
     /**
-     * Menampilkan view print-friendly yang otomatis memanggil window.print()
+     * 🖨️ Menampilkan halaman siap cetak (print-friendly, auto window.print()).
      */
     public function printToPrinter($id)
     {
         $nota = Nota::with('items.item')->findOrFail($id);
 
-        // View admin.nota.print_direct adalah halaman HTML yang langsung memicu window.print()
+        // View print HTML langsung
         return view('admin.nota.print', compact('nota'));
     }
 
     /**
-     * Tandai nota sebagai lunas (set uang_muka = total, sisa = 0)
-     * Mengembalikan JSON (bisa dipanggil via AJAX)
+     * 💰 Tandai nota sebagai lunas (via AJAX).
      */
     public function markLunas(Request $request, $id)
     {
         $nota = Nota::findOrFail($id);
 
-        // Jika sisa sudah 0, tidak perlu diupdate lagi
-        $sisa = (int) $nota->sisa;
-        if ($sisa <= 0) {
+        // Jika sudah lunas, jangan update lagi
+        if ((int) $nota->sisa <= 0) {
             return response()->json([
                 'message' => 'Nota sudah lunas.',
                 'nota' => $nota
             ], 200);
         }
 
-        // Update: set uang_muka menjadi total, sisa jadi 0
-        $nota->uang_muka = $nota->total;
-        $nota->sisa = 0;
-
-        // Jika ingin mencatat user yang menandai lunas, tambahkan di sini misal:
-        // $nota->lunas_by = Auth::id();
-
-        $nota->save();
+        $nota->update([
+            'uang_muka' => $nota->total,
+            'sisa' => 0,
+        ]);
 
         return response()->json([
             'message' => 'Berhasil menandai nota sebagai lunas.',
             'nota' => $nota
         ], 200);
+    }
+
+    /**
+     * 🔍 Menampilkan detail nota (untuk tombol "Show Nota").
+     */
+    public function show($id)
+    {
+        $nota = Nota::with(['user', 'items.item'])->findOrFail($id);
+        return view('admin.nota.show', compact('nota'));
+    }
+
+    /**
+     * 🗑️ Menghapus nota dan item terkait.
+     */
+    public function destroy($id)
+    {
+        $nota = Nota::findOrFail($id);
+
+        // Hapus semua item terkait
+        $nota->items()->delete();
+
+        // Hapus nota
+        $nota->delete();
+
+        return redirect()->route('admin.nota.index')->with('success', 'Nota berhasil dihapus.');
     }
 }

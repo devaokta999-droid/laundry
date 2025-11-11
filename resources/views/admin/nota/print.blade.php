@@ -153,7 +153,7 @@
 <div class="nota-container">
     <!-- HEADER -->
     <div class="header">
-        <img src="{{ public_path('images/header.png') }}" alt="Logo Laundry">
+        <img src="{{ asset('images/header.png') }}" alt="Logo Laundry" style="width:150px;">
         <h2>DEVA LAUNDRY</h2>
         <p>Jl. Wisnu Marga No. Belayu, Tabanan</p>
         <p>Telp:+62 821-4703-7006</p>

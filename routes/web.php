@@ -134,7 +134,6 @@ Route::prefix('admin')
         |-------------------------------
         | 🧾 Nota Digital Laundry Satuan
         |-------------------------------
-        | Akses hanya untuk Admin, Kasir, Deva
         */
         Route::get('nota', function (Request $request) {
             app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'deva');
@@ -154,7 +153,7 @@ Route::prefix('admin')
 
         /*
         |-------------------------------
-        | 🔍 (Opsional) Lihat Detail Nota
+        | 🔍 Lihat Detail Nota
         |-------------------------------
         */
         Route::get('nota/{id}', function (Request $request, $id) {
@@ -175,3 +174,12 @@ Route::prefix('admin')
             ->name('nota.lunas');
     });
 
+/*
+|--------------------------------------------------------------------------
+| ✅ Route Public Tambahan untuk Show Nota
+|--------------------------------------------------------------------------
+| Dipakai jika tombol "Show Nota" di luar prefix /admin
+|--------------------------------------------------------------------------
+*/
+Route::get('/nota/{id}/show', [NotaController::class, 'show'])->name('nota.show');
+Route::delete('/admin/nota/{id}', [NotaController::class, 'destroy'])->name('admin.nota.destroy');

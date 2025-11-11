@@ -200,7 +200,7 @@
     <div>
         <div class="sidebar-header mb-4">
             <img src="{{ asset('images/header.png') }}" alt="Logo" width="60" class="mb-2 rounded-3 shadow-sm">
-            <h4>Deva Laundry</h4>
+            <h4>𝙳𝙴𝚅𝙰 𝙻𝙰𝚄𝙽𝙳𝚁𝚈</h4>
         </div>
 
         <nav class="nav flex-column">

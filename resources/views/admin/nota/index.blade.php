@@ -120,6 +120,14 @@
                                 @if($n->sisa <= 0) disabled @endif>
                             @if($n->sisa <= 0) Lunas @else Tandai Lunas @endif
                         </button>
+
+                        {{-- ✅ Tambahan baru: Tombol Show Nota (sebelah kanan tombol Lunas) --}}
+                        <a href="{{ route('admin.nota.show', $n->id) }}" 
+                           class="btn btn-sm btn-info" 
+                           target="_blank" 
+                           title="Lihat detail nota">
+                            Show Nota
+                        </a>
                     </td>
                 </tr>
                 @empty
@@ -137,7 +145,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     const notaBody = document.getElementById('notaBody');
 
-    // daftar default item (bisa kamu ganti / ambil dari server)
     const itemList = [
         { name: 'Baju Kaos/panjang', price: 1500 },
         { name: 'kemeja berkerah/panjang', price: 1500 },
@@ -179,11 +186,8 @@ document.addEventListener('DOMContentLoaded', function () {
         { name: 'Setrika baju bayi', price: 500 },
     ];
 
-    // === Inisialisasi: buat beberapa baris dropdown default untuk mempercepat input ===
-    // (Jika kamu ingin kosong awal, ganti loop ini atau hapus)
     itemList.forEach((item, index) => addDropdownRow(item.name, item.price, '', index + 1));
 
-    // Tambah baris dropdown (pakai itemList)
     function addDropdownRow(name = '', price = '', qty = '', no = null) {
         const rowCount = notaBody.rows.length + 1;
         const tr = document.createElement('tr');
@@ -203,7 +207,6 @@ document.addEventListener('DOMContentLoaded', function () {
         recalc();
     }
 
-    // Tombol "Tambah Item Baru" --> baris kosong yang boleh diisi nama & harga manual
     document.getElementById('addRow').addEventListener('click', () => {
         const rowCount = notaBody.rows.length + 1;
         const tr = document.createElement('tr');
@@ -225,7 +228,6 @@ document.addEventListener('DOMContentLoaded', function () {
         recalc();
     });
 
-    // Ketika dropdown item berubah -> set harga otomatis
     notaBody.addEventListener('change', e => {
         if (e.target.classList.contains('item-name')) {
             const selected = itemList.find(i => i.name === e.target.value);
@@ -235,7 +237,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Hitung subtotal, total, total qty, sisa
     function recalc() {
         let total = 0, totalQty = 0;
         notaBody.querySelectorAll('tr').forEach(tr => {
@@ -258,48 +259,37 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('sisa').value = Math.max(0, total - uangMuka);
     }
 
-    // Input listener realtime (qty & price)
     notaBody.addEventListener('input', e => {
         if (e.target.classList.contains('item-qty') || e.target.classList.contains('item-price')) recalc();
     });
     document.getElementById('uang_muka').addEventListener('input', recalc);
 
-    // Hapus baris
     notaBody.addEventListener('click', e => {
         if (e.target.classList.contains('removeRow')) {
             e.target.closest('tr').remove();
-            // re-numbering nomor baris supaya rapi setelah hapus
             renumberRows();
             recalc();
         }
     });
 
-    // Renumber rows -> update nomor dan name indexes so server menerima items[...] array sequentially
     function renumberRows() {
         const trs = notaBody.querySelectorAll('tr');
         trs.forEach((tr, idx) => {
             const newIndex = idx + 1;
-            // nomor kolom (td pertama)
             tr.querySelector('td:first-child').textContent = newIndex;
-
-            // update name attributes for inputs/selects inside row
             tr.querySelectorAll('input, select').forEach(el => {
-                // extract the input type suffix: e.g. items[3][name] -> [name]
                 const attrName = el.getAttribute('name');
                 if (!attrName) return;
                 const match = attrName.match(/items\[\d+\]\[(.+)\]/);
                 if (match) {
-                    const key = match[1]; // name, price, quantity
+                    const key = match[1];
                     el.setAttribute('name', `items[${newIndex}][${key}]`);
                 }
             });
         });
     }
 
-    // Sebelum submit: - hapus baris yang qty <= 0 (agar backend tidak menolak)
-    //               - renumber rows agar nama array berurutan
     document.getElementById('notaForm').addEventListener('submit', function (e) {
-        // validasi minimal 1 item dengan qty >= 1
         const rows = Array.from(notaBody.querySelectorAll('tr'));
         let hasValid = false;
         rows.forEach(tr => {
@@ -313,22 +303,15 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Hapus baris yang qty <= 0 (tidak akan dikirim ke server)
         rows.forEach(tr => {
             const qty = parseInt(tr.querySelector('.item-qty')?.value || 0);
             if (qty <= 0) tr.remove();
         });
 
-        // renumber agar items[1], items[2], ... berurutan
         renumberRows();
-
-        // recalc satu kali lagi sebelum submit
         recalc();
-
-        // setelah ini form akan submit normal (POST) ke route admin.nota.store
     });
 
-    // Pencarian riwayat (filter)
     const searchInput = document.getElementById('searchNota');
     const rowsRiwayat = document.querySelectorAll('#tableRiwayat tbody tr');
     searchInput.addEventListener('input', function() {
@@ -340,12 +323,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // inisialisasi hitung awal
     recalc();
 
-    // ==========================
-    // Tombol LUNAS (AJAX + disable after click)
-    // ==========================
     const csrfToken = '{{ csrf_token() }}';
     document.querySelectorAll('.btn-lunas').forEach(btn => {
         btn.addEventListener('click', async function () {
@@ -353,7 +332,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const notaId = this.dataset.id;
             const self = this;
-            // disable segera untuk mencegah double click
             self.disabled = true;
             self.textContent = 'Memproses...';
 
@@ -370,21 +348,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const data = await res.json();
                 if (res.ok) {
-                    // update UI row: sisa => 0, uang_muka => total
                     const row = document.querySelector('tr[data-nota-id="'+notaId+'"]');
                     if (row) {
                         const totalCell = row.querySelector('.cell-total');
                         const uangMukaCell = row.querySelector('.cell-uang-muka');
                         const sisaCell = row.querySelector('.cell-sisa');
 
-                        // parse angka dari cell total (dalam format number_format Indonesian) -> kita harus ambil raw total dari response jika ada
                         if (data.nota) {
-                            // server mengembalikan nota; tampilkan formatted numbers
                             const formatter = new Intl.NumberFormat('id-ID');
                             uangMukaCell.textContent = formatter.format(data.nota.uang_muka || 0);
                             sisaCell.textContent = formatter.format(data.nota.sisa || 0);
                         } else if (totalCell) {
-                            // fallback: set sisa 0, uang_muka sama dengan total (mencoba parse totalCell)
                             const totalText = totalCell.textContent.replace(/\./g,'').replace(/,/g,'');
                             const totalVal = parseInt(totalText) || 0;
                             uangMukaCell.textContent = new Intl.NumberFormat('id-ID').format(totalVal);
@@ -396,7 +370,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     self.disabled = true;
                     alert(data.message || 'Nota berhasil ditandai lunas.');
                 } else {
-                    // gagal
                     self.disabled = false;
                     self.textContent = 'Tandai Lunas';
                     alert(data.message || 'Gagal menandai lunas. Coba lagi.');
