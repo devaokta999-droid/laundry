@@ -224,7 +224,7 @@
                     <a href="{{ route('admin.transactions.index') }}" class="nav-link {{ request()->routeIs('admin.transactions.index') ? 'active' : '' }}">Transaksi</a>
                     <a href="{{ route('admin.nota.index') }}" class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">Nota</a>
                     {{-- 📊 Tambahan: Menu Laporan --}}
-                    <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">Laporan invoice</a>
+                    <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">Laporan</a>
                 @endif
 
                 {{-- ✅ Kasir juga bisa akses Nota & Laporan --}}

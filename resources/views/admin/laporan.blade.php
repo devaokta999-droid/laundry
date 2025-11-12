@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<!---- Deva Laundry — macOS Fullscreen Light Mode Blade ---->
+<!---- Deva Laundry — macOS Fullscreen Light Mode Blade (dengan warna + animasi hover di kartu pendapatan) ---->
 <style>
     /* Reset + system font */
     :root{
@@ -88,9 +88,38 @@
 
     /* Summary cards */
     .stats{ display:grid; grid-template-columns: repeat(4,1fr); gap:16px; flex-wrap: wrap; }
-    .card{ background:var(--panel); padding:16px; border-radius:14px; border:1px solid var(--glass-border); box-shadow: var(--card-shadow); }
-    .card h6{ margin:0; color:var(--muted); font-weight:600; font-size:13px; }
-    .card h4{ margin-top:8px; font-size:20px; }
+
+    .card{
+        padding:16px;
+        border-radius:14px;
+        border:1px solid var(--glass-border);
+        box-shadow: var(--card-shadow);
+        color:#fff;
+        transition: all 0.3s ease;
+        transform: translateY(0);
+        cursor: pointer;
+    }
+    .card:hover {
+        transform: translateY(-4px);
+        filter: brightness(1.08);
+        box-shadow: 0 12px 30px rgba(15,23,42,0.1);
+    }
+    .card h6{ margin:0; font-weight:600; font-size:13px; opacity:0.9; }
+    .card h4{ margin-top:8px; font-size:22px; font-weight:700; }
+
+    /* 🌈 Warna khusus untuk tiap kartu pendapatan */
+    .card.harian {
+        background: linear-gradient(135deg, #0051ffff);
+    }
+    .card.mingguan {
+        background: linear-gradient(135deg, #0051ffff);
+    }
+    .card.bulanan {
+        background: linear-gradient(135deg,  #0051ffff);
+    }
+    .card.tahunan {
+        background: linear-gradient(135deg,  #0051ffff);
+    }
 
     /* Table area */
     .content-panel{ flex:1; overflow:auto; padding:8px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.75)); border:1px solid var(--glass-border); }
@@ -146,29 +175,29 @@
                 <input type="date" id="end_date" style="padding:6px; border-radius:8px; border:1px solid rgba(0,0,0,0.1)">
             </div>
             <button class="btn-filter" id="exportExcelBtn">Export Excel</button>
-            <button class="btn-filter" id="exportToday">Exp Harian</button>
-            <button class="btn-filter" id="exportWeek">Exp Mingguan</button>
-            <button class="btn-filter" id="exportMonth">Exp Bulanan</button>
-            <button class="btn-filter" id="exportYear">Exp Tahunan</button>
+            <button class="btn-filter" id="exportToday">Harian</button>
+            <button class="btn-filter" id="exportWeek">Mingguan</button>
+            <button class="btn-filter" id="exportMonth">Bulanan</button>
+            <button class="btn-filter" id="exportYear">Tahunan</button>
             <button class="btn-filter" id="refreshBtn">Refresh</button>
         </div>
     </div>
 
     <!-- Stats -->
     <div class="stats">
-        <div class="card">
+        <div class="card harian">
             <h6>Pendapatan Hari Ini</h6>
             <h4>Rp {{ number_format($harian,0,',','.') }}</h4>
         </div>
-        <div class="card">
+        <div class="card mingguan">
             <h6>Pendapatan Minggu Ini</h6>
             <h4>Rp {{ number_format($mingguan,0,',','.') }}</h4>
         </div>
-        <div class="card">
+        <div class="card bulanan">
             <h6>Pendapatan Bulan Ini</h6>
             <h4>Rp {{ number_format($bulanan,0,',','.') }}</h4>
         </div>
-        <div class="card">
+        <div class="card tahunan">
             <h6>Pendapatan Tahun Ini</h6>
             <h4>Rp {{ number_format($tahunan,0,',','.') }}</h4>
         </div>
@@ -187,7 +216,6 @@
                         <th>Total (Rp)</th>
                         <th>Uang Muka</th>
                         <th>Sisa</th>
-                        <!-- ✅ Kolom kasir baru -->
                         <th>Kasir</th>
                         <th>Status</th>
                     </tr>
@@ -205,7 +233,6 @@
                             <td class="cell-total">{{ number_format($n->total,0,',','.') }}</td>
                             <td>{{ number_format($n->uang_muka,0,',','.') }}</td>
                             <td>{{ number_format($n->sisa,0,',','.') }}</td>
-                            <!-- ✅ Tampilkan kasir -->
                             <td>{{ $kasir }}</td>
                             <td>
                                 @if($n->sisa <= 0)
