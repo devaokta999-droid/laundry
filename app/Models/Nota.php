@@ -43,4 +43,31 @@ class Nota extends Model
     {
         return $this->hasMany(NotaItem::class);
     }
+
+    /**
+     * Relasi ke kasir (alias dari user)
+     * 👉 Untuk dipakai pada laporan/export Excel
+     */
+    public function kasir()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Relasi ke admin (alias dari user)
+     * 👉 Bisa dipakai jika kamu ingin membedakan user dengan role admin
+     */
+    public function admin()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Relasi ke deva (alias tambahan sesuai permintaan)
+     * 👉 Sama-sama menunjuk ke user_id agar tidak error saat dipanggil
+     */
+    public function deva()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

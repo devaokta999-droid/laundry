@@ -9,6 +9,9 @@ use App\Models\ItemLaundry;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\NotaExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Carbon\Carbon;
 
 class NotaController extends Controller
 {
@@ -151,7 +154,7 @@ class NotaController extends Controller
     }
 
     /**
-     * 📊 Laporan keuangan harian, mingguan, bulanan, tahunan.
+     * 📊 Laporan keuangan harian, mingguan, bulanan, tahunan (versi utama).
      */
     public function laporan()
     {
@@ -160,19 +163,16 @@ class NotaController extends Controller
         $startOfMonth = $today->copy()->startOfMonth();
         $startOfYear = $today->copy()->startOfYear();
 
-        // 🔹 Pendapatan
         $harian = Nota::whereDate('created_at', today())->sum('total');
         $mingguan = Nota::whereBetween('created_at', [$startOfWeek, now()])->sum('total');
         $bulanan = Nota::whereBetween('created_at', [$startOfMonth, now()])->sum('total');
         $tahunan = Nota::whereBetween('created_at', [$startOfYear, now()])->sum('total');
 
-        // 🔹 Jumlah nota
         $nota_harian = Nota::whereDate('created_at', today())->count();
         $nota_mingguan = Nota::whereBetween('created_at', [$startOfWeek, now()])->count();
         $nota_bulanan = Nota::whereBetween('created_at', [$startOfMonth, now()])->count();
         $nota_tahunan = Nota::whereBetween('created_at', [$startOfYear, now()])->count();
 
-        // 🔹 Semua data nota
         $notas = Nota::latest()->get();
 
         return view('admin.laporan', compact(
@@ -180,5 +180,61 @@ class NotaController extends Controller
             'nota_harian', 'nota_mingguan', 'nota_bulanan', 'nota_tahunan',
             'notas'
         ));
+    }
+
+    /**
+     * 📊 Laporan keuangan (versi Carbon untuk Excel Export)
+     */
+    public function laporanExcel()
+    {
+        $today = Carbon::today();
+
+        $harian = Nota::whereDate('created_at', $today)->sum('total');
+        $mingguan = Nota::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('total');
+        $bulanan = Nota::whereMonth('created_at', Carbon::now()->month)->sum('total');
+        $tahunan = Nota::whereYear('created_at', Carbon::now()->year)->sum('total');
+
+        $notas = Nota::latest()->get();
+
+        return view('admin.laporan', compact('harian', 'mingguan', 'bulanan', 'tahunan', 'notas'));
+    }
+
+    /**
+     * 📤 Export Laporan ke Excel (dengan filter harian, mingguan, bulanan, tahunan).
+     */
+    public function exportExcel(Request $request)
+    {
+        $filter = $request->input('filter'); // daily, weekly, monthly, yearly
+        $start = $request->input('start_date');
+        $end = $request->input('end_date');
+
+        // 🗓️ Tentukan rentang tanggal berdasarkan filter
+        if ($filter === 'daily') {
+            $start = Carbon::today()->toDateString();
+            $end = Carbon::today()->toDateString();
+        } elseif ($filter === 'weekly') {
+            $start = Carbon::now()->startOfWeek()->toDateString();
+            $end = Carbon::now()->endOfWeek()->toDateString();
+        } elseif ($filter === 'monthly') {
+            $start = Carbon::now()->startOfMonth()->toDateString();
+            $end = Carbon::now()->endOfMonth()->toDateString();
+        } elseif ($filter === 'yearly') {
+            $start = Carbon::now()->startOfYear()->toDateString();
+            $end = Carbon::now()->endOfYear()->toDateString();
+        }
+
+        // 🧾 Nama file dinamis berdasarkan filter
+        $filterLabel = match ($filter) {
+            'daily' => 'Harian',
+            'weekly' => 'Mingguan',
+            'monthly' => 'Bulanan',
+            'yearly' => 'Tahunan',
+            default => 'Semua',
+        };
+
+        $fileName = 'Laporan-Nota-' . $filterLabel . '-' . now()->format('Ymd_His') . '.xlsx';
+
+        // 📤 Export ke Excel
+        return Excel::download(new NotaExport($start, $end), $fileName);
     }
 }

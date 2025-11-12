@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+
+// 🧭 Import semua controller yang digunakan
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ServiceController;
@@ -170,6 +172,10 @@ Route::prefix('admin')
         // 📊 Laporan Keuangan
         Route::get('laporan', [NotaController::class, 'laporan'])
             ->name('laporan');
+
+        // 📤 Export Laporan ke Excel
+        Route::get('laporan/export-excel', [NotaController::class, 'exportExcel'])
+            ->name('laporan.exportExcel');
     });
 
 /*
@@ -178,3 +184,4 @@ Route::prefix('admin')
 |--------------------------------------------------------------------------
 */
 Route::get('/nota/{id}/show', [NotaController::class, 'show'])->name('nota.show');
+

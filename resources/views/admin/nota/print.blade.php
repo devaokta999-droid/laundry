@@ -35,8 +35,8 @@
         }
 
         .header img {
-            width: 45px;
-            height: 45px;
+            width: 150px;
+            height: auto;
             object-fit: contain;
             margin-bottom: 3px;
         }
@@ -153,7 +153,18 @@
 <div class="nota-container">
     <!-- HEADER -->
     <div class="header">
-        <img src="{{ asset('images/header.png') }}" alt="Logo Laundry" style="width:150px;">
+        @php
+            // Pastikan logo tampil di PDF (ubah jadi base64 agar terbaca DomPDF)
+            $logoPath = public_path('images/header.png');
+            $logoBase64 = '';
+            if (file_exists($logoPath)) {
+                $type = pathinfo($logoPath, PATHINFO_EXTENSION);
+                $data = file_get_contents($logoPath);
+                $logoBase64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+            }
+        @endphp
+
+        <img src="{{ $logoBase64 }}" alt="Logo Laundry">
         <h2>DEVA LAUNDRY</h2>
         <p>Jl. Wisnu Marga No. Belayu, Tabanan</p>
         <p>Telp:+62 821-4703-7006</p>
