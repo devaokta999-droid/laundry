@@ -291,18 +291,23 @@
         });
     });
 
-    // Refresh
+    // ✅ Refresh otomatis tanpa konfirmasi
     document.getElementById('refreshBtn').addEventListener('click', ()=>{
         applyFilter();
-        Swal.fire('Disegarkan', 'Data diperbarui', 'success');
+        Swal.fire({
+            icon: 'success',
+            title: 'Data diperbarui!',
+            showConfirmButton: false,
+            timer: 1200
+        });
     });
 
-    // Export Excel Buttons
+    // ✅ Export Excel Buttons + validasi tanggal + notifikasi sukses
     const excelBtn = document.getElementById('exportExcelBtn');
     const start = document.getElementById('start_date');
     const end = document.getElementById('end_date');
 
-    function exportFile(url){
+    function exportFile(url, msg=''){
         Swal.fire({
             title: 'Sedang menyiapkan file...',
             text: 'Mohon tunggu beberapa detik',
@@ -315,7 +320,7 @@
         setTimeout(()=>{
             Swal.fire({
                 title: 'Berhasil!',
-                text: 'File Excel telah diunduh.',
+                html: msg || 'File Excel telah diunduh.',
                 icon: 'success',
                 timer: 2500,
                 showConfirmButton: false
@@ -324,24 +329,49 @@
     }
 
     excelBtn.addEventListener('click', ()=>{
-        let url = "{{ route('admin.laporan.exportExcel') }}";
-        if(start.value && end.value){
-            url += `?start_date=${start.value}&end_date=${end.value}`;
+        // ✅ Validasi tanggal kosong
+        if(!start.value || !end.value){
+            Swal.fire({
+                icon: 'warning',
+                title: 'Tanggal belum dipilih!',
+                text: 'Silakan isi tanggal mulai dan tanggal sampai terlebih dahulu.',
+                timer: 2500,
+                showConfirmButton: false
+            });
+            return;
         }
-        exportFile(url);
+
+        // ✅ Validasi tanggal salah urutan
+        if(new Date(start.value) > new Date(end.value)){
+            Swal.fire({
+                icon: 'error',
+                title: 'Tanggal tidak valid!',
+                text: 'Tanggal mulai tidak boleh lebih besar dari tanggal sampai.',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        let url = "{{ route('admin.laporan.exportExcel') }}";
+        url += `?start_date=${start.value}&end_date=${end.value}`;
+
+        // ✅ Pesan sukses khusus untuk tanggal
+        const msg = `Export berhasil untuk rentang tanggal <b>${start.value}</b> – <b>${end.value}</b>`;
+        exportFile(url, msg);
     });
 
     document.getElementById('exportToday').addEventListener('click', ()=>{
-        exportFile("{{ route('admin.laporan.exportExcel') }}?filter=daily");
+        exportFile("{{ route('admin.laporan.exportExcel') }}?filter=daily", "Export berhasil untuk data <b>Harian</b>");
     });
     document.getElementById('exportWeek').addEventListener('click', ()=>{
-        exportFile("{{ route('admin.laporan.exportExcel') }}?filter=weekly");
+        exportFile("{{ route('admin.laporan.exportExcel') }}?filter=weekly", "Export berhasil untuk data <b>Mingguan</b>");
     });
     document.getElementById('exportMonth').addEventListener('click', ()=>{
-        exportFile("{{ route('admin.laporan.exportExcel') }}?filter=monthly");
+        exportFile("{{ route('admin.laporan.exportExcel') }}?filter=monthly", "Export berhasil untuk data <b>Bulanan</b>");
     });
     document.getElementById('exportYear').addEventListener('click', ()=>{
-        exportFile("{{ route('admin.laporan.exportExcel') }}?filter=yearly");
+        exportFile("{{ route('admin.laporan.exportExcel') }}?filter=yearly", "Export berhasil untuk data <b>Tahunan</b>");
     });
 
     applyFilter();
