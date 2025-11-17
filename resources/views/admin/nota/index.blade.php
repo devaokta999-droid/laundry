@@ -28,12 +28,11 @@
                 <label class="fw-semibold">Tanggal Keluar</label>
                 <input type="date" name="tgl_keluar" class="form-control">
             </div>
-            {{-- ✅ Tambahan: Tombol Refresh --}}
+            {{-- ✅ Tambahan: Tombol Refresh (Diubah menggunakan tag <img>) --}}
             <div class="col-md-2 d-flex align-items-end">
                 <button type="button" class="btn btn-light w-100 fw-semibold" onclick="window.location.reload();">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise me-1" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .917-.594 6 6 0 1 1-2.029 3.194l-.841-.841A.5.5 0 0 1 8.5 8.5v4a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.354-.854l1.458-1.458A5 5 0 0 1 8 3z"/>
-                    </svg>
+                    {{-- Ganti SVG dengan tag IMG yang merujuk ke refresh.png. Sesuaikan path asset() jika perlu. --}}
+                    <img src="{{ asset('images/rfsh.png') }}" alt="Refresh Icon" style="width: 16px; height: 16px; margin-right: 5px; vertical-align: text-bottom;">
                     Refresh
                 </button>
             </div>

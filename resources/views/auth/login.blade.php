@@ -264,8 +264,9 @@
                     <label class="form-label fw-semibold">Password</label>
                     <div class="password-wrapper">
                         <input type="password" class="form-control" id="password" name="password" required>
+                        {{-- FIX: Mengganti ikon awal menjadi bi-eye-slash (mata tertutup) karena input type adalah password --}}
                         <span class="password-toggle" onclick="togglePassword()">
-                            <i class="bi bi-eye"></i>
+                            <i class="bi bi-eye-slash"></i> 
                         </span>
                     </div>
                 </div>
@@ -293,13 +294,15 @@
         const toggleIcon = document.querySelector('.password-toggle i');
 
         if (passwordField.type === 'password') {
+            // Ubah ke 'text' (Show Password)
             passwordField.type = 'text';
             toggleIcon.classList.remove('bi-eye-slash');
-            toggleIcon.classList.add('bi-eye');
+            toggleIcon.classList.add('bi-eye'); // Ikon mata terbuka
         } else {
+            // Ubah ke 'password' (Hide Password)
             passwordField.type = 'password';
             toggleIcon.classList.remove('bi-eye');
-            toggleIcon.classList.add('bi-eye-slash');
+            toggleIcon.classList.add('bi-eye-slash'); // Ikon mata tertutup
         }
     }
 </script>
