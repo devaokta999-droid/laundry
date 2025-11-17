@@ -370,7 +370,7 @@ class NotaController extends Controller
 
 
     /* ---------------------------------------------------
-     | 📊 Bagian Laporan (TIDAK DIUBAH SAMA SEKALI)
+     | 📊 Bagian Laporan (DIPERBAIKI: pendapatan hanya nota LUNAS)
      --------------------------------------------------- */
 
     public function laporan()
@@ -380,11 +380,13 @@ class NotaController extends Controller
         $startOfMonth = $today->copy()->startOfMonth();
         $startOfYear = $today->copy()->startOfYear();
 
-        $harian = Nota::whereDate('created_at', today())->sum('total');
-        $mingguan = Nota::whereBetween('created_at', [$startOfWeek, now()])->sum('total');
-        $bulanan = Nota::whereBetween('created_at', [$startOfMonth, now()])->sum('total');
-        $tahunan = Nota::whereBetween('created_at', [$startOfYear, now()])->sum('total');
+        // HANYA HITUNG NOTA YANG SUDAH LUNAS (sisa = 0)
+        $harian = Nota::whereDate('created_at', today())->where('sisa', 0)->sum('total');
+        $mingguan = Nota::whereBetween('created_at', [$startOfWeek, now()])->where('sisa', 0)->sum('total');
+        $bulanan = Nota::whereBetween('created_at', [$startOfMonth, now()])->where('sisa', 0)->sum('total');
+        $tahunan = Nota::whereBetween('created_at', [$startOfYear, now()])->where('sisa', 0)->sum('total');
 
+        // Jika kamu ingin jumlah nota (count) berdasarkan semua nota termasuk belum lunas, biarkan seperti ini.
         $nota_harian = Nota::whereDate('created_at', today())->count();
         $nota_mingguan = Nota::whereBetween('created_at', [$startOfWeek, now()])->count();
         $nota_bulanan = Nota::whereBetween('created_at', [$startOfMonth, now()])->count();
@@ -403,10 +405,11 @@ class NotaController extends Controller
     {
         $today = Carbon::today();
 
-        $harian = Nota::whereDate('created_at', $today)->sum('total');
-        $mingguan = Nota::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->sum('total');
-        $bulanan = Nota::whereMonth('created_at', Carbon::now()->month)->sum('total');
-        $tahunan = Nota::whereYear('created_at', Carbon::now()->year)->sum('total');
+        // Pastikan hanya menghitung pendapatan dari nota yang LUNAS
+        $harian = Nota::whereDate('created_at', $today)->where('sisa', 0)->sum('total');
+        $mingguan = Nota::whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->where('sisa', 0)->sum('total');
+        $bulanan = Nota::whereMonth('created_at', Carbon::now()->month)->where('sisa', 0)->sum('total');
+        $tahunan = Nota::whereYear('created_at', Carbon::now()->year)->where('sisa', 0)->sum('total');
 
         $notas = Nota::latest()->get();
 

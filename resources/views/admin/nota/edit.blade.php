@@ -29,7 +29,7 @@
 
 <div class="container mt-4">
     <div class="glass-card">
-        <div class="title-mac">🧾 Edit Nota Laundry #{{ $nota->id }}</div>
+        <div class="title-mac">Edit Nota Laundry #{{ $nota->id }}</div>
 
         <!-- Error container -->
         <div id="errorContainer" style="display:none;" class="error-box"></div>
@@ -71,7 +71,7 @@
             <!-- ======================= -->
             <!-- TABLE ITEM -->
             <!-- ======================= -->
-            <h5 class="mb-3 fw-bold">📦 Daftar Item Laundry</h5>
+            <h5 class="mb-3 fw-bold">Daftar Item Laundry</h5>
 
             <table class="table table-bordered" id="itemTable">
                 <thead class="table-light">
@@ -125,7 +125,7 @@
             </table>
 
             <button type="button" class="btn btn-primary-mac btn-mac my-2" id="addRow">
-                ➕ Tambah Baris Item
+                ➕ Tambah Item
             </button>
 
             <hr>
@@ -164,10 +164,10 @@
             </div>
 
             <div class="d-flex justify-content-between mt-4">
-                <a href="{{ route('admin.nota.show', $nota->id) }}" class="btn btn-outline-dark-mac">⬅️ Kembali</a>
+                <a href="{{ route('admin.nota.show', $nota->id) }}" class="btn btn-outline-dark-mac">⬅Kembali</a>
 
                 <button type="submit" id="saveBtn" class="btn btn-primary-mac btn-mac">
-                    💾 Simpan Perubahan
+                    Simpan Perubahan
                 </button>
             </div>
         </form>
@@ -330,7 +330,7 @@
         })
         .finally(() => {
             saveBtn.disabled = false;
-            saveBtn.innerHTML = "💾 Simpan Perubahan";
+            saveBtn.innerHTML = "Simpan Perubahan";
         });
     });
 
