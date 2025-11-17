@@ -55,7 +55,6 @@
     <div class="glass-card">
         <div class="title-mac">Edit Nota Laundry #{{ $nota->id }}</div>
 
-        <!-- Error container -->
         <div id="errorContainer" style="display:none;" class="error-box"></div>
 
         <div class="layout-split">
@@ -64,9 +63,6 @@
                     @csrf
                     @method('PUT')
 
-                    <!-- ======================= -->
-                    <!-- CUSTOMER INFO -->
-                    <!-- ======================= -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="label-mac">Nama Pelanggan</label>
@@ -85,7 +81,6 @@
                         <div class="col-md-4 mb-3">
                             <label class="label-mac">Tanggal Keluar</label>
 
-                            <!-- FIX: Format date agar tampil -->
                             <input type="date" name="tgl_keluar"
                                 value="{{ $nota->tgl_keluar ? date('Y-m-d', strtotime($nota->tgl_keluar)) : '' }}"
                                 class="form-control input-mac">
@@ -94,9 +89,6 @@
 
                     <hr>
 
-                    <!-- ======================= -->
-                    <!-- TABLE ITEM -->
-                    <!-- ======================= -->
                     <h5 class="mb-3 fw-bold">Daftar Item Laundry</h5>
 
                     <table class="table table-bordered" id="itemTable">
@@ -156,9 +148,6 @@
 
                     <hr>
 
-                    <!-- ======================= -->
-                    <!-- TOTAL & PAYMENT -->
-                    <!-- ======================= -->
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label class="label-mac">Total Jumlah Pakaian</label>
@@ -199,9 +188,6 @@
                 </form>
             </div>
 
-            <!-- ======================= -->
-            <!-- CATALOG / LIST ITEM -->
-            <!-- ======================= -->
             <div class="catalog">
                 <h6>Katalog Item Laundry</h6>
                 <input type="text" id="catalogSearch" class="catalog-search" placeholder="Cari item...">
@@ -215,19 +201,15 @@
                             </tr>
                         </thead>
                         <tbody id="catalogBody">
-                            <!-- rows injected by JS -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
-                <p class="mt-2 text-muted" style="font-size:13px">Klik tombol "Pilih" untuk mengisi nama & harga ke baris yang aktif. Jika belum ada baris yang aktif, item akan ditambahkan ke baris baru.</p>
+                <p class="mt-2 text-muted" style="font-size:13px">Klik tombol "Pilih" untuk menambahkan item ke Daftar Item Laundry.</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- =============================== -->
-<!-- JAVASCRIPT -->
-<!-- =============================== -->
 <script>
     const indexUrl = "{{ route('admin.nota.index') }}";
     let rowIndex = {{ count($nota->items) }};
@@ -344,27 +326,15 @@
         rowIndex = rows.length;
     }
 
-    // Fill a row with name & price (and set qty=1 if empty)
-    function fillRow(index, name, price) {
-        // if index out of range, add new row first
-        if (index === null || index === undefined || index < 0 || index >= rowIndex) {
-            addRow(); // adds at the end
-            index = rowIndex - 1;
-        }
-
-        const nameEl = document.querySelector(`input[name="name[${index}]"]`);
-        const priceEl = document.querySelector(`input[name="price[${index}]"]`);
-        const qtyEl = document.querySelector(`input[name="quantity[${index}]"]`);
-
-        if (nameEl) nameEl.value = name;
-        if (priceEl) priceEl.value = price;
-        if (qtyEl && toNumber(qtyEl.value) === 0) qtyEl.value = 1;
-
-        calcSubtotal(index);
+    // Ganti fungsi fillRow untuk selalu memanggil addRow (menambah baris baru)
+    // dan mengisi nilai item katalog ke baris baru tersebut.
+    function fillRow(name, price) {
+        addRow(name, price, 1);
+        currentRowIndex = rowIndex - 1; // Atur currentRowIndex ke baris yang baru ditambahkan
     }
 
     document.addEventListener('click', function(e) {
-        // when user clicks a name-input, mark that row as current
+        // ketika user klik input nama, tandai baris tersebut sebagai aktif
         if (e.target.classList && e.target.classList.contains('name-input')) {
             currentRowIndex = Number(e.target.dataset.index);
             // visual hint (optional): focus the input
@@ -372,13 +342,12 @@
             return;
         }
 
-        // catalog select
+        // catalog select - LOGIKA UTAMA PERUBAHAN
         if (e.target && e.target.classList.contains('catalog-select')) {
             const idx = Number(e.target.dataset.idx);
             const item = CATALOG[idx];
-            fillRow(currentRowIndex, item.name, item.price);
-            // after filling, reset currentRowIndex to that row
-            currentRowIndex = currentRowIndex !== null ? currentRowIndex : (rowIndex - 1);
+            // Langsung tambahkan baris baru dengan item dari katalog
+            fillRow(item.name, item.price);
             return;
         }
     });
@@ -395,17 +364,30 @@
 
     document.addEventListener("click", e => {
         if (e.target.classList.contains("remove-row")) {
-            e.target.closest("tr").remove();
+            const rowToRemove = e.target.closest("tr");
+            const indexRemoved = Number(rowToRemove.querySelector('.name-input').dataset.index);
+            
+            rowToRemove.remove();
             reIndexRows();
             calcTotal();
+
+            // Reset currentRowIndex jika baris yang dihapus adalah yang aktif
+            if (currentRowIndex === indexRemoved) {
+                currentRowIndex = null;
+            } else if (currentRowIndex !== null && currentRowIndex > indexRemoved) {
+                // Sesuaikan index aktif jika ada baris di atasnya yang dihapus
+                currentRowIndex--;
+            }
         }
     });
 
     document.getElementById("addRow").addEventListener("click", function () {
         addRow();
+        // Atur currentRowIndex ke baris yang baru ditambahkan
+        currentRowIndex = rowIndex - 1;
     });
 
-    function addRow(prefillName = '', prefillPrice = 0, prefillQty = 1) {
+    function addRow(prefillName = '', prefillPrice = 0, prefillQty = 0) { // Ubah default prefillQty menjadi 0
         let table = document.querySelector("#itemTable tbody");
 
         let row = document.createElement('tr');
@@ -418,17 +400,17 @@
 
             <td>
                 <input type="number" name="price[${rowIndex}]" class="form-control input-mac price-input" 
-                       data-index="${rowIndex}" min="0" step="0.01" value="${prefillPrice}">
+                        data-index="${rowIndex}" min="0" step="0.01" value="${prefillPrice}">
             </td>
 
             <td>
                 <input type="number" name="quantity[${rowIndex}]" class="form-control input-mac qty-input" 
-                       data-index="${rowIndex}" min="0" value="${prefillQty}">
+                        data-index="${rowIndex}" min="0" value="${prefillQty}">
             </td>
 
             <td>
                 <input type="text" id="subtotal_${rowIndex}" class="form-control input-mac bg-light subtotal-field" 
-                       value="${toNumber(prefillPrice) * toNumber(prefillQty)}" readonly>
+                        value="${toNumber(prefillPrice) * toNumber(prefillQty)}" readonly>
             </td>
 
             <td class="text-center">
@@ -440,6 +422,12 @@
         rowIndex++;
         reIndexRows();
         calcTotal();
+        
+        // Beri fokus pada input kuantitas (jumlah) item yang baru ditambahkan
+        const newQtyInput = row.querySelector('.qty-input');
+        if (newQtyInput) {
+            newQtyInput.focus();
+        }
     }
 
     document.getElementById('notaForm').addEventListener('submit', function (ev) {

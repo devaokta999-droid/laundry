@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-<!---- Deva Laundry — macOS Fullscreen Light Mode Blade (dengan warna + animasi hover di kartu pendapatan) ---->
 <style>
     /* Reset + system font */
     :root{
@@ -151,7 +150,6 @@
         </div>
     </div>
 
-    <!-- Toolbar -->
     <div class="toolbar">
         <div class="toolbar-left">
             <div class="search-box">
@@ -166,7 +164,6 @@
             </div>
         </div>
 
-        <!-- Bagian Ekspor & Filter Tanggal -->
         <div style="margin-left:12px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
             <div style="display:flex; gap:6px; align-items:center;">
                 <label for="start_date">Exp Dari:</label>
@@ -183,7 +180,30 @@
         </div>
     </div>
 
-    <!-- Stats -->
+    <div style="display: flex; align-items: center; gap: 12px; margin-top: -10px;">
+        <label for="monthFilter" style="font-weight: 600; font-size: 14px;">Filter Bulan:</label>
+        <select id="monthFilter" class="btn-filter" style="padding: 8px 12px; border-radius: 10px; cursor: pointer;">
+            <option value="all">Semua Bulan</option>
+            <option value="1">Januari</option>
+            <option value="2">Februari</option>
+            <option value="3">Maret</option>
+            <option value="4">April</option>
+            <option value="5">Mei</option>
+            <option value="6">Juni</option>
+            <option value="7">Juli</option>
+            <option value="8">Agustus</option>
+            <option value="9">September</option>
+            <option value="10">Oktober</option>
+            <option value="11">November</option>
+            <option value="12">Desember</option>
+        </select>
+
+        <label for="yearFilter" style="font-weight: 600; font-size: 14px;">Filter Tahun:</label>
+        <select id="yearFilter" class="btn-filter" style="padding: 8px 12px; border-radius: 10px; cursor: pointer;">
+            <option value="all">Semua Tahun</option>
+            </select>
+    </div>
+
     <div class="stats">
         <div class="card harian">
             <h6>Pendapatan Hari Ini</h6>
@@ -203,7 +223,6 @@
         </div>
     </div>
 
-    <!-- Table -->
     <div class="content-panel mt-3">
         <h5 style="margin:6px 8px">Detail Nota Laundry</h5>
         <div style="overflow:auto; padding:8px">
@@ -225,11 +244,15 @@
                         @php 
                             $status = $n->sisa <= 0 ? 'lunas' : 'belum'; 
                             $kasir = $n->kasir_name ?? ($n->kasir->name ?? 'Tidak Diketahui'); 
+                            $date_obj = \Carbon\Carbon::parse($n->created_at);
+                            $formatted_date = $date_obj->format('d/m/Y');
+                            $month_num = $date_obj->month;
+                            $year_num = $date_obj->year; // Ambil tahun
                         @endphp
-                        <tr data-status="{{ $status }}">
+                        <tr data-status="{{ $status }}" data-month="{{ $month_num }}" data-year="{{ $year_num }}">
                             <td>{{ $loop->iteration }}</td>
                             <td class="cell-name">{{ $n->customer_name }}</td>
-                            <td class="cell-date">{{ \Carbon\Carbon::parse($n->created_at)->format('d/m/Y') }}</td>
+                            <td class="cell-date">{{ $formatted_date }}</td>
                             <td class="cell-total">{{ number_format($n->total,0,',','.') }}</td>
                             <td>{{ number_format($n->uang_muka,0,',','.') }}</td>
                             <td>{{ number_format($n->sisa,0,',','.') }}</td>
@@ -253,47 +276,102 @@
     </div>
 </div>
 
-<!-- Interactivity -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 (function(){
     const searchInput = document.getElementById('searchInput');
     const clearBtn = document.getElementById('clearSearch');
-    const filters = document.querySelectorAll('[data-filter]');
+    const statusFilters = document.querySelectorAll('.filters [data-filter]');
+    const monthFilter = document.getElementById('monthFilter');
+    const yearFilter = document.getElementById('yearFilter'); // Variabel untuk filter tahun
     const table = document.getElementById('notesTable');
 
     function normalizeText(t){ return t? t.toString().toLowerCase() : '' }
 
+    // Fungsi untuk mengisi opsi tahun secara dinamis
+    function populateYearFilter() {
+        const years = new Set();
+        const rows = table.querySelectorAll('tr[data-year]');
+        rows.forEach(r => {
+            const year = r.getAttribute('data-year');
+            years.add(year);
+        });
+
+        // Urutkan tahun dari terbaru ke terlama
+        const sortedYears = Array.from(years).sort((a, b) => b - a);
+
+        // Hapus opsi lama kecuali "Semua Tahun"
+        yearFilter.innerHTML = '<option value="all">Semua Tahun</option>';
+
+        // Tambahkan opsi tahun yang ditemukan
+        sortedYears.forEach(year => {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearFilter.appendChild(option);
+        });
+    }
+
     function applyFilter(){
         const q = normalizeText(searchInput.value);
-        const active = document.querySelector('.btn-filter.active')?.getAttribute('data-filter') || 'all';
+        const activeStatus = document.querySelector('.filters .btn-filter.active')?.getAttribute('data-filter') || 'all';
+        const activeMonth = monthFilter.value;
+        const activeYear = yearFilter.value; // Ambil nilai tahun yang dipilih
         const rows = table.querySelectorAll('tr[data-status]');
+        
+        // Skip filtering jika tidak ada data selain pesan 'Belum ada nota'
+        if(rows.length === 0 && table.querySelector('tr td[colspan="8"]')) {
+            return;
+        }
+
         rows.forEach(r => {
             const name = normalizeText(r.querySelector('.cell-name')?.textContent);
             const date = normalizeText(r.querySelector('.cell-date')?.textContent);
             const total = normalizeText(r.querySelector('.cell-total')?.textContent);
             const status = r.getAttribute('data-status');
+            const rowMonth = r.getAttribute('data-month');
+            const rowYear = r.getAttribute('data-year'); // Ambil data tahun dari baris
 
             const matchesQuery = q === '' || name.includes(q) || date.includes(q) || total.includes(q);
-            const matchesStatus = active === 'all' || (active === 'lunas' && status === 'lunas') || (active === 'belum' && status === 'belum');
+            const matchesStatus = activeStatus === 'all' || (activeStatus === 'lunas' && status === 'lunas') || (activeStatus === 'belum' && status === 'belum');
+            
+            // Logika filter bulan dan tahun digabungkan
+            const matchesMonth = activeMonth === 'all' || rowMonth === activeMonth;
+            const matchesYear = activeYear === 'all' || rowYear === activeYear; // Bandingkan tahun
 
-            r.style.display = (matchesQuery && matchesStatus) ? '' : 'none';
+            // Tampilkan baris jika semua filter cocok
+            r.style.display = (matchesQuery && matchesStatus && matchesMonth && matchesYear) ? '' : 'none';
         });
     }
 
     searchInput.addEventListener('input', applyFilter);
     clearBtn.addEventListener('click', () => { searchInput.value=''; applyFilter(); });
-    filters.forEach(btn => {
+    
+    // Event listener untuk Status Filter
+    statusFilters.forEach(btn => {
         btn.addEventListener('click', ()=>{
-            filters.forEach(b=>b.classList.remove('active'));
+            statusFilters.forEach(b=>b.classList.remove('active'));
             btn.classList.add('active');
             applyFilter();
         });
     });
 
+    // Event listener untuk Filter Bulan dan TAHUN
+    monthFilter.addEventListener('change', applyFilter);
+    yearFilter.addEventListener('change', applyFilter); // Tambahkan listener untuk filter tahun
+
+
     // ✅ Refresh otomatis tanpa konfirmasi
     document.getElementById('refreshBtn').addEventListener('click', ()=>{
+        // Reset filter
+        searchInput.value = '';
+        monthFilter.value = 'all';
+        yearFilter.value = 'all'; // Reset filter tahun
+        statusFilters.forEach(b=>b.classList.remove('active'));
+        document.querySelector('.filters [data-filter="all"]').classList.add('active');
+        
         applyFilter();
+
         Swal.fire({
             icon: 'success',
             title: 'Data diperbarui!',
@@ -374,6 +452,8 @@
         exportFile("{{ route('admin.laporan.exportExcel') }}?filter=yearly", "Export berhasil untuk data <b>Tahunan</b>");
     });
 
+    // Panggil ini saat halaman dimuat
+    populateYearFilter(); 
     applyFilter();
 })();
 </script>

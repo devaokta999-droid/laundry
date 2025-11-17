@@ -28,6 +28,17 @@
                 <label class="fw-semibold">Tanggal Keluar</label>
                 <input type="date" name="tgl_keluar" class="form-control">
             </div>
+            {{-- ✅ Tambahan: Tombol Refresh --}}
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="button" class="btn btn-light w-100 fw-semibold" onclick="window.location.reload();">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise me-1" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .917-.594 6 6 0 1 1-2.029 3.194l-.841-.841A.5.5 0 0 1 8.5 8.5v4a.5.5 0 0 1-.5.5H4a.5.5 0 0 1-.354-.854l1.458-1.458A5 5 0 0 1 8 3z"/>
+                    </svg>
+                    Refresh
+                </button>
+            </div>
+            {{-- ❌ Perhatikan penyesuaian kelas col-md-X di atas untuk menampung tombol ini --}}
+            {{-- Sebelumnya: col-md-2 untuk Tanggal Keluar. Sekarang: col-md-2 untuk Tgl Keluar dan col-md-2 untuk Refresh --}}
         </div>
 
         {{-- ✅ Daftar Jenis Pakaian --}}
