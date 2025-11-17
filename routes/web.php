@@ -178,10 +178,14 @@ Route::prefix('admin')
             ->name('laporan.exportExcel');
     });
 
-/*
-|--------------------------------------------------------------------------
-| ✅ Route Public Tambahan (Show Nota di luar admin)
-|--------------------------------------------------------------------------
-*/
-Route::get('/nota/{id}/show', [NotaController::class, 'show'])->name('nota.show');
+        /*
+        |--------------------------------------------------------------------------
+        | ✅ Route Public Tambahan (Show Nota di luar admin)
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/nota/{id}/show', [NotaController::class, 'show'])->name('nota.show');
+        // Edit Nota
+        Route::get('/admin/nota/{id}/edit', [NotaController::class, 'edit'])->name('admin.nota.edit');
+        // Update Nota
+        Route::put('/admin/nota/{id}', [NotaController::class, 'update'])->name('admin.nota.update');
 

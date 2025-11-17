@@ -128,6 +128,7 @@
         border: 1.5px solid #d0d3da;
         color: #333;
         background-color: transparent;
+        box-shadow: none;
     }
 
     .macos-nota .btn-outline-dark:hover {
@@ -240,18 +241,23 @@
 
         <!-- Tombol Aksi -->
         <div class="text-center">
+
+            <!-- Tombol Edit → hanya muncul jika belum lunas -->
+            @if($nota->sisa > 0)
+                <a href="{{ route('admin.nota.edit', $nota->id) }}" class="btn btn-primary">Edit Nota</a>
+            @endif
+
             <a href="{{ route('admin.nota.print', $nota->id) }}" class="btn btn-primary" target="_blank">Cetak PDF</a>
             <a href="{{ route('admin.nota.print_direct', $nota->id) }}" class="btn btn-primary" target="_blank">Print Langsung</a>
 
-            <!-- 🔥 Tombol Hapus (warna biru juga) -->
+            <!-- Tombol Hapus -->
             <form action="{{ route('admin.nota.destroy', $nota->id) }}" method="POST" class="d-inline" 
                   onsubmit="return confirm('Apakah kamu yakin ingin menghapus nota ini? Tindakan ini tidak bisa dibatalkan.');">
                 @csrf
                 @method('DELETE')
                 <button type="submit" class="btn btn-primary">Hapus Nota</button>
             </form>
-
-            <a href="{{ url()->previous() }}" class="btn btn-outline-dark">Kembali</a>
+            <a href="{{ route('admin.nota.index') }}" class="btn btn-outline-dark">Kembali</a>
         </div>
     </div>
 </div>
