@@ -120,6 +120,11 @@
         background: linear-gradient(135deg,  #0051ffff);
     }
 
+    /* Tambahan styling untuk card sisa total (ditambahkan tanpa merubah yang lain) */
+    .card.sisa-total {
+        background: linear-gradient(135deg, #ff0000ff);
+    }
+
     /* Table area */
     .content-panel{ flex:1; overflow:auto; padding:8px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.75)); border:1px solid var(--glass-border); }
     table{ width:100%; border-collapse:collapse; min-width:1080px; }
@@ -220,6 +225,12 @@
         <div class="card tahunan">
             <h6>Pendapatan Tahun Ini</h6>
             <h4>Rp {{ number_format($tahunan,0,',','.') }}</h4>
+        </div>
+
+        <!-- ➕ CARD BARU TOTAL SISA (ditambahkan tanpa mengubah kode lain) -->
+        <div class="card sisa-total">
+            <h6>Total Sisa Belum Dibayar</h6>
+            <h4 id="totalSisaCard">Rp 0</h4>
         </div>
     </div>
 
@@ -455,6 +466,191 @@
     // Panggil ini saat halaman dimuat
     populateYearFilter(); 
     applyFilter();
+})();
+</script>
+
+<!-- Tambahan: Hitung ulang kartu pendapatan di sisi klien agar nota BELUM LUNAS juga dihitung (pilihan A) -->
+<script>
+(function(){
+    // Parse string rupiah seperti "1.234.567" atau "Rp 1.234.567" menjadi number
+    function parseRupiah(str){
+        if(!str) return 0;
+        // Hapus semua selain digit dan minus
+        const digits = str.toString().replace(/[^0-9-]/g, '');
+        return digits === '' ? 0 : parseInt(digits, 10);
+    }
+
+    function formatRupiah(num){
+        if(isNaN(num)) num = 0;
+        return 'Rp ' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function getRows(){
+        return Array.from(document.querySelectorAll('#notesTable tr[data-year]'));
+    }
+
+    function computeTotalsIncludingUnpaid(){
+        const rows = getRows();
+        const now = new Date();
+        const todayDay = ('0' + now.getDate()).slice(-2);
+        const todayMonth = now.getMonth() + 1; // 1-12
+        const todayYear = now.getFullYear();
+
+        // week start (Monday) and end (Sunday)
+        const day = now.getDay(); // 0 (Sun) - 6 (Sat)
+        const diffToMonday = (day + 6) % 7; // days since Monday
+        const monday = new Date(now);
+        monday.setDate(now.getDate() - diffToMonday);
+        monday.setHours(0,0,0,0);
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        sunday.setHours(23,59,59,999);
+
+        let harian = 0, mingguan = 0, bulanan = 0, tahunan = 0;
+
+        rows.forEach(r => {
+            const dateText = r.querySelector('.cell-date')?.textContent?.trim() || '';
+            const totalText = r.querySelector('.cell-total')?.textContent?.trim() || '';
+            const total = parseRupiah(totalText);
+
+            // Parse date dd/mm/yyyy
+            const parts = dateText.split('/');
+            let rowDate = null;
+            if(parts.length === 3){
+                const d = parseInt(parts[0],10);
+                const m = parseInt(parts[1],10);
+                const y = parseInt(parts[2],10);
+                rowDate = new Date(y, m-1, d);
+            }
+
+            // Semua nota (termasuk belum lunas) dihitung ke pendapatan sesuai pilihan A
+            if(rowDate){
+                // harian: tanggal sama dengan hari ini
+                if(rowDate.getDate() === now.getDate() && rowDate.getMonth() === now.getMonth() && rowDate.getFullYear() === now.getFullYear()){
+                    harian += total;
+                }
+
+                // mingguan: berada di rentang monday..sunday
+                if(rowDate >= monday && rowDate <= sunday){
+                    mingguan += total;
+                }
+
+                // bulanan: month & year sama
+                if(rowDate.getMonth() + 1 === todayMonth && rowDate.getFullYear() === todayYear){
+                    bulanan += total;
+                }
+
+                // tahunan: year sama
+                if(rowDate.getFullYear() === todayYear){
+                    tahunan += total;
+                }
+            }
+        });
+
+        // Update kartu (tanpa mengubah markup asli server-side, hanya mengganti teks jumlah)
+        const harianEl = document.querySelector('.card.harian h4');
+        const mingguanEl = document.querySelector('.card.mingguan h4');
+        const bulananEl = document.querySelector('.card.bulanan h4');
+        const tahunanEl = document.querySelector('.card.tahunan h4');
+
+        if(harianEl) harianEl.textContent = formatRupiah(harian);
+        if(mingguanEl) mingguanEl.textContent = formatRupiah(mingguan);
+        if(bulananEl) bulananEl.textContent = formatRupiah(bulanan);
+        if(tahunanEl) tahunanEl.textContent = formatRupiah(tahunan);
+    }
+
+    // Jalankan saat halaman siap
+    document.addEventListener('DOMContentLoaded', computeTotalsIncludingUnpaid);
+
+    // Jalankan juga setelah klik Refresh
+    const refreshBtn = document.getElementById('refreshBtn');
+    if(refreshBtn){
+        refreshBtn.addEventListener('click', function(){
+            // beri sedikit delay agar perubahan DOM (filter reset) selesai
+            setTimeout(computeTotalsIncludingUnpaid, 250);
+        });
+    }
+
+    // Jika ada pengunduhan/export yang memfilter data (Harian/Mingguan/Bulanan/Tahunan), tidak mengubah data server-side,
+    // jadi kita juga hitung ulang saat salah satu tombol export ditekan untuk menjaga konsistensi tampilan.
+    ['exportToday','exportWeek','exportMonth','exportYear'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('click', ()=> setTimeout(computeTotalsIncludingUnpaid, 300));
+    });
+
+    // Jika tabel berubah dinamis melalui AJAX (tidak ada sekarang), developer bisa memanggil computeTotalsIncludingUnpaid() setelah update.
+
+    // Jalankan sekali langsung
+    computeTotalsIncludingUnpaid();
+})();
+</script>
+
+<!-- ➕ SCRIPT TOTAL SISA (ditambahkan tanpa mengubah script exist) -->
+<script>
+// ➕ SCRIPT TOTAL SISA
+(function(){
+    function parseRupiah(str){
+        if(!str) return 0;
+        // Hapus semua selain digit
+        const digits = str.toString().replace(/[^0-9-]/g,'');
+        return digits === '' ? 0 : parseInt(digits,10);
+    }
+
+    function formatRupiah(num){
+        if(isNaN(num)) num = 0;
+        return 'Rp ' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function computeTotalSisa(){
+        const rows = document.querySelectorAll('#notesTable tr[data-status]');
+        let totalSisa = 0;
+
+        // Jika tidak ada baris data (hanya pesan kosong), hasil tetap 0
+        rows.forEach(r => {
+            // kolom ke-6 (index 5) adalah Sisa sesuai struktur tabel
+            const sisaCell = r.children[5];
+            if(sisaCell){
+                totalSisa += parseRupiah(sisaCell.textContent.trim());
+            }
+        });
+
+        const sisaCard = document.getElementById('totalSisaCard');
+        if(sisaCard){
+            sisaCard.textContent = formatRupiah(totalSisa);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', computeTotalSisa);
+
+    // Hitung ulang saat refresh
+    const refreshBtn = document.getElementById('refreshBtn');
+    if(refreshBtn){
+        refreshBtn.addEventListener('click', () => {
+            setTimeout(computeTotalSisa, 350);
+        });
+    }
+
+    // Hitung ulang saat filter berubah atau pencarian
+    const searchInput = document.getElementById('searchInput');
+    if(searchInput) searchInput.addEventListener('input', ()=> setTimeout(computeTotalSisa, 200));
+    const monthFilter = document.getElementById('monthFilter');
+    if(monthFilter) monthFilter.addEventListener('change', ()=> setTimeout(computeTotalSisa, 200));
+    const yearFilter = document.getElementById('yearFilter');
+    if(yearFilter) yearFilter.addEventListener('change', ()=> setTimeout(computeTotalSisa, 200));
+
+    // Saat status filter diklik
+    document.querySelectorAll('.btn-filter[data-filter]').forEach(btn=>{
+        btn.addEventListener('click', ()=> setTimeout(computeTotalSisa, 250));
+    });
+
+    // Jika tombol export mempengaruhi view lokal, hitung ulang setelah klik
+    ['exportToday','exportWeek','exportMonth','exportYear'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el) el.addEventListener('click', ()=> setTimeout(computeTotalSisa, 400));
+    });
+
+    // Jalankan sekali lagi untuk memastikan nilai ter-update jika DOM sudah dimodifikasi
+    setTimeout(computeTotalSisa, 500);
 })();
 </script>
 @endsection
