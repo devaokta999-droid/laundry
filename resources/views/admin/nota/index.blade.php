@@ -150,6 +150,14 @@
                            title="Lihat detail nota">
                             Show Nota
                         </a>
+
+                        {{-- ✅ Tambahan baru: Badge Notifikasi "Belum Lunas" (Desain C: icon + teks) --}}
+                        {{-- Tampilkan hanya jika sisa > 0 --}}
+                        @if($n->sisa > 0)
+                            <span class="badge-belum ms-2" style="background:#ff4d4f;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px;vertical-align:middle;">
+                            Belum Lunas
+                            </span>
+                        @endif
                     </td>
                 </tr>
                 @empty
@@ -375,16 +383,23 @@ document.addEventListener('DOMContentLoaded', function () {
                         const totalCell = row.querySelector('.cell-total');
                         const uangMukaCell = row.querySelector('.cell-uang-muka');
                         const sisaCell = row.querySelector('.cell-sisa');
+                        const badge = row.querySelector('.badge-belum');
 
                         if (data.nota) {
                             const formatter = new Intl.NumberFormat('id-ID');
                             uangMukaCell.textContent = formatter.format(data.nota.uang_muka || 0);
                             sisaCell.textContent = formatter.format(data.nota.sisa || 0);
+
+                            // Jika sisa sudah 0 atau kurang, sembunyikan badge
+                            if (parseInt(data.nota.sisa || 0) <= 0) {
+                                if (badge) badge.style.display = 'none';
+                            }
                         } else if (totalCell) {
                             const totalText = totalCell.textContent.replace(/\./g,'').replace(/,/g,'');
                             const totalVal = parseInt(totalText) || 0;
                             uangMukaCell.textContent = new Intl.NumberFormat('id-ID').format(totalVal);
                             sisaCell.textContent = new Intl.NumberFormat('id-ID').format(0);
+                            if (badge) badge.style.display = 'none';
                         }
                     }
 

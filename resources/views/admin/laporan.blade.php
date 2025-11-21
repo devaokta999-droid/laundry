@@ -86,7 +86,7 @@
     .btn-filter.active{ background: linear-gradient(180deg,#eef2ff,#ffffff); box-shadow: var(--card-shadow); }
 
     /* Summary cards */
-    .stats{ display:grid; grid-template-columns: repeat(4,1fr); gap:16px; flex-wrap: wrap; }
+    .stats{ display:grid; grid-template-columns: repeat(5,1fr); gap:16px; flex-wrap: wrap; }
 
     .card{
         padding:16px;
@@ -105,19 +105,20 @@
     }
     .card h6{ margin:0; font-weight:600; font-size:13px; opacity:0.9; }
     .card h4{ margin-top:8px; font-size:22px; font-weight:700; }
+    .card p.small{ margin:6px 0 0; font-size:13px; opacity:0.95; }
 
     /* 🌈 Warna khusus untuk tiap kartu pendapatan */
     .card.harian {
         background: linear-gradient(135deg, #0051ffff);
     }
     .card.mingguan {
-        background: linear-gradient(135deg, #0051ffff);
+        background: linear-gradient(135deg, #0066d6ff);
     }
     .card.bulanan {
-        background: linear-gradient(135deg,  #0051ffff);
+        background: linear-gradient(135deg,  #0088e6ff);
     }
     .card.tahunan {
-        background: linear-gradient(135deg,  #0051ffff);
+        background: linear-gradient(135deg,  #00a3ffff);
     }
 
     /* Tambahan styling untuk card sisa total (ditambahkan tanpa merubah yang lain) */
@@ -135,7 +136,7 @@
     .badge-belum{ background:#fff4e6; color:#7a4b0b; padding:6px 10px; border-radius:999px; font-weight:700; }
 
     /* Responsive */
-    @media(max-width:900px){
+    @media(max-width:1100px){
         .stats{ grid-template-columns: repeat(2,1fr); }
         .search-box input{ width:160px; }
         table{ min-width:760px; }
@@ -212,29 +213,45 @@
     <div class="stats">
         <div class="card harian">
             <h6>Pendapatan Hari Ini</h6>
-            <h4>Rp {{ number_format($harian,0,',','.') }}</h4>
+            <h4 id="cardHarian">Rp {{ number_format($harian,0,',','.') }}</h4>
+            <p class="small">Nota: <span id="countHarian">0</span></p>
         </div>
         <div class="card mingguan">
             <h6>Pendapatan Minggu Ini</h6>
-            <h4>Rp {{ number_format($mingguan,0,',','.') }}</h4>
+            <h4 id="cardMingguan">Rp {{ number_format($mingguan,0,',','.') }}</h4>
+            <p class="small">Nota: <span id="countMingguan">0</span></p>
         </div>
         <div class="card bulanan">
             <h6>Pendapatan Bulan Ini</h6>
-            <h4>Rp {{ number_format($bulanan,0,',','.') }}</h4>
+            <h4 id="cardBulanan">Rp {{ number_format($bulanan,0,',','.') }}</h4>
+            <p class="small">Nota: <span id="countBulanan">0</span></p>
         </div>
         <div class="card tahunan">
             <h6>Pendapatan Tahun Ini</h6>
-            <h4>Rp {{ number_format($tahunan,0,',','.') }}</h4>
+            <h4 id="cardTahunan">Rp {{ number_format($tahunan,0,',','.') }}</h4>
+            <p class="small">Nota: <span id="countTahunan">0</span></p>
         </div>
 
         <!-- ➕ CARD BARU TOTAL SISA (ditambahkan tanpa mengubah kode lain) -->
         <div class="card sisa-total">
             <h6>Total Sisa Belum Dibayar</h6>
             <h4 id="totalSisaCard">Rp 0</h4>
+            <p class="small">Jumlah Nota Belum Lunas: <span id="countBelumLunas">0</span></p>
         </div>
     </div>
 
+    <!-- Tambahan: Dashboard visual sederhana -->
     <div class="content-panel mt-3">
+        <h5 style="margin:6px 8px">Dashboard Visual</h5>
+        <div style="display:flex; gap:16px; flex-wrap:wrap;">
+            <div style="flex:1; min-width:320px; padding:12px;">
+                <canvas id="incomeChart" height="160"></canvas>
+            </div>
+            <div style="flex:1; min-width:320px; padding:12px;">
+                <canvas id="statusDonut" height="160"></canvas>
+            </div>
+        </div>
+
         <h5 style="margin:6px 8px">Detail Nota Laundry</h5>
         <div style="overflow:auto; padding:8px">
             <table class="table table-hover align-middle text-center">
@@ -288,6 +305,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 (function(){
     const searchInput = document.getElementById('searchInput');
@@ -353,6 +371,11 @@
             // Tampilkan baris jika semua filter cocok
             r.style.display = (matchesQuery && matchesStatus && matchesMonth && matchesYear) ? '' : 'none';
         });
+
+        // Setelah filtering, update ringkasan counts & totals
+        computeTotalsIncludingUnpaid();
+        computeTotalSisa();
+        updateDashboardCharts();
     }
 
     searchInput.addEventListener('input', applyFilter);
@@ -469,7 +492,7 @@
 })();
 </script>
 
-<!-- Tambahan: Hitung ulang kartu pendapatan di sisi klien agar nota BELUM LUNAS juga dihitung (pilihan A) -->
+<!-- Tambahan: Hitung ulang kartu pendapatan di sisi klien agar nota BELUM LUNAS juga dihitung (pilihan A) dan jumlah nota per pendapatan -->
 <script>
 (function(){
     // Parse string rupiah seperti "1.234.567" atau "Rp 1.234.567" menjadi number
@@ -489,8 +512,12 @@
         return Array.from(document.querySelectorAll('#notesTable tr[data-year]'));
     }
 
+    // Chart instances
+    let incomeChart = null;
+    let statusDonut = null;
+
     function computeTotalsIncludingUnpaid(){
-        const rows = getRows();
+        const rows = getRows().filter(r => r.style.display !== 'none');
         const now = new Date();
         const todayDay = ('0' + now.getDate()).slice(-2);
         const todayMonth = now.getMonth() + 1; // 1-12
@@ -507,6 +534,7 @@
         sunday.setHours(23,59,59,999);
 
         let harian = 0, mingguan = 0, bulanan = 0, tahunan = 0;
+        let countHarian = 0, countMingguan = 0, countBulanan = 0, countTahunan = 0;
 
         rows.forEach(r => {
             const dateText = r.querySelector('.cell-date')?.textContent?.trim() || '';
@@ -528,35 +556,45 @@
                 // harian: tanggal sama dengan hari ini
                 if(rowDate.getDate() === now.getDate() && rowDate.getMonth() === now.getMonth() && rowDate.getFullYear() === now.getFullYear()){
                     harian += total;
+                    countHarian += 1;
                 }
 
                 // mingguan: berada di rentang monday..sunday
                 if(rowDate >= monday && rowDate <= sunday){
                     mingguan += total;
+                    countMingguan += 1;
                 }
 
                 // bulanan: month & year sama
                 if(rowDate.getMonth() + 1 === todayMonth && rowDate.getFullYear() === todayYear){
                     bulanan += total;
+                    countBulanan += 1;
                 }
 
                 // tahunan: year sama
                 if(rowDate.getFullYear() === todayYear){
                     tahunan += total;
+                    countTahunan += 1;
                 }
             }
         });
 
         // Update kartu (tanpa mengubah markup asli server-side, hanya mengganti teks jumlah)
-        const harianEl = document.querySelector('.card.harian h4');
-        const mingguanEl = document.querySelector('.card.mingguan h4');
-        const bulananEl = document.querySelector('.card.bulanan h4');
-        const tahunanEl = document.querySelector('.card.tahunan h4');
+        const harianEl = document.querySelector('#cardHarian');
+        const mingguanEl = document.querySelector('#cardMingguan');
+        const bulananEl = document.querySelector('#cardBulanan');
+        const tahunanEl = document.querySelector('#cardTahunan');
 
         if(harianEl) harianEl.textContent = formatRupiah(harian);
         if(mingguanEl) mingguanEl.textContent = formatRupiah(mingguan);
         if(bulananEl) bulananEl.textContent = formatRupiah(bulanan);
         if(tahunanEl) tahunanEl.textContent = formatRupiah(tahunan);
+
+        // Update counts
+        document.getElementById('countHarian').textContent = countHarian;
+        document.getElementById('countMingguan').textContent = countMingguan;
+        document.getElementById('countBulanan').textContent = countBulanan;
+        document.getElementById('countTahunan').textContent = countTahunan;
     }
 
     // Jalankan saat halaman siap
@@ -571,17 +609,123 @@
         });
     }
 
-    // Jika ada pengunduhan/export yang memfilter data (Harian/Mingguan/Bulanan/Tahunan), tidak mengubah data server-side,
-    // jadi kita juga hitung ulang saat salah satu tombol export ditekan untuk menjaga konsistensi tampilan.
-    ['exportToday','exportWeek','exportMonth','exportYear'].forEach(id=>{
-        const el = document.getElementById(id);
-        if(el) el.addEventListener('click', ()=> setTimeout(computeTotalsIncludingUnpaid, 300));
-    });
-
     // Jika tabel berubah dinamis melalui AJAX (tidak ada sekarang), developer bisa memanggil computeTotalsIncludingUnpaid() setelah update.
 
     // Jalankan sekali langsung
     computeTotalsIncludingUnpaid();
+
+    // Chart helpers: kumpulkan data bulanan (total & jumlah nota) dari DOM (semua tahun yang terlihat pada tabel)
+    function collectMonthlyData(yearFilterValue){
+        const rows = getRows().filter(r => r.style.display !== 'none');
+        const months = Array.from({length:12},()=>({total:0,count:0}));
+        rows.forEach(r => {
+            const dateText = r.querySelector('.cell-date')?.textContent?.trim() || '';
+            const totalText = r.querySelector('.cell-total')?.textContent?.trim() || '';
+            const total = parseRupiah(totalText);
+            const parts = dateText.split('/');
+            if(parts.length === 3){
+                const d = parseInt(parts[0],10);
+                const m = parseInt(parts[1],10);
+                const y = parseInt(parts[2],10);
+                if(yearFilterValue === 'all' || String(y) === String(yearFilterValue)){
+                    months[m-1].total += total;
+                    months[m-1].count += 1;
+                }
+            }
+        });
+        return months;
+    }
+
+    function initCharts(){
+        const ctx = document.getElementById('incomeChart').getContext('2d');
+        const ctx2 = document.getElementById('statusDonut').getContext('2d');
+
+        const monthsLabel = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agt','Sep','Okt','Nov','Des'];
+        const monthly = collectMonthlyData('all');
+        const totals = monthly.map(m=>m.total);
+
+        incomeChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: monthsLabel,
+                datasets: [{
+                    label: 'Pendapatan (Rp)',
+                    data: totals,
+                    // colors are left to Chart.js defaults (do not set explicit colors)
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // status donut
+        const statusCounts = computeStatusCounts();
+        statusDonut = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['Lunas','Belum Lunas'],
+                datasets: [{
+                    data: [statusCounts.lunas, statusCounts.belum],
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+        });
+    }
+
+    function computeStatusCounts(){
+        const rows = getRows().filter(r => r.style.display !== 'none');
+        let lunas = 0, belum = 0;
+        rows.forEach(r => {
+            const status = r.getAttribute('data-status');
+            if(status === 'lunas') lunas += 1; else belum += 1;
+        });
+        return { lunas, belum };
+    }
+
+    function updateDashboardCharts(){
+        if(!incomeChart || !statusDonut) return;
+        const yearVal = document.getElementById('yearFilter')?.value || 'all';
+        const monthly = collectMonthlyData(yearVal);
+        const totals = monthly.map(m=>m.total);
+        incomeChart.data.datasets[0].data = totals;
+        incomeChart.update();
+
+        const statusCounts = computeStatusCounts();
+        statusDonut.data.datasets[0].data = [statusCounts.lunas, statusCounts.belum];
+        statusDonut.update();
+
+        // update jumlah belum lunas pada card
+        document.getElementById('countBelumLunas').textContent = statusCounts.belum;
+    }
+
+    // Init charts after DOM ready
+    document.addEventListener('DOMContentLoaded', ()=>{
+        // small delay to ensure populateYearFilter has run
+        setTimeout(()=>{
+            initCharts();
+            updateDashboardCharts();
+        }, 300);
+    });
+
+    // Recompute charts when filters change
+    document.getElementById('yearFilter')?.addEventListener('change', ()=>{
+        setTimeout(()=>{ updateDashboardCharts(); }, 200);
+    });
+
+    // Also recompute when search / filters / refresh happen
+    document.getElementById('searchInput')?.addEventListener('input', ()=> setTimeout(()=>{ updateDashboardCharts(); }, 250));
+    document.querySelectorAll('.btn-filter[data-filter]').forEach(btn=>{
+        btn.addEventListener('click', ()=> setTimeout(()=>{ updateDashboardCharts(); }, 250));
+    });
+
 })();
 </script>
 
@@ -604,13 +748,16 @@
     function computeTotalSisa(){
         const rows = document.querySelectorAll('#notesTable tr[data-status]');
         let totalSisa = 0;
+        let countBelum = 0;
 
         // Jika tidak ada baris data (hanya pesan kosong), hasil tetap 0
         rows.forEach(r => {
             // kolom ke-6 (index 5) adalah Sisa sesuai struktur tabel
             const sisaCell = r.children[5];
             if(sisaCell){
-                totalSisa += parseRupiah(sisaCell.textContent.trim());
+                const s = parseRupiah(sisaCell.textContent.trim());
+                totalSisa += s;
+                if(s > 0) countBelum += 1;
             }
         });
 
@@ -618,6 +765,7 @@
         if(sisaCard){
             sisaCard.textContent = formatRupiah(totalSisa);
         }
+        document.getElementById('countBelumLunas').textContent = countBelum;
     }
 
     document.addEventListener('DOMContentLoaded', computeTotalSisa);

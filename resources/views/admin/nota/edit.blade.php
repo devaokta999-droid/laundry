@@ -326,9 +326,51 @@
         rowIndex = rows.length;
     }
 
-    // Ganti fungsi fillRow untuk selalu memanggil addRow (menambah baris baru)
-    // dan mengisi nilai item katalog ke baris baru tersebut.
+    // FIND ROW BY NAME (case-insensitive)
+    function findRowByNameCI(name) {
+        if (!name) return -1;
+        const target = String(name).trim().toLowerCase();
+        const rows = document.querySelectorAll('#itemTable tbody tr');
+        for (let i = 0; i < rows.length; i++) {
+            const ni = rows[i].querySelector('.name-input');
+            if (!ni) continue;
+            const val = String(ni.value || '').trim().toLowerCase();
+            if (val === target && target !== '') return i;
+        }
+        return -1;
+    }
+
+    // Merge to existing row: add qty and optionally update price
+    function mergeToRow(index, addQty = 1, price = null) {
+        const row = document.querySelectorAll('#itemTable tbody tr')[index];
+        if (!row) return;
+        const qtyInput = row.querySelector('.qty-input');
+        const priceInput = row.querySelector('.price-input');
+
+        qtyInput.value = toNumber(qtyInput.value) + toNumber(addQty);
+        if (price !== null && price !== undefined && price > 0) {
+            // decide policy: keep existing price unless new price > 0, then update
+            priceInput.value = price;
+        }
+        // recalc subtotal
+        const idx = qtyInput.dataset.index;
+        calcSubtotal(idx);
+        // highlight merged row briefly
+        row.style.transition = 'background 0.25s';
+        row.style.background = '#e8f7e8';
+        setTimeout(() => row.style.background = '', 400);
+    }
+
+    // Ganti fungsi fillRow untuk selalu memeriksa duplikat (case-insensitive)
+    // Jika ada -> merge (tambah qty). Jika tidak -> tambahkan baris baru.
     function fillRow(name, price) {
+        const found = findRowByNameCI(name);
+        if (found >= 0) {
+            // tambahkan 1 ke qty
+            mergeToRow(found, 1, price);
+            currentRowIndex = found;
+            return;
+        }
         addRow(name, price, 1);
         currentRowIndex = rowIndex - 1; // Atur currentRowIndex ke baris yang baru ditambahkan
     }
@@ -346,7 +388,7 @@
         if (e.target && e.target.classList.contains('catalog-select')) {
             const idx = Number(e.target.dataset.idx);
             const item = CATALOG[idx];
-            // Langsung tambahkan baris baru dengan item dari katalog
+            // Langsung tambahkan atau merge
             fillRow(item.name, item.price);
             return;
         }
@@ -360,6 +402,35 @@
 
         if (e.target.id === "uang_muka") calcTotal();
         if (e.target.id === "catalogSearch") renderCatalog(e.target.value);
+    });
+
+    // When user blurs a name-input, check duplicates: if duplicate exists elsewhere, merge into the first occurrence
+    document.addEventListener('focusout', function(e) {
+        if (e.target && e.target.classList && e.target.classList.contains('name-input')) {
+            const nameVal = String(e.target.value || '').trim();
+            if (!nameVal) return;
+            const thisIdx = Number(e.target.dataset.index);
+            // find first row index with same name (case-insensitive) excluding thisIdx
+            const rows = document.querySelectorAll('#itemTable tbody tr');
+            for (let i = 0; i < rows.length; i++) {
+                if (i === thisIdx) continue;
+                const ni = rows[i].querySelector('.name-input');
+                if (!ni) continue;
+                if (String(ni.value || '').trim().toLowerCase() === nameVal.toLowerCase()) {
+                    // merge current into i
+                    const currentQtyEl = rows[thisIdx].querySelector('.qty-input');
+                    const currentPriceEl = rows[thisIdx].querySelector('.price-input');
+                    const addQty = toNumber(currentQtyEl.value);
+                    const priceCandidate = toNumber(currentPriceEl.value);
+                    mergeToRow(i, addQty, priceCandidate > 0 ? priceCandidate : null);
+                    // remove the current row
+                    rows[thisIdx].remove();
+                    reIndexRows();
+                    calcTotal();
+                    break;
+                }
+            }
+        }
     });
 
     document.addEventListener("click", e => {
@@ -428,6 +499,12 @@
         if (newQtyInput) {
             newQtyInput.focus();
         }
+
+        // attach focus listener to new name-input to update currentRowIndex
+        const newName = row.querySelector('.name-input');
+        if (newName) {
+            newName.addEventListener('focus', (ev) => { currentRowIndex = Number(ev.target.dataset.index); });
+        }
     }
 
     document.getElementById('notaForm').addEventListener('submit', function (ev) {
@@ -439,6 +516,9 @@
 
         reIndexRows();
         calcTotal();
+
+        // Before submit: merge any duplicate names left behind (case-insensitive)
+        mergeAllDuplicatesBeforeSubmit();
 
         const formData = new FormData(this);
 
@@ -473,6 +553,63 @@
             saveBtn.innerHTML = "Simpan Perubahan";
         });
     });
+
+    // Merge duplicates globally before submit: collect by normalized name, sum qty, keep first price
+    function mergeAllDuplicatesBeforeSubmit() {
+        const rows = Array.from(document.querySelectorAll('#itemTable tbody tr'));
+        const map = {}; // nameLower -> { idxFirst, totalQty, price }
+
+        rows.forEach((row, i) => {
+            const nameInput = row.querySelector('.name-input');
+            const qtyInput = row.querySelector('.qty-input');
+            const priceInput = row.querySelector('.price-input');
+            if (!nameInput) return;
+            const name = String(nameInput.value || '').trim();
+            if (!name) return;
+            const key = name.toLowerCase();
+            const qty = toNumber(qtyInput.value);
+            const price = toNumber(priceInput.value);
+
+            if (!map[key]) {
+                map[key] = { idx: i, qty: qty, price: price };
+            } else {
+                map[key].qty += qty;
+                // keep existing price unless it's zero and new price > 0
+                if ((!map[key].price || map[key].price === 0) && price > 0) map[key].price = price;
+            }
+        });
+
+        // Now iterate rows again and apply merging: for rows not first occurrence, remove and add qty to first
+        const processed = new Set();
+        const allRows = document.querySelectorAll('#itemTable tbody tr');
+        for (let i = 0; i < allRows.length; i++) {
+            const row = allRows[i];
+            const nameInput = row.querySelector('.name-input');
+            if (!nameInput) continue;
+            const name = String(nameInput.value || '').trim();
+            if (!name) continue;
+            const key = name.toLowerCase();
+            const entry = map[key];
+            if (!entry) continue;
+            if (processed.has(key)) {
+                // remove duplicate row
+                row.remove();
+                i--; // adjust index as DOM changed
+                continue;
+            }
+            // first occurrence -> set qty and price
+            const qtyInput = row.querySelector('.qty-input');
+            const priceInput = row.querySelector('.price-input');
+            qtyInput.value = entry.qty;
+            if (entry.price && entry.price > 0) priceInput.value = entry.price;
+            const idx = qtyInput.dataset.index;
+            calcSubtotal(idx);
+            processed.add(key);
+        }
+
+        reIndexRows();
+        calcTotal();
+    }
 
     function showValidationErrors(errors) {
         const container = document.getElementById('errorContainer');

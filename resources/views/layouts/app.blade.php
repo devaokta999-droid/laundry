@@ -40,7 +40,6 @@
             align-items: stretch;
         }
 
-        /* 🍏 Sidebar */
         .sidebar {
             position: fixed;
             top: 30px;
@@ -89,7 +88,6 @@
             color: var(--mac-accent);
         }
 
-        /* 🧾 Tombol Kasir */
         .btn-cashier {
             background: linear-gradient(180deg, #007aff, #0051cc);
             color: #fff;
@@ -125,7 +123,6 @@
             color: #fff;
         }
 
-        /* 📱 Toggle Sidebar */
         .sidebar-toggle {
             display: none;
             position: fixed;
@@ -140,7 +137,6 @@
             box-shadow: 0 3px 10px rgba(0,122,255,0.4);
         }
 
-        /* 🖥 Content */
         .content-wrapper {
             flex: 1;
             padding: 3rem;
@@ -155,7 +151,6 @@
             to { opacity: 1; transform: scale(1); }
         }
 
-        /* 📱 Responsive */
         @media (max-width: 992px) {
             .sidebar {
                 transform: translateX(-120%);
@@ -192,10 +187,8 @@
 </head>
 <body>
 
-<!-- 📱 Sidebar Toggle -->
 <button class="sidebar-toggle" id="sidebarToggle">☰</button>
 
-<!-- 🍏 Sidebar -->
 <div class="sidebar" id="macSidebar">
     <div>
         <div class="sidebar-header mb-4">
@@ -213,24 +206,19 @@
                 @php $role = auth()->user()->role; @endphp
                 <hr>
 
-                {{-- 🧾 Kasir Area --}}
                 @if($role === 'kasir')
                     <a href="{{ route('admin.cashier.index') }}" class="btn-cashier mb-3">Kasir</a>
                 @endif
 
-                {{-- 🔹 Admin & Deva --}}
                 @if(in_array($role, ['admin', 'deva']))
                     <a href="{{ route('admin.cashier.index') }}" class="nav-link {{ request()->routeIs('admin.cashier.index') ? 'active' : '' }}">Kasir</a>
                     <a href="{{ route('admin.transactions.index') }}" class="nav-link {{ request()->routeIs('admin.transactions.index') ? 'active' : '' }}">Transaksi</a>
                     <a href="{{ route('admin.nota.index') }}" class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">Nota</a>
-                    {{-- 📊 Tambahan: Menu Laporan --}}
                     <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">Laporan</a>
                 @endif
 
-                {{-- ✅ Kasir juga bisa akses Nota & Laporan --}}
                 @if($role === 'kasir')
                     <a href="{{ route('admin.nota.index') }}" class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">Nota</a>
-                    <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">Laporan</a>
                 @endif
             @endauth
         </nav>
@@ -260,12 +248,10 @@
     </div>
 </div>
 
-<!-- 🧊 Main Content -->
 <div class="content-wrapper" id="page-content">
     @yield('content')
 </div>
 
-<!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     const sidebar = document.getElementById('macSidebar');
