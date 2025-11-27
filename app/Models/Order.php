@@ -23,6 +23,8 @@ class Order extends Model
         'total_price',
         'pickup_date',
         'pickup_time',
+        'delivery_date',
+        'delivery_time',
         'status',
     ];
 
@@ -33,6 +35,8 @@ class Order extends Model
         'items' => 'array',
         'pickup_date' => 'datetime',
         'pickup_time' => 'datetime',
+        'delivery_date' => 'datetime',
+        'delivery_time' => 'datetime',
     ];
 
     /**

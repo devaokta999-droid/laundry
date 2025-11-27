@@ -100,6 +100,13 @@
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
 
+            <p class="text-muted mb-1" style="font-size:.9rem;">
+                <strong>Ringkasan hak akses:</strong><br>
+                - <strong>Admin</strong> dapat mengakses semua menu dan fitur.<br>
+                - <strong>Deva</strong> hanya dapat mengakses menu <strong>Layanan</strong>, <strong>Nota</strong>, dan <strong>Laporan</strong>.<br>
+                - <strong>Kasir</strong> hanya dapat mengakses menu <strong>Nota</strong> saja.
+            </p>
+
             <p class="text-muted mb-3">
                 Hanya admin yang dapat mengubah role pengguna. Role menentukan hak akses menu dan fitur (Layanan, Nota, Laporan, dll).
             </p>

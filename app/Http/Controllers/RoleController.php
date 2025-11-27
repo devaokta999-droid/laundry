@@ -25,7 +25,7 @@ class RoleController extends Controller
     public function index()
     {
         $users = User::orderBy('name')->get();
-        $roles = ['admin', 'kasir', 'deva', 'user'];
+        $roles = ['admin', 'kasir', 'deva'];
 
         return view('admin.roles.index', compact('users', 'roles'));
     }
@@ -35,7 +35,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $roles = ['admin', 'kasir', 'deva', 'user'];
+        $roles = ['admin', 'kasir', 'deva'];
         return view('admin.roles.create', compact('roles'));
     }
 
@@ -48,7 +48,7 @@ class RoleController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:admin,kasir,deva,user',
+            'role' => 'required|in:admin,kasir,deva',
         ]);
 
         User::create([
@@ -68,7 +68,7 @@ class RoleController extends Controller
      */
     public function edit(User $role)
     {
-        $roles = ['admin', 'kasir', 'deva', 'user'];
+        $roles = ['admin', 'kasir', 'deva'];
         $user = $role;
         return view('admin.roles.edit', compact('user', 'roles'));
     }
@@ -84,7 +84,7 @@ class RoleController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|string|min:6',
-            'role' => 'required|in:admin,kasir,deva,user',
+            'role' => 'required|in:admin,kasir,deva',
         ]);
 
         $user->name = $data['name'];

@@ -71,11 +71,11 @@
                 <h5 class="mb-3">Penjadwalan</h5>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Tanggal Jemput</label>
+                        <label class="form-label">Tanggal Jemput ke Rumah</label>
                         <input type="date" class="form-control" name="pickup_date" required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Waktu Jemput</label>
+                        <label class="form-label">Waktu Jemput ke Rumah</label>
                         <input type="time" class="form-control" name="pickup_time" required>
                     </div>
                 </div>

@@ -37,20 +37,27 @@
             align-items: center;
         }
         .macos-date-input {
-            border-radius: 14px;
-            padding: 10px 40px 10px 14px;
-            height: 48px;
+            border-radius: 999px;
+            padding: 10px 42px 10px 16px;
+            height: 44px;
             font-size: 0.95rem;
-            border: 1px solid rgba(0,0,0,0.12);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.06);
+            background: linear-gradient(135deg, #fdfdfd, #f4f5f9);
+            box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+        }
+        .macos-date-input::-webkit-calendar-picker-indicator {
+            opacity: 0;
+            -webkit-appearance: none;
+            display: none;
         }
         .macos-date-input:focus {
             border-color: #007aff;
-            box-shadow: 0 0 0 3px rgba(0,122,255,0.2);
+            box-shadow: 0 0 0 2px rgba(0,122,255,0.25);
+            outline: none;
         }
         .macos-date-icon {
             position: absolute;
-            right: 12px;
+            right: 10px;
             top: 50%;
             transform: translateY(-50%);
             color: #007aff;
