@@ -152,29 +152,29 @@ body {
         <div class="mac-card">
             <h2>Informasi Kontak</h2>
             <div class="mac-info">
-                <p><i class="fa-solid fa-phone"></i> Telepon / Whatsapp: <strong>{{ config('app.admin_whatsapp', '+62 821-4703-7006') }}</strong></p>
-                <p><i class="fa-solid fa-envelope"></i> Email: <strong>hello@devalaundry.example</strong></p>
-                <p><i class="fa-brands fa-instagram"></i> Instagram: <strong>@devalaundry</strong></p>
-                <p><i class="fa-brands fa-facebook"></i> Facebook: <strong>@devalaundry</strong></p>
-                <p><i class="fa-brands fa-tiktok"></i> TikTok: <strong>@devalaundry.official</strong></p>
+                <p><i class="fa-solid fa-phone"></i> Telepon / Whatsapp: <strong>{{ $contactPhone }}</strong></p>
+                <p><i class="fa-solid fa-envelope"></i> Email: <strong>{{ $contactEmail }}</strong></p>
+                <p><i class="fa-brands fa-instagram"></i> Instagram: <strong>{{ $contactInstagram }}</strong></p>
+                <p><i class="fa-brands fa-facebook"></i> Facebook: <strong>{{ $contactFacebook }}</strong></p>
+                <p><i class="fa-brands fa-tiktok"></i> TikTok: <strong>{{ $contactTikTok }}</strong></p>
             </div>
 
             {{-- 🌟 Tombol Aksi --}}
             <div class="mt-4 flex flex-col gap-3">
-                <a href="https://wa.me/{{ preg_replace('/\D/', '', config('app.admin_whatsapp', '+62 821-4703-7006')) }}"
+                <a href="https://wa.me/{{ preg_replace('/\D/', '', $contactPhone) }}"
                    target="_blank" class="mac-btn">
                     <i class="fa-brands fa-whatsapp"></i> Chat via WhatsApp
                 </a>
-                <a href="mailto:hello@devalaundry.example" class="mac-btn">
+                <a href="mailto:{{ $contactEmail }}" class="mac-btn">
                     <i class="fa-solid fa-envelope"></i> Kirim Email
                 </a>
-                <a href="https://www.instagram.com/devasptr_?igsh=OWl5d28xbm11N3dn" target="_blank" class="mac-btn">
+                <a href="{{ $contactInstagram }}" target="_blank" class="mac-btn">
                     <i class="fa-brands fa-instagram"></i> Instagram
                 </a>
-                <a href="https://facebook.com/devalaundry" target="_blank" class="mac-btn">
+                <a href="{{ $contactFacebook }}" target="_blank" class="mac-btn">
                     <i class="fa-brands fa-facebook-f"></i> Facebook
                 </a>
-                <a href="https://www.tiktok.com/@devaja._?is_from_webapp=1&sender_device=pc" target="_blank" class="mac-btn">
+                <a href="{{ $contactTikTok }}" target="_blank" class="mac-btn">
                     <i class="fa-brands fa-tiktok"></i> TikTok
                 </a>
             </div>
@@ -188,7 +188,7 @@ body {
                 allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 
             {{-- 🗺️ Tombol menuju Google Maps --}}
-            <a href="https://maps.app.goo.gl/G1ERg4TJQhMLp2cm9"
+                <a href="{{ $contactMapsLink }}"
                target="_blank" class="mac-btn">
                 <i class="fa-solid fa-map-location-dot"></i> Lihat di Google Maps
             </a>

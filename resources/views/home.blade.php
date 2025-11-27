@@ -205,7 +205,7 @@ body {
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12h14M13 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Pesan Sekarang
             </a>
-            <a target="_blank" href="https://wa.me/{{ preg_replace('/\D/', '', config('app.admin_whatsapp', '+62 821-4703-7006')) }}?text=Halo%20Deva%20Laundry%20Aku%20Mau%20Pesan" class="mac-btn btn-ghost mac-btn">
+            <a target="_blank" href="https://wa.me/{{ preg_replace('/\D/', '', $contactPhone) }}?text=Halo%20Deva%20Laundry%20" class="mac-btn btn-ghost mac-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12a9 9 0 10-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 22l-4.35-1.74" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 Hubungi Kami
             </a>
@@ -222,7 +222,7 @@ body {
             <div class="mac-card">
                 <h5 class="mb-2 fw-bold">{{ $s->name }}</h5>
                 <p class="text-muted mb-3">{{ $s->description ?? 'Tanpa deskripsi' }}</p>
-                <div class="fw-bold text-primary">Rp {{ number_format($s->price, 0, ',', '.') }}</div>
+                {{-- Price hidden per user request; only show description. --}}
             </div>
         </div>
         @empty
@@ -256,22 +256,22 @@ body {
 <div class="container">
     <footer class="mac-footer-pro">
         <div class="social-icons" aria-label="Deva Laundry social links">
-            <a href="https://facebook.com/devalaundry" target="_blank" title="Facebook" rel="noopener">
+            <a href="{{ $contactFacebook }}" target="_blank" title="Facebook" rel="noopener">
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook" class="social-logo">
             </a>
-            <a href="https://www.instagram.com/devasptr_?igsh=OWl5d28xbm11N3dn" target="_blank" title="Instagram" rel="noopener">
+            <a href="{{ $contactInstagram }}" target="_blank" title="Instagram" rel="noopener">
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" alt="Instagram" class="social-logo">
             </a>
-            <a href="https://www.tiktok.com/@devalaundry.official" target="_blank" title="TikTok" rel="noopener">
+            <a href="{{ $contactTikTok }}" target="_blank" title="TikTok" rel="noopener">
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/tiktok.svg" alt="TikTok" class="social-logo">
             </a>
-            <a href="https://wa.me/{{ preg_replace('/\D/', '', config('app.admin_whatsapp', '+62 821-4703-70064')) }}" target="_blank" title="WhatsApp" rel="noopener">
+            <a href="https://wa.me/{{ preg_replace('/\D/', '', $contactPhone) }}" target="_blank" title="WhatsApp" rel="noopener">
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/whatsapp.svg" alt="Whatsapp" class="social-logo">
             </a>
-            <a href="mailto:hello@devalaundry.example" title="Email" rel="noopener">
+            <a href="mailto:{{ $contactEmail }}" title="Email" rel="noopener">
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/gmail.svg" alt="Email" class="social-logo">
             </a>
-            <a href="https://maps.app.goo.gl/z7jsgdWsD8JC4MFo8" target="_blank" title="Lokasi kami" rel="noopener">
+            <a href="{{ $contactMapsLink }}" target="_blank" title="Lokasi kami" rel="noopener">
                 <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/googlemaps.svg" alt="Maps" class="social-logo">
             </a>
         </div>

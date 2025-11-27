@@ -187,38 +187,62 @@
 </head>
 <body>
 
-<button class="sidebar-toggle" id="sidebarToggle">☰</button>
+<button class="sidebar-toggle" id="sidebarToggle"></button>
 
 <div class="sidebar" id="macSidebar">
     <div>
         <div class="sidebar-header mb-4">
             <img src="{{ asset('images/header.png') }}" alt="Logo" width="60" class="mb-2 rounded-3 shadow-sm">
-            <h4>𝙳𝙴𝚅𝙰 𝙻𝙰𝚄𝙽𝙳𝚁𝚈</h4>
+            <h4>DEVA LAUNDRY</h4>
         </div>
 
         <nav class="nav flex-column">
             <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
             <a href="{{ route('about') }}" class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}">Tentang</a>
-            <a href="{{ route('layanan.index') }}" class="nav-link {{ request()->routeIs('layanan.index') ? 'active' : '' }}">Layanan</a>
             <a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">Kontak</a>
 
             @auth
                 @php $role = auth()->user()->role; @endphp
                 <hr>
 
-                @if($role === 'kasir')
-                    <a href="{{ route('admin.cashier.index') }}" class="btn-cashier mb-3">Kasir</a>
-                @endif
-
+                {{-- Layanan hanya untuk Admin & Deva --}}
                 @if(in_array($role, ['admin', 'deva']))
-                    <a href="{{ route('admin.cashier.index') }}" class="nav-link {{ request()->routeIs('admin.cashier.index') ? 'active' : '' }}">Kasir</a>
-                    <a href="{{ route('admin.transactions.index') }}" class="nav-link {{ request()->routeIs('admin.transactions.index') ? 'active' : '' }}">Transaksi</a>
-                    <a href="{{ route('admin.nota.index') }}" class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">Nota</a>
-                    <a href="{{ route('admin.laporan') }}" class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">Laporan</a>
+                    <a href="{{ route('layanan.index') }}"
+                       class="nav-link {{ request()->routeIs('layanan.index') ? 'active' : '' }}">
+                        Layanan
+                    </a>
                 @endif
 
-                @if($role === 'kasir')
-                    <a href="{{ route('admin.nota.index') }}" class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">Nota</a>
+                {{-- Kasir, Admin, Deva dapat mengakses NOTA --}}
+                @if(in_array($role, ['kasir', 'admin', 'deva']))
+                    <a href="{{ route('admin.nota.index') }}" 
+                       class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">
+                       Nota
+                    </a>
+                @endif
+
+                {{-- Admin & Deva dapat mengakses LAPORAN --}}
+                @if(in_array($role, ['admin', 'deva']))
+                    <a href="{{ route('admin.laporan') }}" 
+                       class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
+                       Laporan
+                    </a>
+                @endif
+
+                {{-- Admin: Kelola Tim, Role & Profil --}}
+                @if($role === 'admin')
+                    <a href="{{ route('admin.team.index') }}" 
+                       class="nav-link {{ request()->routeIs('admin.team.*') ? 'active' : '' }}">
+                        Tim Profesional
+                    </a>
+                    <a href="{{ route('admin.roles.index') }}" 
+                       class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
+                        Role & Permission
+                    </a>
+                    <a href="{{ route('admin.profile') }}" 
+                       class="nav-link {{ request()->routeIs('admin.profile') ? 'active' : '' }}">
+                        Profil
+                    </a>
                 @endif
             @endauth
         </nav>
@@ -226,16 +250,17 @@
 
     <div class="mt-auto">
         @guest
-            <a href="{{ route('register') }}" class="btn btn-outline-primary mb-2">Daftar</a>
-            <a href="{{ route('login') }}" class="btn btn-primary">Login</a>
+            <a href="{{ route('login') }}" class="btn btn-primary w-100">Login</a>
         @else
-            <div class="dropdown">
+            <div class="dropup w-100">
                 <button class="btn btn-outline-primary dropdown-toggle w-100" data-bs-toggle="dropdown">
-                    👤 {{ auth()->user()->name }}
+                    {{ auth()->user()->name }}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end w-100">
-                    <li><a class="dropdown-item" href="{{ route('layanan.index') }}">Layanan Saya</a></li>
-                    <li><hr class="dropdown-divider"></li>
+                    @if(in_array(auth()->user()->role, ['admin', 'deva']))
+                        <li><a class="dropdown-item" href="{{ route('layanan.index') }}">Layanan Saya</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                    @endif
                     <li>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

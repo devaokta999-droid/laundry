@@ -98,6 +98,14 @@
         transform: translateY(0);
         cursor: pointer;
     }
+    /* Make all .card elements consistent size and layout */
+    .card {
+        min-height: 140px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+    }
     .card:hover {
         transform: translateY(-4px);
         filter: brightness(1.08);
@@ -126,6 +134,20 @@
         background: linear-gradient(135deg, #ff0000ff);
     }
 
+    /* Buat semua kartu di dalam .stats sama ukuran dan rapi */
+    .stats .card {
+        min-height: 140px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 18px;
+        box-sizing: border-box;
+    }
+    .stats .card h6 { font-size: 13px; margin-bottom: 6px; }
+    .stats .card h4 { margin: 0 0 6px 0; font-size: 20px; }
+    .stats .card p.small { margin: 0; color: rgba(255,255,255,0.95); font-size: 13px; }
+
     /* Table area */
     .content-panel{ flex:1; overflow:auto; padding:8px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.75)); border:1px solid var(--glass-border); }
     table{ width:100%; border-collapse:collapse; min-width:1080px; }
@@ -134,6 +156,8 @@
 
     .badge-lunas{ background:#e6ffef; color:#04683a; padding:6px 10px; border-radius:999px; font-weight:700; }
     .badge-belum{ background:#fff4e6; color:#7a4b0b; padding:6px 10px; border-radius:999px; font-weight:700; }
+    .badge-cash{ background:#e6ffef; color:#04683a; padding:4px 8px; border-radius:8px; font-weight:700; display:inline-block; }
+    .badge-transfer{ background:#e6f0ff; color:#0b3d91; padding:4px 8px; border-radius:8px; font-weight:700; display:inline-block; }
 
     /* Responsive */
     @media(max-width:1100px){
@@ -167,6 +191,10 @@
                 <button class="btn-filter active" data-filter="all">Semua</button>
                 <button class="btn-filter" data-filter="lunas">Lunas</button>
                 <button class="btn-filter" data-filter="belum">Belum Lunas</button>
+                <!-- Payment type filters -->
+                <button class="btn-filter active" data-pay-filter="all">Semua Pembayaran</button>
+                <button class="btn-filter" data-pay-filter="cash">Hanya Cash</button>
+                <button class="btn-filter" data-pay-filter="transfer">Hanya Transfer</button>
             </div>
         </div>
 
@@ -238,6 +266,20 @@
             <h4 id="totalSisaCard">Rp 0</h4>
             <p class="small">Jumlah Nota Belum Lunas: <span id="countBelumLunas">0</span></p>
         </div>
+
+        <!-- Total pembayaran menurut metode (Cash / Transfer) -->
+        <div style="display:flex; gap:12px; align-items:center; justify-self:end;">
+            <div class="card" style="min-width:220px; background: linear-gradient(135deg,#13b5c9,#0ea5a7);">
+                <h6>Total Pembayaran Cash</h6>
+                <h4 id="totalCash">Rp {{ number_format($totalCash ?? 0,0,',','.') }}</h4>
+                <p class="small">Nota: <span id="countCashNotes">0</span></p>
+            </div>
+            <div class="card" style="min-width:220px; background: linear-gradient(135deg,#8b5cf6,#6d28d9);">
+                <h6>Total Pembayaran Transfer</h6>
+                <h4 id="totalTransfer">Rp {{ number_format($totalTransfer ?? 0,0,',','.') }}</h4>
+                <p class="small">Nota: <span id="countTransferNotes">0</span></p>
+            </div>
+        </div>
     </div>
 
     <!-- Tambahan: Dashboard visual sederhana -->
@@ -259,43 +301,67 @@
                     <tr>
                         <th>#</th>
                         <th>Nama Pelanggan</th>
+                        <th>Kasir</th>
                         <th>Tanggal</th>
+                        <th>Pembayaran</th>
+                        <th>Terbayar (Rp)</th>
+                        <th>Total Awal (Rp)</th>
                         <th>Total (Rp)</th>
+                        <th>Diskon (Rp)</th>
                         <th>Uang Muka</th>
                         <th>Sisa</th>
-                        <th>Kasir</th>
                         <th>Status</th>
                     </tr>
                 </thead>
                 <tbody id="notesTable">
                     @forelse($notas as $n)
-                        @php 
-                            $status = $n->sisa <= 0 ? 'lunas' : 'belum'; 
-                            $kasir = $n->kasir_name ?? ($n->kasir->name ?? 'Tidak Diketahui'); 
-                            $date_obj = \Carbon\Carbon::parse($n->created_at);
-                            $formatted_date = $date_obj->format('d/m/Y');
-                            $month_num = $date_obj->month;
-                            $year_num = $date_obj->year; // Ambil tahun
-                        @endphp
-                        <tr data-status="{{ $status }}" data-month="{{ $month_num }}" data-year="{{ $year_num }}">
-                            <td>{{ $loop->iteration }}</td>
-                            <td class="cell-name">{{ $n->customer_name }}</td>
-                            <td class="cell-date">{{ $formatted_date }}</td>
-                            <td class="cell-total">{{ number_format($n->total,0,',','.') }}</td>
-                            <td>{{ number_format($n->uang_muka,0,',','.') }}</td>
-                            <td>{{ number_format($n->sisa,0,',','.') }}</td>
-                            <td>{{ $kasir }}</td>
-                            <td>
-                                @if($n->sisa <= 0)
-                                    <span class="badge-lunas">Lunas</span>
-                                @else
-                                    <span class="badge-belum">Belum Lunas</span>
-                                @endif
-                            </td>
-                        </tr>
+                            @php 
+                                $status = $n->sisa <= 0 ? 'lunas' : 'belum'; 
+                                $date_obj = \Carbon\Carbon::parse($n->created_at);
+                                $formatted_date = $date_obj->format('d/m/Y');
+                                $month_num = $date_obj->month;
+                                $year_num = $date_obj->year; // Ambil tahun
+                                $cashSum = $n->payments->where('type','cash')->sum('amount');
+                                $transferSum = $n->payments->where('type','transfer')->sum('amount');
+                                $paid = $cashSum + $transferSum;
+                                $gap = max(0, $n->total - $paid);
+                            @endphp
+                            <tr data-status="{{ $status }}" data-month="{{ $month_num }}" data-year="{{ $year_num }}" data-cash="{{ $cashSum }}" data-transfer="{{ $transferSum }}" data-paid="{{ $paid }}">
+                                <td>{{ $loop->iteration }}</td>
+                                <td class="cell-name">{{ $n->customer_name }}</td>
+                                <td class="cell-kasir">{{ optional($n->kasir)->name ?? '-' }}</td>
+                                <td class="cell-date">{{ $formatted_date }}</td>
+                                <td style="text-align:left;">
+                                    @if($n->payments && $n->payments->count() > 0)
+                                        @if($cashSum > 0)
+                                            <span class="badge-cash">Cash: Rp {{ number_format($cashSum,0,',','.') }}</span>
+                                        @endif
+                                        @php $transferGrouped = $n->payments->where('type','transfer')->groupBy('method'); @endphp
+                                        @foreach($transferGrouped as $method => $group)
+                                            @php $methodLabel = $method ? ucfirst($method) : 'Transfer'; @endphp
+                                            <span class="badge-transfer">{{ $methodLabel }}: Rp {{ number_format($group->sum('amount'),0,',','.') }}</span>
+                                        @endforeach
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td class="cell-paid">{{ number_format($paid,0,',','.') }}</td>
+                                <td class="cell-original">{{ number_format($n->items ? $n->items->sum('subtotal') : $n->total,0,',','.') }}</td>
+                                <td class="cell-total">{{ number_format($n->total,0,',','.') }}</td>
+                                <td class="cell-diskon">{{ number_format($n->payments ? $n->payments->sum('discount_amount') : 0,0,',','.') }}</td>
+                                <td>{{ number_format($n->uang_muka,0,',','.') }}</td>
+                                <td class="cell-sisa">{{ number_format($n->sisa,0,',','.') }}</td>
+                                <td>
+                                    @if($n->sisa <= 0)
+                                        <span class="badge-lunas">Lunas</span>
+                                    @else
+                                        <span class="badge-belum">Belum Lunas</span>
+                                    @endif
+                                </td>
+                            </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-muted">Belum ada nota ditemukan.</td>
+                            <td colspan="12" class="text-muted">Belum ada nota ditemukan.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -311,6 +377,7 @@
     const searchInput = document.getElementById('searchInput');
     const clearBtn = document.getElementById('clearSearch');
     const statusFilters = document.querySelectorAll('.filters [data-filter]');
+    const payFilters = document.querySelectorAll('.filters [data-pay-filter]');
     const monthFilter = document.getElementById('monthFilter');
     const yearFilter = document.getElementById('yearFilter'); // Variabel untuk filter tahun
     const table = document.getElementById('notesTable');
@@ -346,10 +413,11 @@
         const activeStatus = document.querySelector('.filters .btn-filter.active')?.getAttribute('data-filter') || 'all';
         const activeMonth = monthFilter.value;
         const activeYear = yearFilter.value; // Ambil nilai tahun yang dipilih
-        const rows = table.querySelectorAll('tr[data-status]');
+            const rows = table.querySelectorAll('tr[data-status]');
+            const activePay = document.querySelector('.filters .btn-filter[data-pay-filter].active')?.getAttribute('data-pay-filter') || 'all';
         
         // Skip filtering jika tidak ada data selain pesan 'Belum ada nota'
-        if(rows.length === 0 && table.querySelector('tr td[colspan="8"]')) {
+        if(rows.length === 0 && table.querySelector('tr td[colspan="11"]')) {
             return;
         }
 
@@ -368,8 +436,16 @@
             const matchesMonth = activeMonth === 'all' || rowMonth === activeMonth;
             const matchesYear = activeYear === 'all' || rowYear === activeYear; // Bandingkan tahun
 
+            // matches by payment filter
+            let matchesPay = true;
+            if(activePay === 'cash'){
+                matchesPay = parseFloat(r.getAttribute('data-cash') || 0) > 0;
+            } else if(activePay === 'transfer'){
+                matchesPay = parseFloat(r.getAttribute('data-transfer') || 0) > 0;
+            }
+
             // Tampilkan baris jika semua filter cocok
-            r.style.display = (matchesQuery && matchesStatus && matchesMonth && matchesYear) ? '' : 'none';
+            r.style.display = (matchesQuery && matchesStatus && matchesMonth && matchesYear && matchesPay) ? '' : 'none';
         });
 
         // Setelah filtering, update ringkasan counts & totals
@@ -390,6 +466,15 @@
         });
     });
 
+    // Event listener untuk Payment Filter
+    payFilters.forEach(btn => {
+        btn.addEventListener('click', ()=>{
+            payFilters.forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+            applyFilter();
+        });
+    });
+
     // Event listener untuk Filter Bulan dan TAHUN
     monthFilter.addEventListener('change', applyFilter);
     yearFilter.addEventListener('change', applyFilter); // Tambahkan listener untuk filter tahun
@@ -403,15 +488,22 @@
         yearFilter.value = 'all'; // Reset filter tahun
         statusFilters.forEach(b=>b.classList.remove('active'));
         document.querySelector('.filters [data-filter="all"]').classList.add('active');
+        // reset payment filters
+        payFilters.forEach(b=>b.classList.remove('active'));
+        document.querySelector('.filters [data-pay-filter="all"]').classList.add('active');
         
         applyFilter();
 
         Swal.fire({
             icon: 'success',
-            title: 'Data diperbarui!',
+            title: 'Berhasil di-refresh!',
+            text: 'Halaman laporan berhasil diperbarui.',
             showConfirmButton: false,
-            timer: 1200
+            timer: 1500
         });
+        setTimeout(function () {
+            window.location.reload();
+        }, 1600);
     });
 
     // ✅ Export Excel Buttons + validasi tanggal + notifikasi sukses
@@ -590,9 +682,31 @@
         if(bulananEl) bulananEl.textContent = formatRupiah(bulanan);
         if(tahunanEl) tahunanEl.textContent = formatRupiah(tahunan);
 
-        // Update counts
-        document.getElementById('countHarian').textContent = countHarian;
-        document.getElementById('countMingguan').textContent = countMingguan;
+        // Update note counts on cards
+        const countHarianEl = document.getElementById('countHarian');
+        const countMingguanEl = document.getElementById('countMingguan');
+        if(countHarianEl) countHarianEl.textContent = countHarian;
+        if(countMingguanEl) countMingguanEl.textContent = countMingguan;
+        // Compute totals & counts for payment methods (from visible rows)
+        let cashSum = 0, transferSum = 0, countCash = 0, countTransfer = 0;
+        rows.forEach(r => {
+            const c = parseInt(r.getAttribute('data-cash') || 0, 10) || 0;
+            const t = parseInt(r.getAttribute('data-transfer') || 0, 10) || 0;
+            if(c > 0){ cashSum += c; countCash += 1; }
+            if(t > 0){ transferSum += t; countTransfer += 1; }
+        });
+
+        const totalCashEl = document.getElementById('totalCash');
+        const totalTransferEl = document.getElementById('totalTransfer');
+        if(totalCashEl) totalCashEl.textContent = formatRupiah(cashSum);
+        if(totalTransferEl) totalTransferEl.textContent = formatRupiah(transferSum);
+
+        const countCashEl = document.getElementById('countCashNotes');
+        const countTransferEl = document.getElementById('countTransferNotes');
+        if(countCashEl) countCashEl.textContent = countCash;
+        if(countTransferEl) countTransferEl.textContent = countTransfer;
+
+        // Update remaining counts (bulanan & tahunan only)
         document.getElementById('countBulanan').textContent = countBulanan;
         document.getElementById('countTahunan').textContent = countTahunan;
     }
@@ -745,15 +859,15 @@
         return 'Rp ' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
-    function computeTotalSisa(){
+        function computeTotalSisa(){
         const rows = document.querySelectorAll('#notesTable tr[data-status]');
         let totalSisa = 0;
         let countBelum = 0;
 
         // Jika tidak ada baris data (hanya pesan kosong), hasil tetap 0
         rows.forEach(r => {
-            // kolom ke-6 (index 5) adalah Sisa sesuai struktur tabel
-            const sisaCell = r.children[5];
+            // cari cell dengan kelas .cell-sisa
+            const sisaCell = r.querySelector('.cell-sisa');
             if(sisaCell){
                 const s = parseRupiah(sisaCell.textContent.trim());
                 totalSisa += s;

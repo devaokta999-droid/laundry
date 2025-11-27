@@ -13,22 +13,23 @@ use App\Exports\NotaExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Payment;
 
 class NotaController extends Controller
 {
     /**
-     * 🧾 Menampilkan daftar nota.
+     * dY_ Menampilkan daftar nota.
      */
     public function index()
     {
-        $notas = Nota::with('items.item')->latest()->get();
+        $notas = Nota::with('items.item', 'payments.user', 'user')->latest()->get();
         $items = ItemLaundry::orderBy('name')->get();
 
         return view('admin.nota.index', compact('notas', 'items'));
     }
 
     /**
-     * 💾 Menyimpan data nota baru.
+     * dY'_ Menyimpan data nota baru.
      *
      * Note: front-end may send item fields as arrays: name[0], price[0], quantity[0]
      * so we parse them into an items array here and validate server-side.
@@ -63,7 +64,7 @@ class NotaController extends Controller
                 $p = isset($prices[$i]) ? $prices[$i] : null;
                 $q = isset($qtys[$i]) ? $qtys[$i] : null;
 
-                // push raw — we'll filter/validate after
+                // push raw �?" we'll filter/validate after
                 $items[] = [
                     'name' => $n,
                     'price' => $p,
@@ -100,7 +101,7 @@ class NotaController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // All good — proceed to save
+        // All good �?" proceed to save
         DB::beginTransaction();
         try {
             $total = 0;
@@ -152,11 +153,11 @@ class NotaController extends Controller
     }
 
     /**
-     * 🖨️ Cetak nota dalam format PDF.
+     * dY-"�,? Cetak nota dalam format PDF.
      */
     public function print($id)
     {
-        $nota = Nota::with(['items.item', 'user'])->findOrFail($id);
+        $nota = Nota::with(['items.item', 'user', 'payments'])->findOrFail($id);
         $pdf = Pdf::loadView('admin.nota.print', compact('nota'))
             ->setPaper('A5', 'portrait');
 
@@ -164,16 +165,16 @@ class NotaController extends Controller
     }
 
     /**
-     * 🖨️ Tampilan print HTML langsung.
+     * dY-"�,? Tampilan print HTML langsung.
      */
     public function printToPrinter($id)
     {
-        $nota = Nota::with('items.item')->findOrFail($id);
+        $nota = Nota::with(['items.item', 'user', 'payments'])->findOrFail($id);
         return view('admin.nota.print', compact('nota'));
     }
 
     /**
-     * 💰 Tandai nota sebagai lunas (AJAX).
+     * dY'� Tandai nota sebagai lunas (AJAX).
      */
     public function markLunas(Request $request, $id)
     {
@@ -198,179 +199,152 @@ class NotaController extends Controller
     }
 
     /**
-     * 🔍 Detail nota.
+     * dY'3 Proses pembayaran (AJAX or form)
+     * Request fields: amount (numeric), type (cash|transfer), method (optional)
+     */
+    public function pay(Request $request, $id)
+    {
+        $nota = Nota::findOrFail($id);
+
+        $data = $request->validate([
+            'amount' => 'required|numeric|min:0.01',
+            'type' => 'required|in:cash,transfer',
+            'method' => 'nullable|string|max:100',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
+        ]);
+
+        $amount = floatval($data['amount']);
+        $discountPercent = isset($data['discount_percent']) ? floatval($data['discount_percent']) : 0;
+
+        DB::beginTransaction();
+        try {
+            $discountAmount = 0;
+            if ($discountPercent > 0) {
+                $discountAmount = round(floatval($nota->total) * ($discountPercent / 100), 2);
+                // apply discount to total
+                $nota->total = round(floatval($nota->total) - $discountAmount, 2);
+            }
+
+            // Prevent overpaying beyond updated total �?" cap to remaining sisa
+            $remaining = max(0, floatval($nota->total) - floatval($nota->uang_muka));
+            if ($amount > $remaining) {
+                $amount = $remaining;
+            }
+
+            // Update uang_muka and sisa after discount
+            $newUangMuka = floatval($nota->uang_muka) + $amount;
+            $newSisa = floatval($nota->total) - $newUangMuka;
+            if ($newSisa <= 0) {
+                $newSisa = 0;
+                $newUangMuka = floatval($nota->total);
+            }
+
+            $nota->update([
+                'total' => $nota->total,
+                'uang_muka' => $newUangMuka,
+                'sisa' => $newSisa,
+            ]);
+
+            // If after discount there's nothing left to pay, skip creating a payment
+            if ($amount <= 0) {
+                DB::commit();
+
+                if ($request->ajax()) {
+                    return response()->json([
+                        'message' => 'Diskon diterapkan. Tidak ada pembayaran yang diperlukan.',
+                        'nota' => $nota->fresh()->load('payments.user'),
+                        'payment' => null,
+                        'discount_percent' => $discountPercent,
+                        'discount_amount' => $discountAmount,
+                    ], 200);
+                }
+
+                return redirect()->route('admin.nota.show', $nota->id)->with('success', 'Diskon diterapkan. Tidak ada pembayaran yang diperlukan.');
+            }
+
+            // Create payment record (store discount info per payment)
+            $payment = Payment::create([
+                'nota_id' => $nota->id,
+                'user_id' => Auth::id(),
+                'amount' => $amount,
+                'type' => $data['type'],
+                'method' => $data['method'] ?? null,
+                'discount_percent' => $discountPercent > 0 ? $discountPercent : null,
+                'discount_amount' => $discountAmount > 0 ? $discountAmount : null,
+            ]);
+
+            // eager load user for immediate JSON response
+            $payment->load('user');
+
+            DB::commit();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'message' => 'Pembayaran berhasil diproses.',
+                    'nota' => $nota->fresh()->load('payments.user'),
+                    'payment' => $payment,
+                    'discount_percent' => $discountPercent,
+                    'discount_amount' => $discountAmount,
+                ], 200);
+            }
+
+            return redirect()->route('admin.nota.show', $nota->id)->with('success', 'Pembayaran berhasil.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            if ($request->ajax()) return response()->json(['message' => 'Gagal menyimpan pembayaran: '.$e->getMessage()], 500);
+            return back()->with('error', 'Gagal menyimpan pembayaran: '.$e->getMessage());
+        }
+    }
+
+    /**
+     * dY"? Detail nota.
      */
     public function show($id)
     {
-        $nota = Nota::with(['user', 'items.item'])->findOrFail($id);
+        $nota = Nota::with(['user', 'items.item', 'payments.user'])->findOrFail($id);
         return view('admin.nota.show', compact('nota'));
     }
 
     /**
-     * 🗑️ Hapus nota dan item terkait.
+     * dY-`�,? Hapus nota dan item terkait.
      */
     public function destroy($id)
     {
         $nota = Nota::findOrFail($id);
         $nota->items()->delete();
+        $nota->payments()->delete();
         $nota->delete();
 
         return redirect()->route('admin.nota.index')->with('success', 'Nota berhasil dihapus.');
     }
 
-
-    /* -------------------------------------------
-     | ✨ ✨ FITUR BARU → EDIT & UPDATE NOTA ✨ ✨
-     --------------------------------------------*/
-
     /**
-     * 📌 Menampilkan form edit nota
+     * Hapus banyak nota sekaligus dari halaman index.
      */
-    public function edit($id)
+    public function bulkDestroy(Request $request)
     {
-        $nota = Nota::with('items.item')->findOrFail($id);
-
-        if ($nota->sisa <= 0) {
-            return redirect()->back()->with('error', 'Nota sudah lunas dan tidak bisa diedit.');
+        $ids = $request->input('ids', []);
+        if (!is_array($ids) || empty($ids)) {
+            return redirect()
+                ->route('admin.nota.index')
+                ->with('error', 'Tidak ada nota yang dipilih untuk dihapus.');
         }
 
-        $items = ItemLaundry::orderBy('name')->get();
-        return view('admin.nota.edit', compact('nota', 'items'));
-    }
-
-    /**
-     * 💾 Update data nota
-     */
-    public function update(Request $r, $id)
-    {
-        // basic validation for customer and uang_muka
-        $basic = Validator::make($r->all(), [
-            'customer_name' => 'required|string|max:100',
-            'customer_address' => 'nullable|string|max:255',
-            'tgl_keluar' => 'nullable|date',
-            'uang_muka' => 'nullable|numeric|min:0',
-        ]);
-
-        if ($basic->fails()) {
-            if ($r->ajax()) return response()->json(['errors' => $basic->errors()], 422);
-            return back()->withErrors($basic)->withInput();
-        }
-
-        // Build items array from request same as in store()
-        $items = [];
-        if ($r->has('items') && is_array($r->items)) {
-            $items = $r->items;
-        } else {
-            $names = $r->input('name', []);
-            $prices = $r->input('price', []);
-            $qtys = $r->input('quantity', []);
-
-            $max = max(count($names), count($prices), count($qtys));
-            for ($i = 0; $i < $max; $i++) {
-                $n = isset($names[$i]) ? trim($names[$i]) : '';
-                $p = isset($prices[$i]) ? $prices[$i] : null;
-                $q = isset($qtys[$i]) ? $qtys[$i] : null;
-
-                $items[] = [
-                    'name' => $n,
-                    'price' => $p,
-                    'quantity' => $q,
-                ];
-            }
-        }
-
-        // Remove empty rows
-        $items = array_filter($items, function ($row) {
-            $name = isset($row['name']) ? trim($row['name']) : '';
-            $price = isset($row['price']) ? floatval($row['price']) : 0;
-            $qty = isset($row['quantity']) ? floatval($row['quantity']) : 0;
-            return !($name === '' && $price == 0 && $qty == 0);
-        });
-
-        if (count($items) === 0) {
-            $msg = ['items' => ['Minimal harus ada 1 item laundry.']];
-            if ($r->ajax()) return response()->json(['errors' => $msg], 422);
-            return back()->withErrors($msg)->withInput();
-        }
-
-        // validate each item
-        $itemRules = [];
-        foreach (array_values($items) as $i => $row) {
-            $itemRules["items.$i.name"] = 'required|string|max:100';
-            $itemRules["items.$i.price"] = 'required|numeric|min:0';
-            $itemRules["items.$i.quantity"] = 'required|numeric|min:1';
-        }
-
-        $validator = Validator::make(['items' => array_values($items)], $itemRules);
-        if ($validator->fails()) {
-            if ($r->ajax()) return response()->json(['errors' => $validator->errors()], 422);
-            return back()->withErrors($validator)->withInput();
-        }
-
-        DB::beginTransaction();
-        try {
-            $nota = Nota::findOrFail($id);
-
-            if ($nota->sisa <= 0) {
-                $msg = 'Nota sudah lunas dan tidak bisa diedit.';
-                if ($r->ajax()) return response()->json(['message' => $msg], 403);
-                return back()->with('error', $msg);
-            }
-
-            $total = 0;
-            foreach ($items as $row) {
-                $total += floatval($row['price']) * floatval($row['quantity']);
-            }
-
-            $uangMuka = $r->input('uang_muka', 0) ? floatval($r->input('uang_muka', 0)) : 0;
-            $sisa = $total - $uangMuka;
-
-            $nota->update([
-                'customer_name' => $r->input('customer_name'),
-                'customer_address' => $r->input('customer_address'),
-                'tgl_keluar' => $r->input('tgl_keluar'),
-                'total' => $total,
-                'uang_muka' => $uangMuka,
-                'sisa' => $sisa,
-            ]);
-
-            // Delete old items and insert new ones
+        $notas = Nota::whereIn('id', $ids)->get();
+        foreach ($notas as $nota) {
             $nota->items()->delete();
-
-            foreach ($items as $row) {
-                $item = ItemLaundry::firstOrCreate([
-                    'name' => $row['name']
-                ], [
-                    'price' => $row['price'] ?? 0
-                ]);
-
-                NotaItem::create([
-                    'nota_id' => $nota->id,
-                    'item_id' => $item->id,
-                    'quantity' => $row['quantity'],
-                    'price' => $row['price'],
-                    'subtotal' => floatval($row['price']) * floatval($row['quantity']),
-                ]);
-            }
-
-            DB::commit();
-
-            if ($r->ajax()) {
-                return response()->json(['message' => 'Nota berhasil diperbarui', 'nota' => $nota], 200);
-            }
-
-            // redirect to show nota by default
-            return redirect()->route('admin.nota.show', $id)->with('success', 'Nota berhasil diperbarui!');
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            if ($r->ajax()) return response()->json(['message' => 'Gagal memperbarui nota', 'error' => $e->getMessage()], 500);
-            return back()->with('error', 'Gagal memperbarui nota: ' . $e->getMessage());
+            $nota->payments()->delete();
+            $nota->delete();
         }
+
+        return redirect()
+            ->route('admin.nota.index')
+            ->with('success', 'Nota terpilih berhasil dihapus.');
     }
 
 
     /* ---------------------------------------------------
-     | 📊 Bagian Laporan (DIPERBAIKI: pendapatan hanya nota LUNAS)
+     | dY"S Bagian Laporan (DIPERBAIKI: pendapatan hanya nota LUNAS)
      --------------------------------------------------- */
 
     public function laporan()
@@ -392,12 +366,17 @@ class NotaController extends Controller
         $nota_bulanan = Nota::whereBetween('created_at', [$startOfMonth, now()])->count();
         $nota_tahunan = Nota::whereBetween('created_at', [$startOfYear, now()])->count();
 
-        $notas = Nota::latest()->get();
+        // eager load payments so laporan view can show payment breakdown per nota
+        $notas = Nota::with('payments.user', 'kasir')->latest()->get();
+
+        // Totals by payment type (cash vs transfer) across all payments (only dari tabel payments)
+        $totalCash = Payment::where('type', 'cash')->sum('amount');
+        $totalTransfer = Payment::where('type', 'transfer')->sum('amount');
 
         return view('admin.laporan', compact(
             'harian', 'mingguan', 'bulanan', 'tahunan',
             'nota_harian', 'nota_mingguan', 'nota_bulanan', 'nota_tahunan',
-            'notas'
+            'notas', 'totalCash', 'totalTransfer'
         ));
     }
 

@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
         // ✅ Jalankan seeder lain jika ada (misalnya layanan default, dll)
         $this->call([
             AdminAndServicesSeeder::class,
+            TeamMemberSeeder::class,
         ]);
 
         // ✅ Buat akun Admin

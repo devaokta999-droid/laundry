@@ -104,7 +104,7 @@
                     @enderror
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label for="description" class="form-label">Deskripsi</label>
                     <textarea 
                         id="description" 
@@ -117,21 +117,7 @@
                     @enderror
                 </div>
 
-                <div class="mb-4">
-                    <label for="price" class="form-label">Harga (Rp)</label>
-                    <input 
-                        type="number" 
-                        id="price" 
-                        name="price" 
-                        class="form-control @error('price') is-invalid @enderror"
-                        value="{{ old('price', $service->price) }}" 
-                        min="0" 
-                        step="1000"
-                        required>
-                    @error('price')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+                {{-- 🚫 Kolom harga telah dihapus --}}
 
                 <button type="submit" class="btn-macos mb-3">
                     Perbarui Layanan

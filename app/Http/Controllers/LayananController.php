@@ -13,6 +13,15 @@ class LayananController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+
+        // Batasi hanya role admin & deva yang boleh mengakses semua aksi layanan
+        $this->middleware(function ($request, $next) {
+            $user = auth()->user();
+            if (!$user || !in_array($user->role, ['admin', 'deva'])) {
+                abort(403, 'Akses ditolak - hanya admin dan deva yang dapat mengakses menu layanan.');
+            }
+            return $next($request);
+        });
     }
 
     /**
@@ -41,13 +50,11 @@ class LayananController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
         ]);
 
         Service::create([
             'name' => $request->name,
             'description' => $request->description,
-            'price' => $request->price,
         ]);
 
         return redirect()->route('layanan.index')->with('success', '✅ Layanan berhasil ditambahkan!');
@@ -70,14 +77,12 @@ class LayananController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
         ]);
 
         $service = Service::findOrFail($id);
         $service->update([
             'name' => $request->name,
             'description' => $request->description,
-            'price' => $request->price,
         ]);
 
         return redirect()->route('layanan.index')->with('success', '✅ Layanan berhasil diperbarui!');

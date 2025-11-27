@@ -2,7 +2,6 @@
 
 @section('content')
 <style>
-    /* 🌈 Font & Layout */
     html, body {
         height: 100%;
         margin: 0;
@@ -11,7 +10,6 @@
         font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
     }
 
-    /* 🩵 Full center alignment */
     .login-page-wrapper {
         min-height: 100vh;
         display: flex;
@@ -20,7 +18,6 @@
         padding: 20px;
     }
 
-    /* 🌤️ Container */
     .login-container {
         display: flex;
         background: rgba(255, 255, 255, 0.25);
@@ -41,7 +38,6 @@
         transform: translateY(-3px);
     }
 
-    /* 🧍‍♂️ Left side */
     .login-illustration {
         flex: 1;
         background: linear-gradient(135deg, #e0e7ff, #f3f4f6);
@@ -56,10 +52,8 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-radius: 0;
     }
 
-    /* 💻 Right side - form */
     .login-card {
         flex: 1;
         background: rgba(255, 255, 255, 0.55);
@@ -70,7 +64,6 @@
         justify-content: center;
     }
 
-    /* 🍎 Logo */
     .login-logo {
         display: flex;
         justify-content: center;
@@ -81,21 +74,13 @@
     .login-logo img {
         width: 100px;
         height: auto;
-        max-height: 100px;
         border-radius: 20px;
         object-fit: contain;
         background: white;
         padding: 5px;
         box-shadow: 0 6px 30px rgba(0, 122, 255, 0.35);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .login-logo img:hover {
-        transform: scale(1.05);
-        box-shadow: 0 8px 40px rgba(0, 122, 255, 0.45);
-    }
-
-    /* ✨ Heading */
     .login-card h3 {
         font-weight: 600;
         color: #1a1a1a;
@@ -110,7 +95,6 @@
         margin-bottom: 25px;
     }
 
-    /* 📧 Input fields */
     .form-control {
         border-radius: 14px;
         border: 1px solid rgba(0, 0, 0, 0.1);
@@ -127,7 +111,6 @@
         background: rgba(255, 255, 255, 0.9);
     }
 
-    /* 👁️ Password field wrapper */
     .password-wrapper {
         position: relative;
     }
@@ -143,11 +126,6 @@
         transition: color 0.2s ease;
     }
 
-    .password-toggle:hover {
-        color: #007aff;
-    }
-
-    /* 🔘 Button */
     .btn-primary {
         border-radius: 14px;
         background: linear-gradient(135deg, #007aff, #0056d8);
@@ -159,50 +137,17 @@
         padding: 12px 0;
     }
 
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #0066e0, #004ec2);
-        transform: translateY(-1px);
-    }
-
-    /* ⚠️ Error alert */
-    .alert {
-        border-radius: 12px;
-        font-size: 0.9rem;
-    }
-
-    /* 🩶 Register link */
-    .register-link {
-        margin-top: 18px;
-        font-size: 0.88rem;
-        color: #555;
-    }
-
-    .register-link a {
-        color: #007aff;
-        font-weight: 500;
-        text-decoration: none;
-        transition: color 0.2s ease;
-    }
-
-    .register-link a:hover {
-        color: #004ec2;
-        text-decoration: underline;
-    }
-
-    /* 🍎 Footer */
     .login-footer {
         margin-top: 25px;
         color: #555;
         font-size: 0.85rem;
     }
 
-    /* ✨ Animation */
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(20px); }
         to { opacity: 1; transform: translateY(0); }
     }
 
-    /* 📱 Responsive */
     @media (max-width: 768px) {
         .login-container {
             flex-direction: column;
@@ -221,23 +166,19 @@
 
         .login-logo img {
             width: 80px;
-            max-height: 80px;
         }
     }
 </style>
 
-{{-- Bootstrap Icons --}}
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
 
 <div class="login-page-wrapper">
     <div class="login-container">
 
-        {{-- 🧍‍♂️ Left Illustration --}}
         <div class="login-illustration">
             <img src="{{ asset('images/picture.jpg') }}" alt="Login Illustration">
         </div>
 
-        {{-- 💻 Right Login Form --}}
         <div class="login-card">
             <div class="login-logo">
                 <img src="{{ asset('images/header.png') }}" alt="Deva Laundry Logo">
@@ -252,58 +193,74 @@
                 </div>
             @endif
 
+            @if(session('new_password'))
+                <div class="alert alert-success">
+                    Password baru untuk <strong>{{ session('email') }}</strong>:<br>
+                    <code>{{ session('new_password') }}</code><br>
+                    Silakan gunakan password ini untuk login, lalu ganti di menu yang sesuai.
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('login') }}">
                 @csrf
 
                 <div class="mb-3 text-start">
                     <label class="form-label fw-semibold">Email</label>
-                    <input type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus>
+                    <input type="email" class="form-control" id="login-email" name="email" value="{{ old('email') ?? session('email') }}" required autofocus>
                 </div>
 
                 <div class="mb-3 text-start">
                     <label class="form-label fw-semibold">Password</label>
                     <div class="password-wrapper">
                         <input type="password" class="form-control" id="password" name="password" required>
-                        {{-- FIX: Mengganti ikon awal menjadi bi-eye-slash (mata tertutup) karena input type adalah password --}}
                         <span class="password-toggle" onclick="togglePassword()">
-                            <i class="bi bi-eye-slash"></i> 
+                            <i class="bi bi-eye-slash"></i>
                         </span>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary w-100">Sign In</button>
+                <button type="submit" class="btn btn-primary w-100 mb-2">Sign In</button>
             </form>
 
-            {{-- 🔗 Register link --}}
-            <div class="register-link">
-                Don’t have an account?
-                <a href="{{ route('register') }}">Register here</a>
-            </div>
+            <form method="POST" action="{{ route('password.forgot') }}" id="forgotForm">
+                @csrf
+                <input type="hidden" name="email" id="forgot-email">
+                <button type="button" class="btn btn-link p-0" onclick="submitForgotPassword()">Lupa password?</button>
+            </form>
 
             <div class="login-footer">
-                © {{ date('Y') }} Deva Laundry 
+                © {{ date('Y') }} Deva Laundry
             </div>
         </div>
     </div>
 </div>
 
-{{-- 👁️ JavaScript for toggle password --}}
 <script>
     function togglePassword() {
         const passwordField = document.getElementById('password');
         const toggleIcon = document.querySelector('.password-toggle i');
 
         if (passwordField.type === 'password') {
-            // Ubah ke 'text' (Show Password)
             passwordField.type = 'text';
             toggleIcon.classList.remove('bi-eye-slash');
-            toggleIcon.classList.add('bi-eye'); // Ikon mata terbuka
+            toggleIcon.classList.add('bi-eye');
         } else {
-            // Ubah ke 'password' (Hide Password)
             passwordField.type = 'password';
             toggleIcon.classList.remove('bi-eye');
-            toggleIcon.classList.add('bi-eye-slash'); // Ikon mata tertutup
+            toggleIcon.classList.add('bi-eye-slash');
         }
+    }
+
+    function submitForgotPassword() {
+        const emailInput = document.getElementById('login-email');
+        const hiddenEmail = document.getElementById('forgot-email');
+        if (!emailInput.value) {
+            alert('Isi email dulu sebelum reset password.');
+            emailInput.focus();
+            return;
+        }
+        hiddenEmail.value = emailInput.value;
+        document.getElementById('forgotForm').submit();
     }
 </script>
 @endsection

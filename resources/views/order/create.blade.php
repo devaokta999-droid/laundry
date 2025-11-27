@@ -51,12 +51,11 @@
                         <div class="d-flex align-items-center mb-2 border-bottom pb-2">
                             <input type="checkbox"
                                 class="me-2 service-checkbox"
-                                data-price="{{ $s->price }}"
                                 value="{{ $s->id }}"
                                 name="service_ids[]">
                             <div class="flex-grow-1">
                                 <strong>{{ $s->title }}</strong>
-                                <small class="text-muted d-block">Rp {{ number_format($s->price, 0, ',', '.') }}</small>
+                                <small class="text-muted d-block">{{ $s->description }}</small>
                             </div>
                             <input type="number" name="qty[]" min="1" value="1"
                                 class="form-control w-25 ms-3 qty-input">
@@ -89,11 +88,9 @@
             </div>
         </div>
 
-        {{-- ✅ Total dan Tombol Kirim --}}
+        {{-- ❌ Bagian Total Pembayaran Dihapus --}}
         <div class="card shadow-sm">
             <div class="card-body text-center">
-                <h5 class="mb-3">Total Pembayaran</h5>
-                <h4 class="text-success mb-3">Rp <span id="totalDisplay">0</span></h4>
                 <button type="submit" class="btn btn-primary px-5">
                     Kirim Pesanan & Chat WA Admin
                 </button>
@@ -105,22 +102,6 @@
 
 @push('scripts')
 <script>
-function calculateTotal() {
-    let total = 0;
-    document.querySelectorAll('#servicesList .d-flex').forEach(function(div) {
-        const checkbox = div.querySelector('.service-checkbox');
-        const qty = div.querySelector('.qty-input');
-        if (checkbox.checked) {
-            const price = parseFloat(checkbox.dataset.price || 0);
-            const q = parseInt(qty.value || 1);
-            total += price * q;
-        }
-    });
-    document.getElementById('totalDisplay').innerText = new Intl.NumberFormat('id-ID').format(total);
-}
-
-document.addEventListener('change', calculateTotal);
-document.addEventListener('input', calculateTotal);
-calculateTotal();
+// Tidak ada perhitungan total karena harga sudah tidak digunakan
 </script>
 @endpush

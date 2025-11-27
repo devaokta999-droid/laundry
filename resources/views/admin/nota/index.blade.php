@@ -2,6 +2,96 @@
 
 @section('content')
 <div class="container mt-4">
+    <style>
+        /* Action buttons layout for nota rows: horizontal, spaced, wrap if needed */
+        .nota-actions{
+            display:flex;
+            gap:0.5rem;
+            flex-wrap:wrap;
+            align-items:center;
+            justify-content:flex-start;
+        }
+        .nota-actions .btn{
+            white-space:nowrap;
+        }
+        @media (max-width: 992px){
+            .nota-actions{gap:0.35rem}
+        }
+        /* Compact badge for unpaid notes */
+        .badge-belum{
+            background: #ff4d4f;
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            line-height: 1;
+            display: inline-block;
+            vertical-align: middle;
+            min-width: 62px;
+            text-align: center;
+        }
+        /* macOS-style date picker wrapper */
+        .macos-date-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .macos-date-input {
+            border-radius: 14px;
+            padding: 10px 40px 10px 14px;
+            height: 48px;
+            font-size: 0.95rem;
+            border: 1px solid rgba(0,0,0,0.12);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+        }
+        .macos-date-input:focus {
+            border-color: #007aff;
+            box-shadow: 0 0 0 3px rgba(0,122,255,0.2);
+        }
+        .macos-date-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #007aff;
+            cursor: pointer;
+            font-size: 18px;
+            pointer-events: auto;
+        }
+        /* macOS glassy refresh button */
+        .mac-refresh-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.6);
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #0f172a;
+            background: linear-gradient(135deg, #f9fafb, #e5f1ff);
+            box-shadow: 0 6px 18px rgba(15,23,42,0.12);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            transition: all 0.18s ease;
+        }
+        .mac-refresh-btn-icon {
+            width: 16px;
+            height: 16px;
+        }
+        .mac-refresh-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 26px rgba(15,23,42,0.18);
+            background: linear-gradient(135deg, #e8f2ff, #ffffff);
+        }
+        .mac-refresh-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(15,23,42,0.18) inset;
+        }
+    </style>
     <h3 class="mb-4 text-primary fw-bold"> Nota Deva Laundry Satuan Digital</h3>
 
     {{-- ✅ Notifikasi sukses & error --}}
@@ -26,13 +116,16 @@
             </div>
             <div class="col-md-2">
                 <label class="fw-semibold">Tanggal Keluar</label>
-                <input type="date" name="tgl_keluar" class="form-control">
+                <div class="macos-date-wrapper">
+                    <input type="date" name="tgl_keluar" id="tgl_keluar" class="form-control macos-date-input">
+                    <span class="macos-date-icon" id="tgl_keluar_icon">&#128197;</span>
+                </div>
             </div>
             {{-- ✅ Tambahan: Tombol Refresh (Diubah menggunakan tag <img>) --}}
             <div class="col-md-2 d-flex align-items-end">
-                <button type="button" class="btn btn-light w-100 fw-semibold" onclick="window.location.reload();">
+                <button type="button" class="mac-refresh-btn" onclick="window.location.reload();">
                     {{-- Ganti SVG dengan tag IMG yang merujuk ke refresh.png. Sesuaikan path asset() jika perlu. --}}
-                    <img src="{{ asset('images/rfsh.png') }}" alt="Refresh Icon" style="width: 16px; height: 16px; margin-right: 5px; vertical-align: text-bottom;">
+                    <img src="{{ asset('images/rfsh.png') }}" alt="Refresh" class="mac-refresh-btn-icon">
                     Refresh
                 </button>
             </div>
@@ -71,9 +164,10 @@
                 <div class="mb-2">
                     <label class="fw-semibold">Uang Muka (Rp)</label>
                     <input type="number" name="uang_muka" id="uang_muka" class="form-control" value="0" min="0">
+                    <div class="form-text">Masukkan uang muka jika pelanggan membayar di awal.</div>
                 </div>
                 <div class="mb-2">
-                    <label class="fw-semibold">Sisa Pembayaran (Rp)</label>
+                    <label class="fw-semibold">Sisa (Rp)</label>
                     <input type="text" id="sisa" class="form-control" readonly>
                 </div>
                 <button type="submit" class="btn btn-success w-100 mt-3 fw-semibold" id="submitNota">Simpan Nota</button>
@@ -99,80 +193,219 @@
             <input type="text" id="searchNota" class="form-control ps-5" placeholder="Cari nama pelanggan atau tanggal...">
         </div>
     </div>
+    <div class="d-flex justify-content-end mb-3 gap-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary filter-status-riwayat active" data-status="all">
+            Semua
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-success filter-status-riwayat" data-status="lunas">
+            Lunas
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-warning filter-status-riwayat" data-status="belum">
+            Belum Lunas
+        </button>
+    </div>
 
-    <div class="table-responsive">
+    <form method="POST" action="{{ route('admin.nota.bulk_destroy') }}" id="bulkDeleteForm">
+        @csrf
+        @method('DELETE')
+        <div class="d-flex justify-content-between mb-2">
+            <div>
+                <button type="submit" class="btn btn-sm btn-danger"
+                        onclick="return confirm('Yakin ingin menghapus nota yang dipilih?')">
+                    Hapus Terpilih
+                </button>
+            </div>
+        </div>
+        <div class="table-responsive">
         <table class="table table-striped align-middle text-center" id="tableRiwayat">
             <thead class="table-light">
                 <tr>
+                    <th>
+                        <input type="checkbox" id="select_all_nota">
+                    </th>
                     <th>#</th>
                     <th>Nama Pelanggan</th>
-                    <th>Tanggal Keluar</th>
+                    <th>Kasir</th>
+                    <th>Tanggal</th>
+                    <th>Pembayaran</th>
+                    <th>Terbayar (Rp)</th>
+                    <th>Uang Muka (Rp)</th>
+                    <th>Sisa (Rp)</th>
+                    <th>Total Awal (Rp)</th>
                     <th>Total (Rp)</th>
-                    <th>Uang Muka</th>
-                    <th>Sisa</th>
-                    <th>Dibuat Oleh</th>
+                    <th>Diskon (Rp)</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($notas as $n)
                 <tr data-nota-id="{{ $n->id }}">
+                    <td>
+                        <input type="checkbox" name="ids[]" class="nota-checkbox" value="{{ $n->id }}">
+                    </td>
                     <td>{{ $loop->iteration }}</td>
                     <td class="nama-customer">{{ $n->customer_name }}</td>
+                    <td class="nama-kasir">{{ optional($n->user)->name ?? '-' }}</td>
                     <td class="tgl-keluar">{{ $n->tgl_keluar ? \Carbon\Carbon::parse($n->tgl_keluar)->format('Y-m-d') : '-' }}</td>
-                    <td class="cell-total">{{ number_format($n->total, 0, ',', '.') }}</td>
-                    <td class="cell-uang-muka">{{ number_format($n->uang_muka, 0, ',', '.') }}</td>
-                    <td class="cell-sisa">{{ number_format($n->sisa, 0, ',', '.') }}</td>
-                    <td>{{ $n->user->name ?? '-' }}</td>
-                    <td>
-                        {{-- Tombol Print langsung (kiri dari Cetak PDF) --}}
-                        <a href="{{ route('admin.nota.print_direct', $n->id) }}" class="btn btn-sm btn-secondary" target="_blank" title="Cetak langsung ke printer">
-                            Print
-                        </a>
-
-                        {{-- Tombol Cetak PDF (sudah ada, jangan dihapus) --}}
-                        <a href="{{ route('admin.nota.print', $n->id) }}" class="btn btn-sm btn-primary" target="_blank">
-                            Cetak PDF
-                        </a>
-
-                        {{-- Tombol Lunas (di sebelah kanan Cetak PDF) --}}
-                        <button type="button"
-                                class="btn btn-sm btn-success btn-lunas"
-                                data-id="{{ $n->id }}"
-                                @if($n->sisa <= 0) disabled @endif>
-                            @if($n->sisa <= 0) Lunas @else Tandai Lunas @endif
-                        </button>
-
-                        {{-- ✅ Tambahan baru: Tombol Show Nota (sebelah kanan tombol Lunas) --}}
-                        <a href="{{ route('admin.nota.show', $n->id) }}" 
-                           class="btn btn-sm btn-info" 
-                           target="_blank" 
-                           title="Lihat detail nota">
-                            Show Nota
-                        </a>
-
-                        {{-- ✅ Tambahan baru: Badge Notifikasi "Belum Lunas" (Desain C: icon + teks) --}}
-                        {{-- Tampilkan hanya jika sisa > 0 --}}
-                        @if($n->sisa > 0)
-                            <span class="badge-belum ms-2" style="background:#ff4d4f;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px;vertical-align:middle;">
-                            Belum Lunas
-                            </span>
+                    <td class="pembayaran-cell">
+                        @php
+                            $payments = $n->payments ?? collect();
+                            $cashTotal = $payments->where('type','cash')->sum('amount');
+                            $transferGrouped = $payments->where('type','transfer')->groupBy('method');
+                            $totalDiscount = $payments->sum('discount_amount');
+                        @endphp
+                        @if($cashTotal > 0)
+                            <span class="badge bg-success">Cash: {{ number_format($cashTotal,0,',','.') }}</span>
                         @endif
+                        @foreach($transferGrouped as $method => $group)
+                            @php $methodLabel = $method ? ucfirst($method) : 'Transfer'; @endphp
+                            <span class="badge bg-info text-dark">Transfer ({{ $methodLabel }}): {{ number_format($group->sum('amount'),0,',','.') }}</span>
+                        @endforeach
+                        @if($totalDiscount > 0)
+                            <span class="badge bg-warning text-dark">Diskon: {{ number_format($totalDiscount,0,',','.') }}</span>
+                        @endif
+                        @if($payments->count() == 0)
+                            <span class="text-muted">-</span>
+                        @endif
+                    </td>
+                    <td class="cell-terbayar">{{ number_format($n->payments ? $n->payments->sum('amount') : 0, 0, ',', '.') }}</td>
+                    <td class="cell-uang-muka">{{ number_format($n->uang_muka ?? 0, 0, ',', '.') }}</td>
+                    <td class="cell-sisa">{{ number_format($n->sisa ?? max(0, $n->total - ($n->payments ? $n->payments->sum('amount') : 0)), 0, ',', '.') }}</td>
+                    <td class="cell-original">{{ number_format($n->items ? $n->items->sum('subtotal') : $n->total, 0, ',', '.') }}</td>
+                    <td class="cell-total">{{ number_format($n->total, 0, ',', '.') }}</td>
+                    <td class="cell-diskon">{{ number_format($n->payments ? $n->payments->sum('discount_amount') : 0, 0, ',', '.') }}</td>
+                    <td>
+                        <div class="nota-actions">
+                            @php
+                                $terbayar = $n->payments ? $n->payments->sum('amount') : 0;
+                                $sisa_now = max(0, $n->total - $terbayar);
+                            @endphp
+
+                            {{-- Tombol Print langsung (kiri dari Cetak PDF) --}}
+                            <a href="{{ route('admin.nota.print_direct', $n->id) }}" class="btn btn-sm btn-secondary" target="_blank" title="Cetak langsung ke printer">Print</a>
+
+                            {{-- Tombol Cetak PDF (sudah ada, jangan dihapus) --}}
+                            <a href="{{ route('admin.nota.print', $n->id) }}" class="btn btn-sm btn-primary" target="_blank">Cetak PDF</a>
+
+                            {{-- Tombol Show Nota --}}
+                            <a href="{{ route('admin.nota.show', $n->id) }}" class="btn btn-sm btn-info" target="_blank" title="Lihat detail nota">Show Nota</a>
+
+                            {{-- Badge Lunas / Belum Lunas --}}
+                            @if($sisa_now <= 0)
+                                <span class="badge bg-success badge-lunas">Lunas</span>
+                            @else
+                                <span class="badge-belum">Belum Lunas</span>
+                            @endif
+                        </div>
                     </td>
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" class="text-muted">Belum ada nota dibuat.</td>
+                    <td colspan="13" class="text-muted">Belum ada nota dibuat.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
-    </div>
+        </div>
+    </form>
 </div>
 
 {{-- ✅ Script Dinamis --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Modal Pembayaran (digunakan oleh index) -->
+<div class="modal fade" id="modalPayIndex" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Pembayaran</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="payFormIndex">
+                <div class="modal-body">
+                    @csrf
+                    <input type="hidden" id="payNotaId" name="nota_id" value="">
+
+                    <div class="mb-3">
+                        <label class="form-label">Tipe Pembayaran</label>
+                        <select name="type" id="paymentTypeIdx" class="form-select" required>
+                            <option value="cash">Cash</option>
+                            <option value="transfer">Transfer</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="methodWrapperIdx" style="display:none;">
+                        <label class="form-label">Metode Transfer</label>
+                        <select name="method" id="paymentMethodIdx" class="form-select">
+                            <option value="gopay">Gopay</option>
+                            <option value="dana">Dana</option>
+                            <option value="shopeepay">ShopeePay</option>
+                            <option value="paylater">PayLater</option>
+                            <option value="bca">BCA</option>
+                            <option value="bni">BNI</option>
+                            <option value="qris">QRIS</option>
+                            <option value="lainnya">Lainnya</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Diskon (%) <small class="text-muted">opsional</small></label>
+                        <input type="number" step="0.01" min="0" max="100" name="discount_percent" id="discountPercentIdx" class="form-control" value="0">
+                        <div class="form-text mb-2">Diskon persentase yang diterapkan ke total nota sebelum menghitung sisa.</div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Total Setelah Diskon (Rp)</label>
+                            <input type="text" id="discountedTotalIdx" class="form-control" readonly>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Diskon (Rp)</label>
+                            <input type="text" id="discountAmountIdx" class="form-control" readonly>
+                        </div>
+
+                        <div class="mb-2" id="cashGivenWrapperIdx">
+                            <label class="form-label">Uang Diterima (Cash) (Rp)</label>
+                            <input type="number" step="0.01" min="0.01" id="cashGivenIdx" class="form-control">
+                            <div class="form-text">Isi jika pembayaran tunai, untuk menghitung kembalian.</div>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label">Kembalian (Rp)</label>
+                            <input type="text" id="changeIdx" class="form-control" readonly>
+                        </div>
+
+                        <label class="form-label">Jumlah Bayar (Rp)</label>
+                        <input type="number" step="0.01" min="0.01" name="amount" id="payAmountIdx" class="form-control" value="0" required>
+                        <div class="form-text">Masukkan jumlah yang dibayarkan (default: sisa setelah diskon).</div>
+                    </div>
+
+                    <div id="payAlertIdx" class="alert alert-danger d-none" role="alert"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Proses Bayar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // macOS-style date input: click icon to open native picker
+    const tglKeluarInput = document.getElementById('tgl_keluar');
+    const tglKeluarIcon = document.getElementById('tgl_keluar_icon');
+    if (tglKeluarInput && tglKeluarIcon) {
+        tglKeluarIcon.addEventListener('click', function () {
+            try {
+                if (tglKeluarInput.showPicker) {
+                    tglKeluarInput.showPicker();
+                } else {
+                    tglKeluarInput.focus();
+                }
+            } catch (e) {
+                tglKeluarInput.focus();
+            }
+        });
+    }
+
     const notaBody = document.getElementById('notaBody');
 
     const itemList = [
@@ -285,14 +518,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
         document.getElementById('total').value = total;
         document.getElementById('total_qty').value = totalQty;
-        const uangMuka = parseInt(document.getElementById('uang_muka').value || 0);
-        document.getElementById('sisa').value = Math.max(0, total - uangMuka);
+        // compute formatted sisa = total - uang_muka (allow any uang_muka input)
+        const uangMukaEl = document.getElementById('uang_muka');
+        const sisaEl = document.getElementById('sisa');
+        const formatter = new Intl.NumberFormat('id-ID');
+        let um = 0;
+        if (uangMukaEl) {
+            um = parseInt(uangMukaEl.value || 0, 10) || 0;
+        }
+        const sisaVal = total - um; // can be negative if uang_muka > total
+        if (sisaEl) sisaEl.value = formatter.format(sisaVal);
     }
 
     notaBody.addEventListener('input', e => {
         if (e.target.classList.contains('item-qty') || e.target.classList.contains('item-price')) recalc();
     });
-    document.getElementById('uang_muka').addEventListener('input', recalc);
+    // listen to uang_muka changes to update sisa
+    const uangMukaInput = document.getElementById('uang_muka');
+    if (uangMukaInput) {
+        uangMukaInput.addEventListener('input', recalc);
+    }
 
     notaBody.addEventListener('click', e => {
         if (e.target.classList.contains('removeRow')) {
@@ -355,70 +600,305 @@ document.addEventListener('DOMContentLoaded', function () {
 
     recalc();
 
-    const csrfToken = '{{ csrf_token() }}';
-    document.querySelectorAll('.btn-lunas').forEach(btn => {
-        btn.addEventListener('click', async function () {
-            if (!confirm('Tandai nota ini sebagai LUNAS? Tindakan ini akan mengatur uang muka = total dan sisa = 0.')) return;
-
-            const notaId = this.dataset.id;
-            const self = this;
-            self.disabled = true;
-            self.textContent = 'Memproses...';
-
+    // Update badges based on sisa value for all existing rows
+    function refreshBadgesFromSisa(){
+        document.querySelectorAll('#tableRiwayat tbody tr[data-nota-id]').forEach(row => {
             try {
-                const res = await fetch("{{ url('admin/nota') }}/" + notaId + "/lunas", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({})
-                });
-
-                const data = await res.json();
-                if (res.ok) {
-                    const row = document.querySelector('tr[data-nota-id="'+notaId+'"]');
-                    if (row) {
-                        const totalCell = row.querySelector('.cell-total');
-                        const uangMukaCell = row.querySelector('.cell-uang-muka');
-                        const sisaCell = row.querySelector('.cell-sisa');
-                        const badge = row.querySelector('.badge-belum');
-
-                        if (data.nota) {
-                            const formatter = new Intl.NumberFormat('id-ID');
-                            uangMukaCell.textContent = formatter.format(data.nota.uang_muka || 0);
-                            sisaCell.textContent = formatter.format(data.nota.sisa || 0);
-
-                            // Jika sisa sudah 0 atau kurang, sembunyikan badge
-                            if (parseInt(data.nota.sisa || 0) <= 0) {
-                                if (badge) badge.style.display = 'none';
-                            }
-                        } else if (totalCell) {
-                            const totalText = totalCell.textContent.replace(/\./g,'').replace(/,/g,'');
-                            const totalVal = parseInt(totalText) || 0;
-                            uangMukaCell.textContent = new Intl.NumberFormat('id-ID').format(totalVal);
-                            sisaCell.textContent = new Intl.NumberFormat('id-ID').format(0);
-                            if (badge) badge.style.display = 'none';
-                        }
-                    }
-
-                    self.textContent = 'Lunas';
-                    self.disabled = true;
-                    alert(data.message || 'Nota berhasil ditandai lunas.');
+                const sisaText = row.querySelector('.cell-sisa')?.textContent || '0';
+                const digits = sisaText.toString().replace(/[^0-9-]/g,'');
+                const sisaVal = digits === '' ? 0 : parseInt(digits,10);
+                const actionsDiv = row.querySelector('.nota-actions');
+                if (!actionsDiv) return;
+                // remove existing badge elements
+                const oldLunas = actionsDiv.querySelector('.badge-lunas');
+                const oldBelum = actionsDiv.querySelector('.badge-belum');
+                if (oldLunas) oldLunas.remove();
+                if (oldBelum) oldBelum.remove();
+                if (sisaVal <= 0) {
+                    const el = document.createElement('span'); el.className = 'badge bg-success badge-lunas'; el.textContent = 'Lunas'; actionsDiv.appendChild(el);
                 } else {
-                    self.disabled = false;
-                    self.textContent = 'Tandai Lunas';
-                    alert(data.message || 'Gagal menandai lunas. Coba lagi.');
+                    const el = document.createElement('span'); el.className = 'badge-belum'; el.textContent = 'Belum Lunas'; actionsDiv.appendChild(el);
                 }
-            } catch (err) {
-                console.error(err);
-                self.disabled = false;
-                self.textContent = 'Tandai Lunas';
-                alert('Terjadi kesalahan jaringan. Coba lagi.');
-            }
+            } catch(e){}
+        });
+    }
+
+    // run once on load to ensure badges match server values
+    refreshBadgesFromSisa();
+
+    const csrfToken = '{{ csrf_token() }}';
+    // Payment modal logic for index
+    const payFormIdx = document.getElementById('payFormIndex');
+    const payNotaIdInput = document.getElementById('payNotaId');
+    const payAmountIdx = document.getElementById('payAmountIdx');
+    const discountPercentIdx = document.getElementById('discountPercentIdx');
+    const paymentTypeIdx = document.getElementById('paymentTypeIdx');
+    const methodWrapperIdx = document.getElementById('methodWrapperIdx');
+    const paymentMethodIdx = document.getElementById('paymentMethodIdx');
+    const cashGivenWrapperIdx = document.getElementById('cashGivenWrapperIdx');
+    const cashGivenIdx = document.getElementById('cashGivenIdx');
+    const changeIdx = document.getElementById('changeIdx');
+    const payAlertIdx = document.getElementById('payAlertIdx');
+
+    document.querySelectorAll('.btn-pay').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const notaId = this.dataset.id;
+            const row = document.querySelector('tr[data-nota-id="' + notaId + '"]');
+            // compute sisa = total - terbayar
+            // prefer using original total (sum of items) when available
+            const totalText = row?.querySelector('.cell-original')?.textContent || row?.querySelector('.cell-total')?.textContent || '0';
+            const terbayarText = row?.querySelector('.cell-terbayar')?.textContent || '0';
+            const rawTotal = totalText.replace(/\./g,'').replace(/,/g,'');
+            const rawTerbayar = terbayarText.replace(/\./g,'').replace(/,/g,'');
+            const totalVal = parseFloat(rawTotal) || 0;
+            const terbayarVal = parseFloat(rawTerbayar) || 0;
+            const sisaVal = Math.max(0, totalVal - terbayarVal);
+
+            payNotaIdInput.value = notaId;
+            payAmountIdx.value = sisaVal;
+            discountPercentIdx.value = 0;
+            paymentTypeIdx.value = 'cash';
+            methodWrapperIdx.style.display = 'none';
+            if (cashGivenWrapperIdx) cashGivenWrapperIdx.style.display = '';
+            if (cashGivenIdx) cashGivenIdx.value = sisaVal;
+            if (changeIdx) changeIdx.value = '0';
+
+            // initialize discount display fields (use original total when present)
+            const discountedTotalEl = document.getElementById('discountedTotalIdx');
+            const discountAmountEl = document.getElementById('discountAmountIdx');
+            if (discountedTotalEl) discountedTotalEl.value = new Intl.NumberFormat('id-ID').format(totalVal);
+            if (discountAmountEl) discountAmountEl.value = new Intl.NumberFormat('id-ID').format(0);
+
+            const modalEl = document.getElementById('modalPayIndex');
+            const modal = new bootstrap.Modal(modalEl);
+            modal.show();
         });
     });
+
+    paymentTypeIdx.addEventListener('change', function(){
+        if (this.value === 'transfer') {
+            methodWrapperIdx.style.display = '';
+            if (cashGivenWrapperIdx) cashGivenWrapperIdx.style.display = 'none';
+            if (changeIdx) changeIdx.value = '';
+        } else {
+            methodWrapperIdx.style.display = 'none';
+            if (cashGivenWrapperIdx) cashGivenWrapperIdx.style.display = '';
+        }
+    });
+
+    // live update discounted total in modal (index)
+    const discountedTotalEl = document.getElementById('discountedTotalIdx');
+    const discountAmountEl = document.getElementById('discountAmountIdx');
+
+    function updateChangeIdx(){
+        if (!cashGivenIdx || !changeIdx) return;
+        const notaId = payNotaIdInput.value || null;
+        const row = notaId ? document.querySelector('tr[data-nota-id=\"' + notaId + '\"]') : null;
+        const totalText = row?.querySelector('.cell-original')?.textContent || row?.querySelector('.cell-total')?.textContent || '0';
+        const terbayarText = row?.querySelector('.cell-terbayar')?.textContent || '0';
+        const rawTotal = totalText.replace(/\\.|,/g,'');
+        const rawTerbayar = terbayarText.replace(/\\.|,/g,'');
+        const totalVal = parseFloat(rawTotal) || 0;
+        const terbayarVal = parseFloat(rawTerbayar) || 0;
+        const percent = parseFloat(discountPercentIdx?.value || 0);
+        const discountAmount = Math.round((totalVal * (percent/100)) * 100) / 100;
+        const discounted = Math.max(0, Math.round((totalVal - discountAmount) * 100) / 100);
+        const remaining = Math.max(0, discounted - terbayarVal);
+        const cashVal = parseFloat(cashGivenIdx.value || '0') || 0;
+        const applied = Math.min(cashVal || remaining, remaining);
+        const change = Math.max(0, cashVal - applied);
+        if (!isNaN(applied) && payAmountIdx) payAmountIdx.value = applied;
+        if (!isNaN(change)) changeIdx.value = new Intl.NumberFormat('id-ID').format(change);
+    }
+
+    if (cashGivenIdx) {
+        cashGivenIdx.addEventListener('input', updateChangeIdx);
+    }
+
+    if (discountPercentIdx) {
+        discountPercentIdx.addEventListener('input', function(){
+            const notaId = payNotaIdInput.value || null;
+            const row = notaId ? document.querySelector('tr[data-nota-id="' + notaId + '"]') : null;
+            // prefer original total (before discounts) when present
+            const totalText = row?.querySelector('.cell-original')?.textContent || row?.querySelector('.cell-total')?.textContent || '0';
+            const terbayarText = row?.querySelector('.cell-terbayar')?.textContent || '0';
+            const rawTotal = totalText.replace(/\\.|,/g,'');
+            const rawTerbayar = terbayarText.replace(/\\.|,/g,'');
+            const totalVal = parseFloat(rawTotal) || 0;
+            const terbayarVal = parseFloat(rawTerbayar) || 0;
+            const percent = parseFloat(this.value || 0);
+            const discountAmount = Math.round((totalVal * (percent/100)) * 100) / 100;
+            const discounted = Math.max(0, Math.round((totalVal - discountAmount) * 100) / 100);
+            if (discountedTotalEl) discountedTotalEl.value = new Intl.NumberFormat('id-ID').format(discounted);
+            if (discountAmountEl) discountAmountEl.value = new Intl.NumberFormat('id-ID').format(discountAmount);
+            const remaining = Math.max(0, discounted - terbayarVal);
+            if (paymentTypeIdx.value === 'cash') {
+                // jika cash, jumlah bayar diambil dari uang diterima dan kembalian dihitung
+                updateChangeIdx();
+            } else {
+                payAmountIdx.value = remaining;
+            }
+        });
+    }
+
+    // Note: riwayat toggle removed — payments shown inline in columns now.
+
+    // Bulk select / delete for nota
+    const selectAllNota = document.getElementById('select_all_nota');
+    const notaCheckboxes = document.querySelectorAll('.nota-checkbox');
+    if (selectAllNota) {
+        selectAllNota.addEventListener('change', function () {
+            notaCheckboxes.forEach(cb => {
+                cb.checked = selectAllNota.checked;
+            });
+        });
+    }
+
+    // Filter Lunas / Belum Lunas untuk Riwayat Nota
+    const statusFilterButtons = document.querySelectorAll('.filter-status-riwayat');
+    const riwayatRows = document.querySelectorAll('#tableRiwayat tbody tr');
+
+    function applyStatusFilterRiwayat(status) {
+        riwayatRows.forEach(row => {
+            const sisaCell = row.querySelector('.cell-sisa');
+            if (!sisaCell) {
+                row.style.display = '';
+                return;
+            }
+            const raw = sisaCell.textContent.replace(/[^0-9\-]/g, '');
+            const sisaVal = parseInt(raw || '0', 10);
+            const isLunas = sisaVal <= 0;
+
+            if (status === 'all') {
+                row.style.display = '';
+            } else if (status === 'lunas') {
+                row.style.display = isLunas ? '' : 'none';
+            } else if (status === 'belum') {
+                row.style.display = !isLunas ? '' : 'none';
+            }
+        });
+    }
+
+    statusFilterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            statusFilterButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const status = btn.getAttribute('data-status') || 'all';
+            applyStatusFilterRiwayat(status);
+        });
+    });
+
+    payFormIdx.addEventListener('submit', function (e) {
+        e.preventDefault();
+        payAlertIdx.classList.add('d-none');
+        const notaId = payNotaIdInput.value;
+        const url = "{{ url('admin/nota') }}/" + notaId + "/pay";
+
+        const fd = new FormData(payFormIdx);
+        fd.append('_token', csrfToken);
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: fd
+        }).then(async res => {
+            if (!res.ok) {
+                const txt = await res.text(); throw new Error(txt || 'Terjadi kesalahan');
+            }
+            return res.json();
+        }).then(json => {
+            const nota = json.nota;
+            const payment = json.payment || null;
+            const discountAmount = json.discount_amount || 0;
+
+            const row = document.querySelector('tr[data-nota-id="' + nota.id + '"]');
+            if (row) {
+                const formatter = new Intl.NumberFormat('id-ID');
+                row.querySelector('.cell-total').textContent = formatter.format(nota.total || 0);
+
+                // update terbayar cell (sum of payments)
+                row.querySelector('.cell-terbayar').textContent = formatter.format(nota.payments ? nota.payments.reduce((s, p) => s + (p.amount || 0), 0) : 0);
+                // update uang muka cell
+                const uangMukaCell = row.querySelector('.cell-uang-muka');
+                if (uangMukaCell) uangMukaCell.textContent = formatter.format(nota.uang_muka || 0);
+
+                // Toggle badges: show Lunas if sisa <= 0, else show Belum Lunas
+                const badgeBelum = row.querySelector('.badge-belum');
+                const badgeLunas = row.querySelector('.badge-lunas');
+                const actionsDiv = row.querySelector('.nota-actions');
+                if (parseFloat(nota.sisa) <= 0) {
+                    if (badgeBelum) badgeBelum.remove();
+                    if (badgeLunas) {
+                        badgeLunas.style.display = 'inline-block';
+                    } else if (actionsDiv) {
+                        const el = document.createElement('span'); el.className = 'badge bg-success badge-lunas'; el.textContent = 'Lunas'; actionsDiv.appendChild(el);
+                    }
+                } else {
+                    if (badgeLunas) badgeLunas.style.display = 'none';
+                    if (badgeBelum) {
+                        badgeBelum.style.display = 'inline-block';
+                    } else if (actionsDiv) {
+                        const el = document.createElement('span'); el.className = 'badge-belum'; el.textContent = 'Belum Lunas'; actionsDiv.appendChild(el);
+                    }
+                }
+            }
+
+            // Update pembayaran summary and terbayar/kekurangan in the nota row (payments are now summarized in columns)
+            if (payment) {
+                const row = document.querySelector('tr[data-nota-id="' + nota.id + '"]');
+                if (row) {
+                    // Update Terbayar and Kekurangan cells
+                    const formatter = new Intl.NumberFormat('id-ID');
+                    row.querySelector('.cell-terbayar').textContent = formatter.format(nota.payments ? nota.payments.reduce((s, p) => s + (p.amount || 0), 0) : 0);
+                    // Update uang muka cell
+                    const uangMukaCell2 = row.querySelector('.cell-uang-muka');
+                    if (uangMukaCell2) uangMukaCell2.textContent = formatter.format(nota.uang_muka || 0);
+
+                    // Update pembayaran badges: cash & transfer
+                    try {
+                        const cash = nota.payments ? nota.payments.filter(p=>p.type==='cash').reduce((s,p)=>s+(p.amount||0),0) : 0;
+                        const transfer = nota.payments ? nota.payments.filter(p=>p.type==='transfer').reduce((s,p)=>s+(p.amount||0),0) : 0;
+                        const pembCell = row.querySelector('.pembayaran-cell');
+                        if (pembCell) {
+                            let html = '';
+                            if (cash > 0) html += '<span class="badge bg-success">Cash: '+formatter.format(cash)+'</span> ';
+                            if (transfer > 0) html += '<span class="badge bg-info text-dark">Transfer: '+formatter.format(transfer)+'</span>';
+                            if (!html) html = '<span class="text-muted">-</span>';
+                            pembCell.innerHTML = html;
+                        }
+                        // update sisa and diskon display
+                        try {
+                            const sisaCell = row.querySelector('.cell-sisa');
+                            const diskonCell = row.querySelector('.cell-diskon');
+                            if (sisaCell) sisaCell.textContent = formatter.format(nota.sisa || 0);
+                            if (diskonCell) diskonCell.textContent = formatter.format(nota.payments ? nota.payments.reduce((s,p) => s + (p.discount_amount || 0), 0) : 0);
+                        } catch(e) {}
+                    } catch(e){}
+                }
+            }
+
+            const modalEl = document.getElementById('modalPayIndex');
+            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.hide();
+
+            if (window.Swal) {
+                let msg = json.message || 'Pembayaran berhasil.';
+                if (discountAmount && discountAmount > 0) msg += ' (Diskon diterapkan: ' + new Intl.NumberFormat('id-ID').format(discountAmount) + '.)';
+                Swal.fire({ icon: 'success', title: 'Berhasil', text: msg });
+            } else {
+                alert(json.message || 'Pembayaran berhasil.');
+            }
+        }).catch(async err => {
+            let msg = err.message || 'Gagal memproses pembayaran.';
+            try {
+                const t = await err.text(); if (t) msg = t;
+            } catch(e){}
+            payAlertIdx.classList.remove('d-none');
+            payAlertIdx.innerText = msg;
+            if (window.Swal) Swal.fire({ icon: 'error', title: 'Gagal', text: msg });
+        });
+    });
+    // Removed explicit "Tandai Lunas" button handler — badges now reflect lunas/belum states.
 });
 </script>
 @endsection

@@ -27,29 +27,23 @@ class OrderController extends Controller
             'qty' => 'required|array',
         ]);
 
-        // Hitung total harga
+        // Simpan item tanpa harga
         $items = [];
-        $total = 0;
 
         foreach ($r->service_ids as $i => $service_id) {
             $service = Service::find($service_id);
             if (!$service) continue;
 
             $qty = max(1, intval($r->qty[$i] ?? 1));
-            $subtotal = $service->price * $qty;
 
             $items[] = [
                 'service_id' => $service->id,
                 'title' => $service->title,
                 'qty' => $qty,
-                'price' => $service->price,
-                'subtotal' => $subtotal,
             ];
-
-            $total += $subtotal;
         }
 
-        // Simpan ke database (user_id bisa null jika pelanggan tidak login)
+        // Simpan ke database tanpa total_price
         $order = Order::create([
             'user_id' => auth()->check() ? auth()->id() : null,
             'customer_name' => $r->customer_name,
@@ -58,21 +52,22 @@ class OrderController extends Controller
             'customer_address' => $r->customer_address,
             'notes' => $r->notes,
             'items' => json_encode($items),
-            'total_price' => $total,
+            'total_price' => 0, // tidak dipakai
             'pickup_date' => $r->pickup_date,
             'pickup_time' => $r->pickup_time,
         ]);
 
-        // Kirim pesan otomatis ke WhatsApp admin
-        $adminNumber = config('app.admin_whatsapp', '6281234567890'); // default WA admin
+        // Kirim pesan ke WhatsApp admin tanpa harga
+        $adminNumber = config('app.admin_whatsapp', '6281234567890');
+
         $text = "🧺 *Order Baru Deva Laundry*%0A"
             ."Nama: {$order->customer_name}%0A"
             ."No HP: {$order->customer_phone}%0A"
-            ."Alamat: {$order->customer_address}%0A"
-            ."Total: Rp".number_format($total, 0, ',', '.')."%0A%0A";
+            ."Alamat: {$order->customer_address}%0A%0A"
+            ."*List Pesanan:*%0A";
 
         foreach ($items as $it) {
-            $text .= "{$it['title']} x{$it['qty']} = Rp".number_format($it['subtotal'], 0, ',', '.')."%0A";
+            $text .= "- {$it['title']} x{$it['qty']}%0A";
         }
 
         $waLink = "https://wa.me/{$adminNumber}?text={$text}";

@@ -4,17 +4,18 @@
 <style>
     /* 🎨 Tampilan elegan macOS */
     .mac-card {
-        background: rgba(255, 255, 255, 0.85);
+        background: rgba(255, 255, 255, 0.9);
         backdrop-filter: blur(18px);
-        border-radius: 18px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        padding: 2rem;
-        transition: all 0.3s ease;
+        -webkit-backdrop-filter: blur(18px);
+        border-radius: 22px;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+        padding: 2.2rem 2rem;
+        transition: all 0.28s ease;
     }
 
     .mac-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
     }
 
     .table {
@@ -34,18 +35,22 @@
     }
 
     .btn-macos {
-        background: linear-gradient(135deg, #007aff, #005ce6);
-        border: none;
+        background: linear-gradient(135deg, #0a84ff, #007aff);
+        border: 1px solid rgba(255, 255, 255, 0.7);
         color: white;
         font-weight: 600;
-        border-radius: 10px;
-        padding: 8px 14px;
-        transition: all 0.2s ease-in-out;
+        border-radius: 999px;
+        padding: 9px 18px;
+        box-shadow: 0 10px 24px rgba(10, 132, 255, 0.35);
+        transition: all 0.18s ease-in-out;
+        text-decoration: none;
+        font-size: 0.95rem;
     }
 
     .btn-macos:hover {
-        background: linear-gradient(135deg, #339cff, #0070f3);
+        background: linear-gradient(135deg, #3b9dff, #0a84ff);
         transform: translateY(-2px);
+        box-shadow: 0 16px 30px rgba(10, 132, 255, 0.45);
     }
 
     .btn-edit {
@@ -73,18 +78,24 @@
     }
 
     .empty-state {
-        color: #777;
+        color: #94a3b8;
         text-align: center;
-        padding: 1.5rem;
+        padding: 1.75rem;
+        font-size: 0.95rem;
     }
 </style>
 
 <div class="container py-5">
     <div class="mac-card">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold" style="color:#007aff;">Daftar Layanan Deva Laundry</h3>
-            <a href="{{ route('layanan.create') }}" class="btn-macos">
-                + Tambah Layanan
+            <div>
+                <div class="text-uppercase text-muted" style="letter-spacing:.12em;font-size:.7rem;">Manajemen Layanan</div>
+                <h3 class="fw-bold mb-1" style="color:#007aff;">Layanan Deva Laundry</h3>
+                <p class="text-muted mb-0" style="font-size:.9rem;">Atur jenis layanan yang akan muncul untuk pelanggan.</p>
+            </div>
+            <a href="{{ route('layanan.create') }}" class="btn-macos d-inline-flex align-items-center gap-2">
+                <span class="rounded-circle bg-white bg-opacity-25 d-inline-flex align-items-center justify-content-center" style="width:20px;height:20px;font-size:1rem;">+</span>
+                <span>Layanan Baru</span>
             </a>
         </div>
 
@@ -114,7 +125,6 @@
                         <th width="5%">No</th>
                         <th>Nama Layanan</th>
                         <th>Deskripsi</th>
-                        <th>Harga</th>
                         <th width="20%">Aksi</th>
                     </tr>
                 </thead>
@@ -124,7 +134,6 @@
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $service->name }}</td>
                         <td class="text-muted">{{ $service->description ?? '-' }}</td>
-                        <td><strong>Rp {{ number_format($service->price, 0, ',', '.') }}</strong></td>
                         <td>
                             <a href="{{ route('layanan.edit', $service->id) }}" class="btn-edit me-2">
                                 Edit
@@ -140,7 +149,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="empty-state">
+                        <td colspan="4" class="empty-state">
                             <em>Belum ada layanan yang ditambahkan.</em>
                         </td>
                     </tr>

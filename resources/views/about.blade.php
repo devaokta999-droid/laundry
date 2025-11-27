@@ -177,19 +177,18 @@ body {
         {{-- Kolom Kiri --}}
         <div class="mac-card">
             <h2>Visi Kami</h2>
-            <p>Menjadi penyedia layanan laundry terpercaya di Bali yang berfokus pada kebersihan, kecepatan pelayanan, dan kepuasan pelanggan dengan standar profesional.</p>
+            <p>{{ $vision }}</p>
 
             <h2 class="mt-4">Misi Kami</h2>
             <ul>
-                <li>Memberikan hasil laundry bersih, rapi, dan wangi.</li>
-                <li>Menyediakan layanan antar-jemput cepat dan tepat waktu.</li>
-                <li>Menggunakan bahan ramah lingkungan dan mesin modern.</li>
-                <li>Menjaga kepercayaan dan kenyamanan pelanggan sebagai prioritas utama.</li>
+                @foreach($missions as $misi)
+                    <li>{{ $misi }}</li>
+                @endforeach
             </ul>
 
             <div style="margin-top:25px; border-top:1px solid #eee; padding-top:15px;">
                 <h3 style="color:#007aff; font-weight:600;">📍 Lokasi Kami</h3>
-                <p>Jl. Wisnu Marga No. Belayu, Peken, Kec. Marga, Kabupaten Tabanan, Bali 82181</p>
+                <p>{{ $locationText }}</p>
             </div>
         </div>
 
@@ -211,18 +210,26 @@ body {
     <div class="mac-team">
         <h2>Tim Profesional Kami</h2>
         <div class="mac-team-grid">
-            @foreach ([ 
-                ['img' => 'owner.jpg', 'nama' => 'Deva okta', 'jabatan' => 'Owner & Founder', 'desc' => 'Membangun Deva Laundry dengan visi pelayanan terbaik dan inovasi berkelanjutan.'],
-                ['img' => 'team2.jpg', 'nama' => 'Rano Utama', 'jabatan' => 'Customer Service', 'desc' => 'Siap melayani pelanggan dengan ramah dan cepat setiap hari.'],
-                ['img' => 'team3.jpg', 'nama' => 'Bayu Pratama', 'jabatan' => 'Supervisor Laundry', 'desc' => 'Mengawasi setiap proses pencucian agar hasil selalu maksimal dan tepat waktu.']
-            ] as $tim)
-            <div class="mac-member">
-                <img src="{{ asset('images/' . $tim['img']) }}" alt="{{ $tim['nama'] }}">
-                <h4>{{ $tim['nama'] }}</h4>
-                <p style="color:#007aff; font-weight:500;">{{ $tim['jabatan'] }}</p>
-                <p style="font-size:0.85rem;">{{ $tim['desc'] }}</p>
-            </div>
-            @endforeach
+            @forelse($teams as $tim)
+                <div class="mac-member">
+                    @if($tim->photo)
+                        <img src="{{ asset('images/' . $tim->photo) }}" alt="{{ $tim->name }}">
+                    @else
+                        <img src="{{ asset('images/header.png') }}" alt="{{ $tim->name }}">
+                    @endif
+                    <h4>{{ $tim->name }}</h4>
+                    <p style="color:#007aff; font-weight:500;">{{ $tim->position }}</p>
+                    <p style="font-size:0.85rem;">{{ $tim->description }}</p>
+                </div>
+            @empty
+                {{-- fallback jika belum ada data tim di database --}}
+                <div class="mac-member">
+                    <img src="{{ asset('images/header.png') }}" alt="Deva Laundry">
+                    <h4>Tim Deva Laundry</h4>
+                    <p style="color:#007aff; font-weight:500;">Profesional & Berpengalaman</p>
+                    <p style="font-size:0.85rem;">Tim kami siap memberikan layanan terbaik untuk setiap pelanggan.</p>
+                </div>
+            @endforelse
         </div>
     </div>
 </div>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -70,6 +71,27 @@ class AuthController extends Controller
     }
 
     /**
+     * Forgot password sederhana: generate password baru dan tampilkan di halaman login.
+     */
+    public function forgotPassword(Request $r)
+    {
+        $r->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $r->email)->first();
+        if (!$user) {
+            return back()->withErrors(['email' => 'Email tidak ditemukan'])->withInput();
+        }
+
+        $newPassword = Str::random(8);
+        $user->password = Hash::make($newPassword);
+        $user->save();
+
+        return back()->with('new_password', $newPassword)->with('email', $r->email);
+    }
+
+    /**
      * Logout user
      */
     public function logout(Request $r)
@@ -88,11 +110,11 @@ class AuthController extends Controller
     {
         switch ($user->role) {
             case 'admin':
-                return redirect()->route('admin.cashier.index'); // halaman kasir admin
+                return redirect()->route('admin.nota.index'); // admin ke menu nota
             case 'kasir':
-                return redirect()->route('admin.cashier.index'); // halaman kasir juga
+                return redirect()->route('admin.nota.index'); // kasir ke menu nota
             case 'deva':
-                return redirect()->route('admin.transactions.index'); // misal deva ke transaksi
+                return redirect()->route('admin.nota.index'); // deva ke menu nota
             default:
                 return redirect()->route('home');
         }
