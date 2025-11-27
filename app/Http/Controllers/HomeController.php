@@ -69,7 +69,14 @@ public function about(){
 
     $missions = array_filter(preg_split('/\r\n|\r|\n/', $missionText));
 
-    return view('about', compact('teams', 'vision', 'missions', 'locationText'));
+    $whyTitle = SiteSetting::getValue('about_why_title', 'Kenapa Pilih Deva Laundry?');
+    $whyText = SiteSetting::getValue('about_why_text', implode(PHP_EOL, [
+        'Deva Laundry hadir untuk mempermudah hidup Anda. Kami mengutamakan kecepatan, ketepatan, dan kualitas layanan premium untuk setiap pelanggan.',
+        'Dengan peralatan modern, sistem kerja profesional, serta tim berpengalaman, kami memastikan pakaian Anda bersih sempurna, harum, dan terawat seperti baru setiap kali dicuci.',
+    ]));
+    $whyParagraphs = array_filter(preg_split('/\r\n|\r|\n/', $whyText));
+
+    return view('about', compact('teams', 'vision', 'missions', 'locationText', 'whyTitle', 'whyParagraphs'));
 }
 
 

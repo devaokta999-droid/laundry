@@ -12,7 +12,10 @@
     <link href="https://fonts.cdnfonts.com/css/sf-pro-display" rel="stylesheet">
 
     <!-- Icon -->
-    <link rel="icon" type="image/png" href="{{ asset('images/header.png') }}">
+    @php
+        $appLogo = \App\Models\SiteSetting::getValue('logo_path', 'header.png');
+    @endphp
+    <link rel="icon" type="image/png" href="{{ asset('images/' . $appLogo) }}">
 
     <style>
         :root {
@@ -192,7 +195,7 @@
 <div class="sidebar" id="macSidebar">
     <div>
         <div class="sidebar-header mb-4">
-            <img src="{{ asset('images/header.png') }}" alt="Logo" width="60" class="mb-2 rounded-3 shadow-sm">
+            <img src="{{ asset('images/' . $appLogo) }}" alt="Logo" width="60" class="mb-2 rounded-3 shadow-sm">
             <h4>DEVA LAUNDRY</h4>
         </div>
 
@@ -257,10 +260,6 @@
                     {{ auth()->user()->name }}
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end w-100">
-                    @if(in_array(auth()->user()->role, ['admin', 'deva']))
-                        <li><a class="dropdown-item" href="{{ route('layanan.index') }}">Layanan Saya</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                    @endif
                     <li>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

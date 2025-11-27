@@ -63,16 +63,22 @@ class AdminProfileController extends Controller
             'about_vision' => 'nullable|string',
             'about_mission' => 'nullable|string',
             'about_location' => 'nullable|string',
+            'about_why_title' => 'nullable|string|max:255',
+            'about_why_text' => 'nullable|string',
 
             // Promo dinamis
             'promo_titles' => 'nullable|array',
             'promo_titles.*' => 'nullable|string|max:255',
             'promo_descs' => 'nullable|array',
             'promo_descs.*' => 'nullable|string',
+
+            // Logo
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'reset_logo' => 'nullable|boolean',
         ]);
 
         foreach ($this->defaultSettings() as $key => $default) {
-            if ($key === 'promos') {
+            if (in_array($key, ['promos', 'logo_path'], true)) {
                 continue;
             }
             $value = $data[$key] ?? null;
@@ -81,6 +87,41 @@ class AdminProfileController extends Controller
                 $value = '';
             }
             SiteSetting::setValue($key, $value);
+        }
+
+        // Reset logo ke default jika diminta
+        if ($request->boolean('reset_logo')) {
+            $oldLogo = SiteSetting::getValue('logo_path', 'header.png');
+            if ($oldLogo && $oldLogo !== 'header.png') {
+                $oldPath = public_path('images/' . $oldLogo);
+                if (is_file($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+            SiteSetting::setValue('logo_path', 'header.png');
+        }
+
+        // Simpan logo baru jika di-upload
+        if ($request->hasFile('logo')) {
+            $logo = $request->file('logo');
+            $destination = public_path('images/logo');
+
+            if (!is_dir($destination)) {
+                mkdir($destination, 0755, true);
+            }
+
+            $filename = time() . '_' . preg_replace('/\s+/', '_', $logo->getClientOriginalName());
+            $logo->move($destination, $filename);
+
+            $oldLogo = SiteSetting::getValue('logo_path', 'header.png');
+            if ($oldLogo && $oldLogo !== 'header.png') {
+                $oldPath = public_path('images/' . $oldLogo);
+                if (is_file($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
+
+            SiteSetting::setValue('logo_path', 'logo/' . $filename);
         }
 
         $titles = $request->input('promo_titles', []);
@@ -130,12 +171,20 @@ class AdminProfileController extends Controller
                 'Menjaga kepercayaan dan kenyamanan pelanggan sebagai prioritas utama.',
             ]),
             'about_location' => 'Jl. Wisnu Marga No. Belayu, Peken, Kec. Marga, Kabupaten Tabanan, Bali 82181',
+            'about_why_title' => 'Kenapa Pilih Deva Laundry?',
+            'about_why_text' => implode(PHP_EOL, [
+                'Deva Laundry hadir untuk mempermudah hidup Anda. Kami mengutamakan kecepatan, ketepatan, dan kualitas layanan premium untuk setiap pelanggan.',
+                'Dengan peralatan modern, sistem kerja profesional, serta tim berpengalaman, kami memastikan pakaian Anda bersih sempurna, harum, dan terawat seperti baru setiap kali dicuci.',
+            ]),
 
             // Promo defaults (disimpan sebagai JSON)
             'promos' => json_encode([
                 ['title' => 'Promo 1', 'desc' => 'Diskon 20% untuk cucian pertama'],
                 ['title' => 'Promo 2', 'desc' => 'Gratis pengambilan di area tertentu'],
             ]),
+
+            // Logo default
+            'logo_path' => 'header.png',
         ];
     }
 }

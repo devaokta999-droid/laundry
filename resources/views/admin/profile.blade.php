@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    <form method="POST" action="{{ route('admin.profile.update') }}" class="mt-4">
+    <form method="POST" action="{{ route('admin.profile.update') }}" class="mt-4" enctype="multipart/form-data">
         @csrf
 
         <div class="row">
@@ -54,6 +54,9 @@
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
                         <h5 class="mb-3 text-primary">Contact</h5>
+                        <p class="text-muted" style="font-size:.85rem;">
+                            Semua field di bawah ini dipakai untuk informasi kontak di halaman Contact dan link ikon media sosial di footer beranda.
+                        </p>
 
                         <div class="mb-3">
                             <label class="form-label">Telepon / WhatsApp</label>
@@ -97,7 +100,32 @@
             <div class="col-md-6 mb-4">
                 <div class="card shadow-sm border-0 h-100">
                     <div class="card-body">
-                        <h5 class="mb-3 text-primary">About (Visi, Misi, Lokasi)</h5>
+                        <h5 class="mb-3 text-primary">Logo & About (Visi, Misi, Lokasi)</h5>
+
+                        @php
+                            $logoPath = $settings['logo_path'] ?? 'header.png';
+                        @endphp
+                        <div class="mb-3 text-center">
+                            <div class="mb-2">
+                                <img src="{{ asset('images/' . $logoPath) }}" alt="Logo Deva Laundry" style="max-width:120px;border-radius:16px;box-shadow:0 8px 18px rgba(15,23,42,0.15);">
+                            </div>
+                            <div class="text-muted" style="font-size:.85rem;">Logo ini dipakai di sidebar dan halaman Tentang Kami.</div>
+                        </div>
+
+                        <div class="mb-2">
+                            <label class="form-label">Ganti Logo</label>
+                            <input type="file" name="logo" class="form-control" accept="image/*">
+                            <small class="text-muted">Format: JPG/PNG/WEBP, maks. 2MB. Disarankan bentuk persegi.</small>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" name="reset_logo" id="reset_logo" value="1">
+                            <label class="form-check-label" for="reset_logo">
+                                Kembalikan ke logo default Deva Laundry
+                            </label>
+                        </div>
+
+                        <hr class="my-3">
+                        <h6 class="mb-3 text-primary">About (Visi, Misi, Lokasi)</h6>
 
                         <div class="mb-3">
                             <label class="form-label">Visi kami</label>
@@ -110,9 +138,22 @@
                             <small class="text-muted">Pisahkan setiap misi dengan enter supaya tampil sebagai list.</small>
                         </div>
 
-                        <div class="mb-0">
+                        <div class="mb-3">
                             <label class="form-label">Lokasi</label>
                             <textarea name="about_location" class="form-control" rows="2">{{ old('about_location', $settings['about_location'] ?? '') }}</textarea>
+                        </div>
+
+                        <hr class="my-3">
+                        <h6 class="mb-2 text-primary">Bagian "Kenapa Pilih Deva Laundry?"</h6>
+                        <div class="mb-2">
+                            <label class="form-label">Judul</label>
+                            <input type="text" name="about_why_title" class="form-control"
+                                   value="{{ old('about_why_title', $settings['about_why_title'] ?? 'Kenapa Pilih Deva Laundry?') }}">
+                        </div>
+                        <div class="mb-0">
+                            <label class="form-label">Isi (setiap baris = 1 paragraf)</label>
+                            <textarea name="about_why_text" class="form-control" rows="4">{{ old('about_why_text', $settings['about_why_text'] ?? '') }}</textarea>
+                            <small class="text-muted">Teks ini akan muncul di kolom kanan halaman Tentang Kami.</small>
                         </div>
                     </div>
                 </div>

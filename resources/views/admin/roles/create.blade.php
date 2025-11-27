@@ -31,8 +31,14 @@
 
                 <div class="mb-3">
                     <label class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control" required>
-                    <div class="form-text">Minimal 6 karakter.</div>
+                    <div class="input-group">
+                        <input type="password" name="password" id="passwordField" class="form-control" required>
+                        <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                            <span id="iconShow">Show</span>
+                            <span id="iconHide" style="display:none;">Hide</span>
+                        </button>
+                    </div>
+                    <div class="form-text">Minimal 6 karakter. Gunakan tombol Show/Hide untuk melihat password.</div>
                 </div>
 
                 <div class="mb-3">
@@ -56,3 +62,22 @@
 </div>
 @endsection
 
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const field = document.getElementById('passwordField');
+        const toggle = document.getElementById('togglePassword');
+        const iconShow = document.getElementById('iconShow');
+        const iconHide = document.getElementById('iconHide');
+
+        if (field && toggle) {
+            toggle.addEventListener('click', function () {
+                const isHidden = field.type === 'password';
+                field.type = isHidden ? 'text' : 'password';
+                iconShow.style.display = isHidden ? 'none' : 'inline';
+                iconHide.style.display = isHidden ? 'inline' : 'none';
+            });
+        }
+    });
+</script>
+@endpush

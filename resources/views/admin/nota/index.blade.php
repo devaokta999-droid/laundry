@@ -91,8 +91,31 @@
             transform: translateY(0);
             box-shadow: 0 4px 12px rgba(15,23,42,0.18) inset;
         }
+        .traffic-lights {
+            display: inline-flex;
+            gap: 0.35rem;
+            margin-right: 0.6rem;
+        }
+        .traffic-light {
+            width: 12px;
+            height: 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+        .traffic-light.red { background: #ff5f57; }
+        .traffic-light.yellow { background: #febc2e; }
+        .traffic-light.green { background: #28c840; }
+        }
     </style>
-    <h3 class="mb-4 text-primary fw-bold"> Nota Deva Laundry Satuan Digital</h3>
+    <h3 class="mb-2 text-primary fw-bold"> Nota Deva Laundry Satuan Digital</h3>
+    <div class="d-flex align-items-center mb-3">
+        <div class="traffic-lights me-2">
+            <span class="traffic-light red"></span>
+            <span class="traffic-light yellow"></span>
+            <span class="traffic-light green"></span>
+        </div>
+        <span class="text-muted" style="font-size:.9rem;">Buat nota baru dan kelola riwayat pembayaran dengan gaya ala macOS.</span>
+    </div>
 
     {{-- ✅ Notifikasi sukses & error --}}
     @if(session('success'))

@@ -167,7 +167,10 @@ body {
 <div class="mac-container">
     {{-- 🪞 Header --}}
     <div class="mac-header">
-        <img src="{{ asset('images/header.png') }}" alt="Logo Deva Laundry">
+        @php
+            $aboutLogo = \App\Models\SiteSetting::getValue('logo_path', 'header.png');
+        @endphp
+        <img src="{{ asset('images/' . $aboutLogo) }}" alt="Logo Deva Laundry">
         <h1>Tentang Deva Laundry</h1>
         <p>Bersih • Rapi • Wangi • Tepat Waktu</p>
     </div>
@@ -194,9 +197,10 @@ body {
 
         {{-- Kolom Kanan --}}
         <div class="mac-card">
-            <h2>Kenapa Pilih Deva Laundry?</h2>
-            <p>Deva Laundry hadir untuk mempermudah hidup Anda. Kami mengutamakan kecepatan, ketepatan, dan kualitas layanan premium untuk setiap pelanggan.</p>
-            <p>Dengan peralatan modern, sistem kerja profesional, serta tim berpengalaman, kami memastikan pakaian Anda bersih sempurna, harum, dan terawat seperti baru setiap kali dicuci.</p>
+            <h2>{{ $whyTitle }}</h2>
+            @foreach($whyParagraphs as $p)
+                <p>{{ $p }}</p>
+            @endforeach
 
             <div class="mt-4">
                 <a href="{{ route('contact') }}" class="mac-btn">
@@ -215,7 +219,7 @@ body {
                     @if($tim->photo)
                         <img src="{{ asset('images/' . $tim->photo) }}" alt="{{ $tim->name }}">
                     @else
-                        <img src="{{ asset('images/header.png') }}" alt="{{ $tim->name }}">
+                        <img src="{{ asset('images/' . $aboutLogo) }}" alt="{{ $tim->name }}">
                     @endif
                     <h4>{{ $tim->name }}</h4>
                     <p style="color:#007aff; font-weight:500;">{{ $tim->position }}</p>
@@ -224,7 +228,7 @@ body {
             @empty
                 {{-- fallback jika belum ada data tim di database --}}
                 <div class="mac-member">
-                    <img src="{{ asset('images/header.png') }}" alt="Deva Laundry">
+                    <img src="{{ asset('images/' . $aboutLogo) }}" alt="Deva Laundry">
                     <h4>Tim Deva Laundry</h4>
                     <p style="color:#007aff; font-weight:500;">Profesional & Berpengalaman</p>
                     <p style="font-size:0.85rem;">Tim kami siap memberikan layanan terbaik untuk setiap pelanggan.</p>
