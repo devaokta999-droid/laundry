@@ -36,12 +36,11 @@ class NotaController extends Controller
      */
     public function store(Request $r)
     {
-        // basic validation for customer and uang_muka
+        // basic validation untuk data pelanggan (uang muka tidak dipakai lagi)
         $basic = Validator::make($r->all(), [
             'customer_name' => 'required|string|max:100',
             'customer_address' => 'nullable|string|max:255',
             'tgl_keluar' => 'nullable|date',
-            'uang_muka' => 'nullable|numeric|min:0',
         ]);
 
         if ($basic->fails()) {
@@ -112,6 +111,11 @@ class NotaController extends Controller
             $uangMuka = $r->input('uang_muka', 0) ? floatval($r->input('uang_muka', 0)) : 0;
             $sisa = $total - $uangMuka;
 
+            // Override: uang muka tidak diambil dari input lagi; selalu 0,
+            // sehingga sisa awal sama dengan total penuh.
+            $uangMuka = 0;
+            $sisa = $total;
+
             $nota = Nota::create([
                 'user_id' => Auth::id(),
                 'customer_name' => $r->input('customer_name'),
@@ -157,7 +161,7 @@ class NotaController extends Controller
      */
     public function print($id)
     {
-        $nota = Nota::with(['items.item', 'user', 'payments'])->findOrFail($id);
+        $nota = Nota::with(['items.item', 'user', 'kasir', 'payments'])->findOrFail($id);
         $pdf = Pdf::loadView('admin.nota.print', compact('nota'))
             ->setPaper('A5', 'portrait');
 
@@ -169,7 +173,7 @@ class NotaController extends Controller
      */
     public function printToPrinter($id)
     {
-        $nota = Nota::with(['items.item', 'user', 'payments'])->findOrFail($id);
+        $nota = Nota::with(['items.item', 'user', 'kasir', 'payments'])->findOrFail($id);
         return view('admin.nota.print', compact('nota'));
     }
 
@@ -340,6 +344,158 @@ class NotaController extends Controller
         return redirect()
             ->route('admin.nota.index')
             ->with('success', 'Nota terpilih berhasil dihapus.');
+    }
+
+    /**
+     * Tampilkan form edit nota.
+     */
+    public function edit($id)
+    {
+        $nota = Nota::with(['items.item', 'user'])->findOrFail($id);
+        $catalogItems = ItemLaundry::orderBy('name')->get();
+
+        // Ringkasan hanya untuk tampilan (tidak wajib tersimpan di DB)
+        $nota->total_items = $nota->items->sum('quantity');
+        $nota->grand_total = $nota->items->sum('subtotal');
+        $nota->sisa_bayar = $nota->sisa;
+
+        return view('admin.nota.edit', compact('nota', 'catalogItems'));
+    }
+
+    /**
+     * Update data nota (item, total, sisa).
+     */
+    public function update(Request $request, $id)
+    {
+        $nota = Nota::with('items')->findOrFail($id);
+
+        // Validasi dasar header nota
+        $basic = Validator::make($request->all(), [
+            'customer_name' => 'required|string|max:100',
+            'customer_address' => 'nullable|string|max:255',
+            'tgl_keluar' => 'nullable|date',
+        ]);
+
+        if ($basic->fails()) {
+            if ($request->ajax()) {
+                return response()->json(['errors' => $basic->errors()], 422);
+            }
+            return back()->withErrors($basic)->withInput();
+        }
+
+        // Ambil ulang items dari form (sama pola dengan store)
+        $items = [];
+        $names = $request->input('name', []);
+        $prices = $request->input('price', []);
+        $qtys = $request->input('quantity', []);
+
+        $max = max(count($names), count($prices), count($qtys));
+        for ($i = 0; $i < $max; $i++) {
+            $n = isset($names[$i]) ? trim($names[$i]) : '';
+            $p = isset($prices[$i]) ? $prices[$i] : null;
+            $q = isset($qtys[$i]) ? $qtys[$i] : null;
+
+            $items[] = [
+                'name' => $n,
+                'price' => $p,
+                'quantity' => $q,
+            ];
+        }
+
+        // Buang baris yang tidak dipakai: qty <= 0 di-skip
+        $items = array_filter($items, function ($row) {
+            $qty = isset($row['quantity']) ? floatval($row['quantity']) : 0;
+            if ($qty <= 0) {
+                return false;
+            }
+            $name  = isset($row['name']) ? trim($row['name']) : '';
+            $price = isset($row['price']) ? floatval($row['price']) : 0;
+            return !($name === '' && $price == 0);
+        });
+
+        if (count($items) === 0) {
+            $msg = ['items' => ['Minimal harus ada 1 item laundry.']];
+            if ($request->ajax()) return response()->json(['errors' => $msg], 422);
+            return back()->withErrors($msg)->withInput();
+        }
+
+        // Validasi tiap baris item
+        $itemRules = [];
+        foreach (array_values($items) as $i => $row) {
+            $itemRules["items.$i.name"] = 'required|string|max:100';
+            $itemRules["items.$i.price"] = 'required|numeric|min:0';
+            $itemRules["items.$i.quantity"] = 'required|numeric|min:1';
+        }
+
+        $validator = Validator::make(['items' => array_values($items)], $itemRules);
+        if ($validator->fails()) {
+            if ($request->ajax()) return response()->json(['errors' => $validator->errors()], 422);
+            return back()->withErrors($validator)->withInput();
+        }
+
+        DB::beginTransaction();
+        try {
+            // Hitung total baru
+            $total = 0;
+            foreach ($items as $row) {
+                $total += floatval($row['price']) * floatval($row['quantity']);
+            }
+
+            // uang_muka tetap dipakai internal sebagai total yang sudah dibayar
+            $paid = floatval($nota->uang_muka);
+            $sisa = max(0, $total - $paid);
+
+            // Update header nota
+            $nota->update([
+                'customer_name' => $request->input('customer_name'),
+                'customer_address' => $request->input('customer_address'),
+                'tgl_keluar' => $request->input('tgl_keluar'),
+                'total' => $total,
+                'sisa' => $sisa,
+            ]);
+
+            // Hapus item lama dan buat ulang
+            $nota->items()->delete();
+
+            foreach ($items as $row) {
+                $item = ItemLaundry::firstOrCreate(
+                    ['name' => $row['name']],
+                    ['price' => $row['price'] ?? 0]
+                );
+
+                NotaItem::create([
+                    'nota_id' => $nota->id,
+                    'item_id' => $item->id,
+                    'quantity' => $row['quantity'],
+                    'price' => $row['price'],
+                    'subtotal' => floatval($row['price']) * floatval($row['quantity']),
+                ]);
+            }
+
+            DB::commit();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'message' => 'Nota berhasil diperbarui.',
+                    'nota' => $nota->fresh()->load('items.item', 'payments.user'),
+                ], 200);
+            }
+
+            return redirect()
+                ->route('admin.nota.show', $nota->id)
+                ->with('success', 'Nota berhasil diperbarui.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'message' => 'Gagal memperbarui nota',
+                    'error' => $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with('error', 'Gagal memperbarui nota: ' . $e->getMessage());
+        }
     }
 
 

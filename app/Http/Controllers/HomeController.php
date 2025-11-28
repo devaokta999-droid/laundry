@@ -76,7 +76,13 @@ public function about(){
     ]));
     $whyParagraphs = array_filter(preg_split('/\r\n|\r|\n/', $whyText));
 
-    return view('about', compact('teams', 'vision', 'missions', 'locationText', 'whyTitle', 'whyParagraphs'));
+    $hoursText = SiteSetting::getValue('about_hours', implode(PHP_EOL, [
+        'Senin — Minggu',
+        '08.30 – 17.00 WITA',
+    ]));
+    $hoursLines = array_filter(preg_split('/\r\n|\r|\n/', $hoursText));
+
+    return view('about', compact('teams', 'vision', 'missions', 'locationText', 'whyTitle', 'whyParagraphs', 'hoursLines'));
 }
 
 

@@ -65,6 +65,7 @@ class AdminProfileController extends Controller
             'about_location' => 'nullable|string',
             'about_why_title' => 'nullable|string|max:255',
             'about_why_text' => 'nullable|string',
+            'about_hours' => 'nullable|string',
 
             // Promo dinamis
             'promo_titles' => 'nullable|array',
@@ -175,6 +176,10 @@ class AdminProfileController extends Controller
             'about_why_text' => implode(PHP_EOL, [
                 'Deva Laundry hadir untuk mempermudah hidup Anda. Kami mengutamakan kecepatan, ketepatan, dan kualitas layanan premium untuk setiap pelanggan.',
                 'Dengan peralatan modern, sistem kerja profesional, serta tim berpengalaman, kami memastikan pakaian Anda bersih sempurna, harum, dan terawat seperti baru setiap kali dicuci.',
+            ]),
+            'about_hours' => implode(PHP_EOL, [
+                'Senin — Minggu',
+                '08.30 – 17.00 WITA',
             ]),
 
             // Promo defaults (disimpan sebagai JSON)

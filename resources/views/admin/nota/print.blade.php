@@ -150,10 +150,22 @@
     </div>
 
     <div class="info">
+        @php
+            $lastPayment = $nota->payments ? $nota->payments->sortByDesc('created_at')->first() : null;
+        @endphp
         <p><strong>No. Nota:</strong> {{ $nota->no_nota ?? 'INV-' . str_pad($nota->id, 5, '0', STR_PAD_LEFT) }}</p>
         <p><strong>Nama:</strong> {{ $nota->customer_name }}</p>
         <p><strong>Alamat:</strong> {{ $nota->customer_address ?? '-' }}</p>
         <p><strong>Tgl Keluar:</strong> {{ $nota->tgl_keluar ? \Carbon\Carbon::parse($nota->tgl_keluar)->format('d/m/Y') : '-' }}</p>
+        <p><strong>Kasir:</strong> {{ optional($nota->kasir)->name ?? optional($nota->user)->name ?? '-' }}</p>
+        <p>
+            <strong>Tgl & Jam Pembayaran:</strong>
+            @if($lastPayment)
+                {{ \Carbon\Carbon::parse($lastPayment->created_at)->format('d/m/Y H:i') }}
+            @else
+                -
+            @endif
+        </p>
     </div>
 
     <table class="items">
@@ -188,7 +200,7 @@
         $originalTotal = $nota->items && $nota->items->count()
             ? $nota->items->sum('subtotal')
             : ($nota->total + $diskonTotal);
-        $totalDibayar = $nota->uang_muka ?? 0;
+        $totalDibayar = $nota->payments ? $nota->payments->sum('amount') : 0;
         $kembalian = max(0, $totalDibayar - $nota->total);
         $totalQty = $nota->items->sum('quantity');
     @endphp
@@ -247,4 +259,3 @@
 
 </body>
 </html>
-

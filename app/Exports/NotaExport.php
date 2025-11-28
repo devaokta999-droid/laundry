@@ -21,7 +21,6 @@ class NotaExport implements FromCollection, WithHeadings, WithMapping, WithStyle
     protected ?string $endDate;
 
     protected float $totalKeseluruhan = 0;
-    protected float $totalUangMuka = 0;
     protected float $totalSisa = 0;
     protected int $jumlahNota = 0;
     protected float $totalTerbayar = 0;
@@ -46,7 +45,6 @@ class NotaExport implements FromCollection, WithHeadings, WithMapping, WithStyle
 
         $this->jumlahNota = $data->count();
         $this->totalKeseluruhan = (float) $data->sum('total');
-        $this->totalUangMuka = (float) $data->sum('uang_muka');
         $this->totalSisa = (float) $data->sum('sisa');
         $this->totalTerbayar = (float) $data->sum(function ($nota) {
             return $nota->payments->sum('amount');
@@ -61,7 +59,6 @@ class NotaExport implements FromCollection, WithHeadings, WithMapping, WithStyle
     public function map($nota): array
     {
         $total = (float) ($nota->total ?? 0);
-        $uangMuka = (float) ($nota->uang_muka ?? 0);
         $sisa = (float) ($nota->sisa ?? 0);
 
         $payments = $nota->payments ?? collect();
@@ -93,7 +90,6 @@ class NotaExport implements FromCollection, WithHeadings, WithMapping, WithStyle
             $nota->customer_name ?? '-',
             $nota->tgl_keluar ? Carbon::parse($nota->tgl_keluar)->format('d/m/Y') : '-',
             $num($total),
-            $num($uangMuka),
             $num($totalTerbayar),
             $num($totalDiskon),
             $num($sisa),
@@ -110,7 +106,6 @@ class NotaExport implements FromCollection, WithHeadings, WithMapping, WithStyle
             'Nama Pelanggan',
             'Tanggal Keluar',
             'Total Awal (Rp)',
-            'Uang Muka (Rp)',
             'Terbayar (Rp)',
             'Diskon (Rp)',
             'Sisa (Rp)',
@@ -177,12 +172,11 @@ class NotaExport implements FromCollection, WithHeadings, WithMapping, WithStyle
                 $sheet->setCellValue("B{$footerRow}", 'TOTAL KESELURUHAN');
                 $sheet->setCellValue("C{$footerRow}", 'Jumlah Nota: ' . $this->jumlahNota);
                 $sheet->setCellValue("D{$footerRow}", $this->totalKeseluruhan);
-                $sheet->setCellValue("E{$footerRow}", $this->totalUangMuka);
-                $sheet->setCellValue("F{$footerRow}", $this->totalTerbayar);
-                $sheet->setCellValue("G{$footerRow}", $this->totalDiskon);
-                $sheet->setCellValue("H{$footerRow}", $this->totalSisa);
+                $sheet->setCellValue("E{$footerRow}", $this->totalTerbayar);
+                $sheet->setCellValue("F{$footerRow}", $this->totalDiskon);
+                $sheet->setCellValue("G{$footerRow}", $this->totalSisa);
 
-                $sheet->getStyle("D4:H{$footerRow}")
+                $sheet->getStyle("D4:G{$footerRow}")
                     ->getNumberFormat()
                     ->setFormatCode('"Rp" #,##0;[Red]"Rp" -#,##0');
 

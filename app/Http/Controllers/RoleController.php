@@ -80,24 +80,40 @@ class RoleController extends Controller
     {
         $user = $role;
 
+        // Jika datang dari form edit penuh (name/email/password ada), jalankan validasi lengkap
+        if ($request->has('name') || $request->has('email')) {
+            $data = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:users,email,' . $user->id,
+                'password' => 'nullable|string|min:6',
+                'role' => 'required|in:admin,kasir,karyawan',
+            ]);
+
+            $user->name = $data['name'];
+            $user->email = $data['email'];
+            $user->role = $data['role'];
+            if (!empty($data['password'])) {
+                $user->password = bcrypt($data['password']);
+            }
+            $user->save();
+
+            return redirect()
+                ->route('admin.roles.index')
+                ->with('success', 'Data pengguna berhasil diperbarui.');
+        }
+
+        // Jika datang dari tombol "Simpan" cepat di halaman index (hanya field role),
+        // cukup validasi dan update role saja.
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|string|min:6',
             'role' => 'required|in:admin,kasir,karyawan',
         ]);
 
-        $user->name = $data['name'];
-        $user->email = $data['email'];
         $user->role = $data['role'];
-        if (!empty($data['password'])) {
-            $user->password = bcrypt($data['password']);
-        }
         $user->save();
 
         return redirect()
             ->route('admin.roles.index')
-            ->with('success', 'Data pengguna berhasil diperbarui.');
+            ->with('success', 'Role pengguna berhasil diperbarui.');
     }
 
     /**

@@ -192,11 +192,6 @@
                     <input type="text" id="total" name="total" class="form-control" readonly>
                 </div>
                 <div class="mb-2">
-                    <label class="fw-semibold">Uang Muka (Rp)</label>
-                    <input type="number" name="uang_muka" id="uang_muka" class="form-control" value="0" min="0">
-                    <div class="form-text">Masukkan uang muka jika pelanggan membayar di awal.</div>
-                </div>
-                <div class="mb-2">
                     <label class="fw-semibold">Sisa (Rp)</label>
                     <input type="text" id="sisa" class="form-control" readonly>
                 </div>
@@ -259,7 +254,6 @@
                     <th>Tanggal</th>
                     <th>Pembayaran</th>
                     <th>Terbayar (Rp)</th>
-                    <th>Uang Muka (Rp)</th>
                     <th>Sisa (Rp)</th>
                     <th>Total Awal (Rp)</th>
                     <th>Total (Rp)</th>
@@ -299,7 +293,6 @@
                         @endif
                     </td>
                     <td class="cell-terbayar">{{ number_format($n->payments ? $n->payments->sum('amount') : 0, 0, ',', '.') }}</td>
-                    <td class="cell-uang-muka">{{ number_format($n->uang_muka ?? 0, 0, ',', '.') }}</td>
                     <td class="cell-sisa">{{ number_format($n->sisa ?? max(0, $n->total - ($n->payments ? $n->payments->sum('amount') : 0)), 0, ',', '.') }}</td>
                     <td class="cell-original">{{ number_format($n->items ? $n->items->sum('subtotal') : $n->total, 0, ',', '.') }}</td>
                     <td class="cell-total">{{ number_format($n->total, 0, ',', '.') }}</td>
@@ -548,26 +541,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
         document.getElementById('total').value = total;
         document.getElementById('total_qty').value = totalQty;
-        // compute formatted sisa = total - uang_muka (allow any uang_muka input)
-        const uangMukaEl = document.getElementById('uang_muka');
+        // compute formatted sisa = total (uang muka tidak digunakan lagi)
         const sisaEl = document.getElementById('sisa');
         const formatter = new Intl.NumberFormat('id-ID');
-        let um = 0;
-        if (uangMukaEl) {
-            um = parseInt(uangMukaEl.value || 0, 10) || 0;
-        }
-        const sisaVal = total - um; // can be negative if uang_muka > total
+        const sisaVal = total;
         if (sisaEl) sisaEl.value = formatter.format(sisaVal);
     }
 
     notaBody.addEventListener('input', e => {
         if (e.target.classList.contains('item-qty') || e.target.classList.contains('item-price')) recalc();
     });
-    // listen to uang_muka changes to update sisa
-    const uangMukaInput = document.getElementById('uang_muka');
-    if (uangMukaInput) {
-        uangMukaInput.addEventListener('input', recalc);
-    }
 
     notaBody.addEventListener('click', e => {
         if (e.target.classList.contains('removeRow')) {
@@ -848,10 +831,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 // update terbayar cell (sum of payments)
                 row.querySelector('.cell-terbayar').textContent = formatter.format(nota.payments ? nota.payments.reduce((s, p) => s + (p.amount || 0), 0) : 0);
-                // update uang muka cell
-                const uangMukaCell = row.querySelector('.cell-uang-muka');
-                if (uangMukaCell) uangMukaCell.textContent = formatter.format(nota.uang_muka || 0);
-
                 // Toggle badges: show Lunas if sisa <= 0, else show Belum Lunas
                 const badgeBelum = row.querySelector('.badge-belum');
                 const badgeLunas = row.querySelector('.badge-lunas');
@@ -880,10 +859,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Update Terbayar and Kekurangan cells
                     const formatter = new Intl.NumberFormat('id-ID');
                     row.querySelector('.cell-terbayar').textContent = formatter.format(nota.payments ? nota.payments.reduce((s, p) => s + (p.amount || 0), 0) : 0);
-                    // Update uang muka cell
-                    const uangMukaCell2 = row.querySelector('.cell-uang-muka');
-                    if (uangMukaCell2) uangMukaCell2.textContent = formatter.format(nota.uang_muka || 0);
-
                     // Update pembayaran badges: cash & transfer
                     try {
                         const cash = nota.payments ? nota.payments.filter(p=>p.type==='cash').reduce((s,p)=>s+(p.amount||0),0) : 0;

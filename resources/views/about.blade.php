@@ -207,6 +207,18 @@ body {
                     <i class="fa-solid fa-phone"></i> Hubungi Kami
                 </a>
             </div>
+
+            <div style="margin-top:24px; padding-top:16px; border-top:1px solid #e5e7eb;">
+                <h3 style="font-size:1.1rem; font-weight:700; color:#007aff; margin-bottom:10px;">Jam Operasional</h3>
+                @foreach($hoursLines as $idx => $line)
+                    <p style="margin:{{ $idx === 0 ? '0' : '2px 0 0' }}; color:#374151; font-size:0.95rem;">
+                        {{ $line }}
+                    </p>
+                @endforeach
+                <p style="margin-top:6px; color:#6b7280; font-size:0.85rem;">
+                    Silakan datang pada jam operasional tersebut untuk pelayanan antar-jemput maupun drop-off langsung di outlet.
+                </p>
+            </div>
         </div>
     </div>
 

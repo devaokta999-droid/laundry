@@ -104,40 +104,105 @@
                         </thead>
 
                         <tbody>
-                            @foreach ($nota->items as $i => $item)
-                            <tr>
-                                <td class="text-center">{{ $i+1 }}</td>
+                            @php
+                                $rowNumber = 0;
+                                $groupedNotaItems = $nota->items->groupBy(function ($item) {
+                                    return strtolower(trim(optional($item->item)->name ?? ''));
+                                });
+                                $catalogNamesLower = $catalogItems->pluck('name')->map(function ($name) {
+                                    return strtolower(trim($name));
+                                })->all();
+                            @endphp
 
-                                <td>
-                                    <input type="text" name="name[{{ $i }}]"
-                                        value="{{ $item->item->name }}"
-                                        class="form-control input-mac name-input" data-index="{{ $i }}">
-                                </td>
+                            {{-- Tampilkan semua item dari katalog sebagai baris default --}}
+                            @foreach ($catalogItems as $catalog)
+                                @php
+                                    $key = strtolower(trim($catalog->name));
+                                    $notaItem = isset($groupedNotaItems[$key]) ? $groupedNotaItems[$key]->first() : null;
+                                    $qty = $notaItem ? $notaItem->quantity : 0;
+                                    $price = $notaItem ? $notaItem->price : $catalog->price;
+                                    $subtotal = $qty * $price;
+                                    $index = $rowNumber++;
+                                @endphp
+                                <tr>
+                                    <td class="text-center">{{ $rowNumber }}</td>
 
-                                <td>
-                                    <input type="number" name="price[{{ $i }}]"
-                                        value="{{ $item->price }}"
-                                        class="form-control input-mac price-input" 
-                                        data-index="{{ $i }}" min="0" step="0.01">
-                                </td>
+                                    <td>
+                                        <input type="text" name="name[{{ $index }}]"
+                                            value="{{ $catalog->name }}"
+                                            class="form-control input-mac name-input" data-index="{{ $index }}">
+                                    </td>
 
-                                <td>
-                                    <input type="number" name="quantity[{{ $i }}]"
-                                        value="{{ $item->quantity }}"
-                                        class="form-control input-mac qty-input" 
-                                        data-index="{{ $i }}" min="0">
-                                </td>
+                                    <td>
+                                        <input type="number" name="price[{{ $index }}]"
+                                            value="{{ $price }}"
+                                            class="form-control input-mac price-input" 
+                                            data-index="{{ $index }}" min="0" step="0.01">
+                                    </td>
 
-                                <td>
-                                    <input type="text" id="subtotal_{{ $i }}"
-                                        value="{{ $item->subtotal }}"
-                                        class="form-control input-mac bg-light subtotal-field" readonly>
-                                </td>
+                                    <td>
+                                        <input type="number" name="quantity[{{ $index }}]"
+                                            value="{{ $qty }}"
+                                            class="form-control input-mac qty-input" 
+                                            data-index="{{ $index }}" min="0">
+                                    </td>
 
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-danger btn-sm remove-row">X</button>
-                                </td>
-                            </tr>
+                                    <td>
+                                        <input type="text" id="subtotal_{{ $index }}"
+                                            value="{{ $subtotal }}"
+                                            class="form-control input-mac bg-light subtotal-field" readonly>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <button type="button" class="btn btn-danger btn-sm remove-row">X</button>
+                                    </td>
+                                </tr>
+                            @endforeach
+
+                            {{-- Tambahkan item tambahan yang tidak ada di katalog --}}
+                            @foreach ($nota->items as $item)
+                                @php
+                                    $name = $item->item->name ?? '';
+                                    $key = strtolower(trim($name));
+                                @endphp
+                                @if (!in_array($key, $catalogNamesLower))
+                                    @php
+                                        $index = $rowNumber++;
+                                    @endphp
+                                    <tr>
+                                        <td class="text-center">{{ $rowNumber }}</td>
+
+                                        <td>
+                                            <input type="text" name="name[{{ $index }}]"
+                                                value="{{ $name }}"
+                                                class="form-control input-mac name-input" data-index="{{ $index }}">
+                                        </td>
+
+                                        <td>
+                                            <input type="number" name="price[{{ $index }}]"
+                                                value="{{ $item->price }}"
+                                                class="form-control input-mac price-input" 
+                                                data-index="{{ $index }}" min="0" step="0.01">
+                                        </td>
+
+                                        <td>
+                                            <input type="number" name="quantity[{{ $index }}]"
+                                                value="{{ $item->quantity }}"
+                                                class="form-control input-mac qty-input" 
+                                                data-index="{{ $index }}" min="0">
+                                        </td>
+
+                                        <td>
+                                            <input type="text" id="subtotal_{{ $index }}"
+                                                value="{{ $item->subtotal }}"
+                                                class="form-control input-mac bg-light subtotal-field" readonly>
+                                        </td>
+
+                                        <td class="text-center">
+                                            <button type="button" class="btn btn-danger btn-sm remove-row">X</button>
+                                        </td>
+                                    </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>
@@ -164,13 +229,6 @@
                         </div>
 
                         <div class="col-md-4 mb-3">
-                            <label class="label-mac">Uang Muka (Rp)</label>
-                            <input type="number" id="uang_muka" name="uang_muka"
-                                value="{{ $nota->uang_muka }}"
-                                class="form-control input-mac">
-                        </div>
-
-                        <div class="col-md-4 mb-3">
                             <label class="label-mac">Sisa Pembayaran (Rp)</label>
                             <input type="number" id="sisa_bayar" name="sisa_bayar"
                                 value="{{ $nota->sisa_bayar }}"
@@ -188,7 +246,7 @@
                 </form>
             </div>
 
-            <div class="catalog">
+            <div class="catalog" style="display:none;">
                 <h6>Katalog Item Laundry</h6>
                 <input type="text" id="catalogSearch" class="catalog-search" placeholder="Cari item...">
                 <div class="catalog-table">
@@ -212,7 +270,7 @@
 
 <script>
     const indexUrl = "{{ route('admin.nota.index') }}";
-    let rowIndex = {{ count($nota->items) }};
+    let rowIndex = {{ $rowNumber ?? 0 }};
     let currentRowIndex = null; // index of the row currently selected for catalog fill
 
     // Katalog items (dari daftar yang kamu kasih)
@@ -291,8 +349,11 @@
         document.getElementById("total_items").value = totalQty;
         document.getElementById("grand_total").value = total;
 
-        let dp = toNumber(document.getElementById("uang_muka").value || 0);
-        document.getElementById("sisa_bayar").value = total - dp;
+        // Uang muka tidak digunakan lagi; sisa_bayar di sini hanya menampilkan total penuh.
+        const sisaField = document.getElementById("sisa_bayar");
+        if (sisaField) {
+            sisaField.value = total;
+        }
     }
 
     function reIndexRows() {
@@ -400,8 +461,7 @@
             calcSubtotal(idx);
         }
 
-        if (e.target.id === "uang_muka") calcTotal();
-        if (e.target.id === "catalogSearch") renderCatalog(e.target.value);
+          if (e.target.id === "catalogSearch") renderCatalog(e.target.value);
     });
 
     // When user blurs a name-input, check duplicates: if duplicate exists elsewhere, merge into the first occurrence

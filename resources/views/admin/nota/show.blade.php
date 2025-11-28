@@ -170,6 +170,9 @@
 
 <div class="macos-nota">
     <div class="container mt-4">
+        @php
+            $lastPayment = $nota->payments ? $nota->payments->sortByDesc('created_at')->first() : null;
+        @endphp
         <h3 class="fw-bold text-primary mb-4 text-center">Detail Nota Laundry</h3>
 
         <div class="card shadow-sm mb-4">
@@ -183,6 +186,14 @@
                     {{ $nota->tgl_keluar ? \Carbon\Carbon::parse($nota->tgl_keluar)->format('d/m/Y') : '-' }}
                 </p>
                 <p><strong>Dibuat Oleh:</strong> {{ $nota->user->name ?? '-' }}</p>
+                <p>
+                    <strong>Tanggal & Jam Pembayaran Terakhir:</strong>
+                    @if($lastPayment)
+                        {{ \Carbon\Carbon::parse($lastPayment->created_at)->format('d/m/Y H:i') }}
+                    @else
+                        - (belum ada pembayaran)
+                    @endif
+                </p>
             </div>
         </div>
 
@@ -233,17 +244,6 @@
                             <th>Diskon (Rp)</th>
                             <td id="diskonAmount">{{ number_format($nota->payments ? $nota->payments->sum('discount_amount') : 0, 0, ',', '.') }}</td>
                         </tr>
-                    <tr>
-                        <th>Uang Muka (Rp)</th>
-                        <td id="uangMuka">{{ number_format($nota->uang_muka, 0, ',', '.') }}</td>
-                    </tr>
-                    @php
-                        $kembalianView = max(0, ($nota->uang_muka ?? 0) - ($nota->total ?? 0));
-                    @endphp
-                    <tr>
-                        <th>Kembalian (Rp)</th>
-                        <td id="kembalianView">{{ number_format($kembalianView, 0, ',', '.') }}</td>
-                    </tr>
                     <tr>
                         <th>Sisa Pembayaran (Rp)</th>
                         <td id="sisaAmount">{{ number_format($nota->sisa, 0, ',', '.') }}</td>
@@ -492,9 +492,8 @@
                     try { return Number(v).toLocaleString('id-ID'); } catch(e) { return v; }
                 }
 
-                // Update numbers in the page
+                // Update numbers in the page (tanpa uang muka)
                 document.getElementById('totalAmount').innerText = toIdFormat(nota.total);
-                document.getElementById('uangMuka').innerText = toIdFormat(nota.uang_muka);
                 document.getElementById('sisaAmount').innerText = toIdFormat(nota.sisa);
                 // update diskon amount display
                 try {

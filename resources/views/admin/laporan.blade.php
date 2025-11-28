@@ -86,7 +86,12 @@
     .btn-filter.active{ background: linear-gradient(180deg,#eef2ff,#ffffff); box-shadow: var(--card-shadow); }
 
     /* Summary cards */
-    .stats{ display:grid; grid-template-columns: repeat(5,1fr); gap:16px; flex-wrap: wrap; }
+    .stats{
+        display:grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap:16px;
+        align-items:stretch;
+    }
 
     .card{
         padding:16px;
@@ -129,9 +134,15 @@
         background: linear-gradient(135deg,  #00a3ffff);
     }
 
-    /* Tambahan styling untuk card sisa total (ditambahkan tanpa merubah yang lain) */
+    /* Tambahan styling untuk card sisa total dan total pembayaran */
     .card.sisa-total {
         background: linear-gradient(135deg, #ff0000ff);
+    }
+    .card.cash-total {
+        background: linear-gradient(135deg,#13b5c9,#0ea5a7);
+    }
+    .card.transfer-total {
+        background: linear-gradient(135deg,#8b5cf6,#6d28d9);
     }
 
     /* Buat semua kartu di dalam .stats sama ukuran dan rapi */
@@ -268,17 +279,15 @@
         </div>
 
         <!-- Total pembayaran menurut metode (Cash / Transfer) -->
-        <div style="display:flex; gap:12px; align-items:center; justify-self:end;">
-            <div class="card" style="min-width:220px; background: linear-gradient(135deg,#13b5c9,#0ea5a7);">
-                <h6>Total Pembayaran Cash</h6>
-                <h4 id="totalCash">Rp {{ number_format($totalCash ?? 0,0,',','.') }}</h4>
-                <p class="small">Nota: <span id="countCashNotes">0</span></p>
-            </div>
-            <div class="card" style="min-width:220px; background: linear-gradient(135deg,#8b5cf6,#6d28d9);">
-                <h6>Total Pembayaran Transfer</h6>
-                <h4 id="totalTransfer">Rp {{ number_format($totalTransfer ?? 0,0,',','.') }}</h4>
-                <p class="small">Nota: <span id="countTransferNotes">0</span></p>
-            </div>
+        <div class="card cash-total">
+            <h6>Total Pembayaran Cash</h6>
+            <h4 id="totalCash">Rp {{ number_format($totalCash ?? 0,0,',','.') }}</h4>
+            <p class="small">Nota: <span id="countCashNotes">0</span></p>
+        </div>
+        <div class="card transfer-total">
+            <h6>Total Pembayaran Transfer</h6>
+            <h4 id="totalTransfer">Rp {{ number_format($totalTransfer ?? 0,0,',','.') }}</h4>
+            <p class="small">Nota: <span id="countTransferNotes">0</span></p>
         </div>
     </div>
 
@@ -308,7 +317,6 @@
                         <th>Total Awal (Rp)</th>
                         <th>Total (Rp)</th>
                         <th>Diskon (Rp)</th>
-                        <th>Uang Muka</th>
                         <th>Sisa</th>
                         <th>Status</th>
                     </tr>
@@ -349,7 +357,6 @@
                                 <td class="cell-original">{{ number_format($n->items ? $n->items->sum('subtotal') : $n->total,0,',','.') }}</td>
                                 <td class="cell-total">{{ number_format($n->total,0,',','.') }}</td>
                                 <td class="cell-diskon">{{ number_format($n->payments ? $n->payments->sum('discount_amount') : 0,0,',','.') }}</td>
-                                <td>{{ number_format($n->uang_muka,0,',','.') }}</td>
                                 <td class="cell-sisa">{{ number_format($n->sisa,0,',','.') }}</td>
                                 <td>
                                     @if($n->sisa <= 0)
