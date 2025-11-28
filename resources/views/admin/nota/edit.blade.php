@@ -246,7 +246,7 @@
                 </form>
             </div>
 
-            <div class="catalog" style="display:none;">
+            <div class="catalog">
                 <h6>Katalog Item Laundry</h6>
                 <input type="text" id="catalogSearch" class="catalog-search" placeholder="Cari item...">
                 <div class="catalog-table">
