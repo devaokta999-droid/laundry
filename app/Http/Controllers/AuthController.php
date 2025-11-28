@@ -113,8 +113,8 @@ class AuthController extends Controller
                 return redirect()->route('admin.nota.index'); // admin ke menu nota
             case 'kasir':
                 return redirect()->route('admin.nota.index'); // kasir ke menu nota
-            case 'deva':
-                return redirect()->route('admin.nota.index'); // deva ke menu nota
+            case 'karyawan':
+                return redirect()->route('admin.nota.index'); // karyawan ke menu nota
             default:
                 return redirect()->route('home');
         }

@@ -20,7 +20,7 @@ class CreateUsersTable extends Migration
 
             // 🔹 Kolom role, default 'user'
             // Bisa diubah ke 'admin' atau 'kasir' nanti dari database atau dashboard admin
-            $table->enum('role', ['admin', 'kasir', 'user', 'deva'])->default('user');
+            $table->enum('role', ['admin', 'kasir', 'user', 'karyawan'])->default('user');
 
             $table->string('phone')->nullable();
             $table->text('address')->nullable();

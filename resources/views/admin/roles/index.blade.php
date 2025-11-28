@@ -86,7 +86,7 @@
             <div class="roles-header-main">
                 <div>
                     <h3>Kelola Role & Permission</h3>
-                    <p>Atur akses Admin, Kasir, Deva, dan pengguna lain dengan gaya macOS yang rapi.</p>
+                    <p>Atur akses Admin, Kasir, Karyawan, dan pengguna lain dengan gaya macOS yang rapi.</p>
                 </div>
                 <a href="{{ route('admin.roles.create') }}" class="btn btn-primary btn-sm">
                     + Tambah User dengan Role
@@ -103,7 +103,7 @@
             <p class="text-muted mb-1" style="font-size:.9rem;">
                 <strong>Ringkasan hak akses:</strong><br>
                 - <strong>Admin</strong> dapat mengakses semua menu dan fitur.<br>
-                - <strong>Deva</strong> hanya dapat mengakses menu <strong>Layanan</strong>, <strong>Nota</strong>, dan <strong>Laporan</strong>.<br>
+                - <strong>Karyawan</strong> hanya dapat mengakses menu <strong>Layanan</strong>, <strong>Nota</strong>, dan <strong>Laporan</strong>.<br>
                 - <strong>Kasir</strong> hanya dapat mengakses menu <strong>Nota</strong> saja.
             </p>
 

@@ -208,24 +208,24 @@
                 @php $role = auth()->user()->role; @endphp
                 <hr>
 
-                {{-- Layanan hanya untuk Admin & Deva --}}
-                @if(in_array($role, ['admin', 'deva']))
+                {{-- Layanan hanya untuk Admin & Karyawan --}}
+                @if(in_array($role, ['admin', 'karyawan']))
                     <a href="{{ route('layanan.index') }}"
                        class="nav-link {{ request()->routeIs('layanan.index') ? 'active' : '' }}">
                         Layanan
                     </a>
                 @endif
 
-                {{-- Kasir, Admin, Deva dapat mengakses NOTA --}}
-                @if(in_array($role, ['kasir', 'admin', 'deva']))
+                {{-- Kasir, Admin, Karyawan dapat mengakses NOTA --}}
+                @if(in_array($role, ['kasir', 'admin', 'karyawan']))
                     <a href="{{ route('admin.nota.index') }}" 
                        class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">
                        Nota
                     </a>
                 @endif
 
-                {{-- Admin & Deva dapat mengakses LAPORAN --}}
-                @if(in_array($role, ['admin', 'deva']))
+                {{-- Admin & Karyawan dapat mengakses LAPORAN --}}
+                @if(in_array($role, ['admin', 'karyawan']))
                     <a href="{{ route('admin.laporan') }}" 
                        class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
                        Laporan

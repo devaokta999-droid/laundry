@@ -60,6 +60,6 @@ class User extends Authenticatable
      */
     public function isDeva(): bool
     {
-        return $this->role === 'deva';
+        return $this->role === 'karyawan';
     }
 }
