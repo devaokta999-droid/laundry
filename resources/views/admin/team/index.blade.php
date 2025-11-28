@@ -3,7 +3,7 @@
 @section('content')
 <style>
     .team-shell {
-        max-width: 1100px;
+        max-width: 1500px;
         margin: 32px auto 40px;
     }
     .team-window {

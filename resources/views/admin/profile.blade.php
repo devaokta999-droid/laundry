@@ -5,7 +5,7 @@
 @section('content')
 <style>
     .profile-shell {
-        max-width: 1200px;
+        max-width: 1500px;
         margin: 32px auto 40px;
         font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }

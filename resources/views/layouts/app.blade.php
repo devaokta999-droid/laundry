@@ -43,6 +43,13 @@
             align-items: stretch;
         }
 
+        /* Perbesar lebar semua container utama di layar besar */
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1500px;
+            }
+        }
+
         .sidebar {
             position: fixed;
             top: 30px;

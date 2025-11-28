@@ -1,8 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container mt-4">
+<div class="container mt-4 nota-page-container">
     <style>
+        .nota-page-container{
+            width: 100%;
+            max-width: 100%;
+            background: radial-gradient(circle at top left, rgba(255,255,255,0.97), rgba(239,244,255,0.95));
+            border-radius: 24px;
+            padding: 24px 24px 30px;
+            box-shadow: 0 26px 70px rgba(15,23,42,0.16);
+            border: 1px solid rgba(255,255,255,0.9);
+        }
         /* Action buttons layout for nota rows: horizontal, spaced, wrap if needed */
         .nota-actions{
             display:flex;
@@ -112,6 +121,28 @@
         .traffic-light.red { background: #ff5f57; }
         .traffic-light.yellow { background: #febc2e; }
         .traffic-light.green { background: #28c840; }
+
+        /* Apple-style card sections */
+        .nota-section-card{
+            border-radius:18px;
+            background: rgba(255,255,255,0.94);
+            border:1px solid rgba(226,232,240,0.9);
+            box-shadow: 0 10px 32px rgba(15,23,42,0.06);
+            padding:18px 18px 20px;
+            margin-bottom:22px;
+        }
+        .nota-section-card h4{
+            font-size:1.05rem;
+            font-weight:700;
+            color:#111827;
+        }
+        .nota-table-wrapper{
+            border-radius:14px;
+            overflow:hidden;
+            border:1px solid rgba(226,232,240,0.9);
+            background:#ffffff;
+        }
+        .nota-table-wrapper table{ margin-bottom:0; }
         }
     </style>
     <h3 class="mb-2 text-primary fw-bold"> Nota Deva Laundry Satuan Digital</h3>
