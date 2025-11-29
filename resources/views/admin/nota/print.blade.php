@@ -201,7 +201,13 @@
             ? $nota->items->sum('subtotal')
             : ($nota->total + $diskonTotal);
         $totalDibayar = $nota->payments ? $nota->payments->sum('amount') : 0;
-        $kembalian = max(0, $totalDibayar - $nota->total);
+        $kembalian = $nota->payments
+            ? $nota->payments->reduce(function ($carry, $p) {
+                $cash = (float) ($p->cash_given ?? 0);
+                $applied = (float) ($p->amount ?? 0);
+                return $carry + max(0, $cash - $applied);
+            }, 0)
+            : 0;
         $totalQty = $nota->items->sum('quantity');
     @endphp
 

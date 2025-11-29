@@ -137,12 +137,100 @@
             color:#111827;
         }
         .nota-table-wrapper{
-            border-radius:14px;
+            border-radius:18px;
             overflow:hidden;
             border:1px solid rgba(226,232,240,0.9);
-            background:#ffffff;
+            background:rgba(255,255,255,0.98);
+            box-shadow: 0 14px 40px rgba(15,23,42,0.08);
         }
-        .nota-table-wrapper table{ margin-bottom:0; }
+        .nota-table-wrapper table{
+            margin-bottom:0;
+        }
+        #notaTable thead,
+        #tableRiwayat thead,
+        .nota-table-wrapper thead{
+            background: linear-gradient(135deg,#f3f4f6,#e5f2ff);
+        }
+        #notaTable thead th,
+        #tableRiwayat thead th,
+        .nota-table-wrapper thead th{
+            border-bottom:1px solid rgba(209,213,219,0.9);
+            font-weight:600;
+            font-size:.82rem;
+            text-transform:uppercase;
+            letter-spacing:.06em;
+        }
+        #notaTable tbody tr:nth-child(even),
+        #tableRiwayat tbody tr:nth-child(even),
+        .nota-table-wrapper tbody tr:nth-child(even){
+            background:#fafbff;
+        }
+        #notaTable tbody tr:hover,
+        #tableRiwayat tbody tr:hover,
+        .nota-table-wrapper tbody tr:hover{
+            background:#eef4ff;
+        }
+
+        .btn-mac-pill{
+            border-radius:999px !important;
+            font-weight:600;
+            padding:.4rem 1rem;
+            border-width:1.3px;
+        }
+        .btn-mac-primary{
+            background:linear-gradient(135deg,#0a84ff,#0051cc);
+            border-color:rgba(255,255,255,0.4);
+            color:#fff;
+            box-shadow:0 8px 22px rgba(15,23,42,0.25);
+        }
+        .btn-mac-primary:hover{
+            background:linear-gradient(135deg,#5eb1ff,#0a84ff);
+            color:#fff;
+        }
+        .btn-mac-ghost{
+            background:rgba(255,255,255,0.7);
+            border-color:rgba(148,163,184,0.7);
+            color:#0f172a;
+        }
+        .btn-mac-ghost:hover{
+            background:#e5f1ff;
+            color:#0f172a;
+        }
+
+        .nota-filters-chip-group .btn{
+            border-radius:999px;
+            font-size:.8rem;
+            padding:.25rem .8rem;
+        }
+        .nota-filters-chip-group .btn.active{
+            background:#0f172a;
+            color:#fff;
+            border-color:transparent;
+        }
+
+        .nota-search-wrapper{
+            max-width:280px;
+        }
+        .nota-search-input{
+            border-radius:999px;
+            padding-left:2.2rem;
+        }
+        .nota-search-input:focus{
+            box-shadow:0 0 0 2px rgba(0,122,255,0.3);
+            border-color:#0a84ff;
+        }
+
+        .nota-section-title{
+            font-size:1.05rem;
+            font-weight:700;
+            color:#0f172a;
+        }
+
+        @media (max-width: 768px){
+            .nota-search-wrapper{
+                max-width:100%;
+                margin-top:.75rem;
+            }
         }
     </style>
     <h3 class="mb-2 text-primary fw-bold"> Nota Deva Laundry Satuan Digital</h3>
@@ -195,8 +283,8 @@
         </div>
 
         {{-- ✅ Daftar Jenis Pakaian --}}
-        <table class="table table-bordered align-middle text-center" id="notaTable">
-            <thead class="table-primary">
+        <table class="table align-middle text-center" id="notaTable">
+            <thead>
                 <tr>
                     <th>No</th>
                     <th>Jenis Pakaian</th>
@@ -209,7 +297,7 @@
             <tbody id="notaBody"></tbody>
         </table>
 
-        <button type="button" id="addRow" class="btn btn-outline-primary mb-3">+ Tambah Item Baru</button>
+        <button type="button" id="addRow" class="btn btn-outline-primary btn-mac-pill btn-mac-ghost mb-3">+ Tambah Item Baru</button>
 
         {{-- ✅ Total & Uang Muka --}}
         <div class="row text-end">
@@ -226,7 +314,7 @@
                     <label class="fw-semibold">Sisa (Rp)</label>
                     <input type="text" id="sisa" class="form-control" readonly>
                 </div>
-                <button type="submit" class="btn btn-success w-100 mt-3 fw-semibold" id="submitNota">Simpan Nota</button>
+                <button type="submit" class="btn btn-success w-100 mt-3 fw-semibold btn-mac-pill btn-mac-primary" id="submitNota">Simpan Nota</button>
             </div>
         </div>
     </form>
@@ -237,7 +325,7 @@
         <h4 class="text-primary fw-bold mb-0">Riwayat Nota Laundry</h4>
         
         {{-- ✅ Perubahan hanya di bagian ini --}}
-        <div class="position-relative w-25">
+        <div class="position-relative nota-search-wrapper">
             <span class="position-absolute top-50 translate-middle-y ps-2" style="left: 8px;">
                 {{-- Ikon Search hitam-putih --}}
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="black" viewBox="0 0 16 16">
@@ -246,10 +334,10 @@
                     0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
                 </svg>
             </span>
-            <input type="text" id="searchNota" class="form-control ps-5" placeholder="Cari nama pelanggan atau tanggal...">
+            <input type="text" id="searchNota" class="form-control nota-search-input" placeholder="Cari nama pelanggan atau tanggal...">
         </div>
     </div>
-    <div class="d-flex justify-content-end mb-3 gap-2">
+    <div class="d-flex justify-content-end mb-3 gap-2 nota-filters-chip-group">
         <button type="button" class="btn btn-sm btn-outline-secondary filter-status-riwayat active" data-status="all">
             Semua
         </button>
@@ -266,7 +354,7 @@
         @method('DELETE')
         <div class="d-flex justify-content-between mb-2">
             <div>
-                <button type="submit" class="btn btn-sm btn-danger"
+                <button type="submit" class="btn btn-sm btn-outline-danger btn-mac-pill"
                         onclick="return confirm('Yakin ingin menghapus nota yang dipilih?')">
                     Hapus Terpilih
                 </button>
@@ -336,13 +424,13 @@
                             @endphp
 
                             {{-- Tombol Print langsung (kiri dari Cetak PDF) --}}
-                            <a href="{{ route('admin.nota.print_direct', $n->id) }}" class="btn btn-sm btn-secondary" target="_blank" title="Cetak langsung ke printer">Print</a>
+                            <a href="{{ route('admin.nota.print_direct', $n->id) }}" class="btn btn-sm btn-outline-secondary btn-mac-pill" target="_blank" title="Cetak langsung ke printer">Print</a>
 
                             {{-- Tombol Cetak PDF (sudah ada, jangan dihapus) --}}
-                            <a href="{{ route('admin.nota.print', $n->id) }}" class="btn btn-sm btn-primary" target="_blank">Cetak PDF</a>
+                            <a href="{{ route('admin.nota.print', $n->id) }}" class="btn btn-sm btn-outline-primary btn-mac-pill" target="_blank">Cetak PDF</a>
 
                             {{-- Tombol Show Nota --}}
-                            <a href="{{ route('admin.nota.show', $n->id) }}" class="btn btn-sm btn-info" target="_blank" title="Lihat detail nota">Show Nota</a>
+                            <a href="{{ route('admin.nota.show', $n->id) }}" class="btn btn-sm btn-outline-info btn-mac-pill" target="_blank" title="Lihat detail nota">Show Nota</a>
 
                             {{-- Badge Lunas / Belum Lunas --}}
                             @if($sisa_now <= 0)
@@ -421,11 +509,6 @@
                             <input type="number" step="0.01" min="0.01" id="cashGivenIdx" class="form-control">
                             <div class="form-text">Isi jika pembayaran tunai, untuk menghitung kembalian.</div>
                         </div>
-                        <div class="mb-2">
-                            <label class="form-label">Kembalian (Rp)</label>
-                            <input type="text" id="changeIdx" class="form-control" readonly>
-                        </div>
-
                         <label class="form-label">Jumlah Bayar (Rp)</label>
                         <input type="number" step="0.01" min="0.01" name="amount" id="payAmountIdx" class="form-control" value="0" required>
                         <div class="form-text">Masukkan jumlah yang dibayarkan (default: sisa setelah diskon).</div>
@@ -840,6 +923,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const fd = new FormData(payFormIdx);
         fd.append('_token', csrfToken);
+        // kirim juga total uang cash yang diterima (jika pembayaran cash)
+        try {
+            if (paymentTypeIdx.value === 'cash' && cashGivenIdx) {
+                const cashVal = parseFloat(cashGivenIdx.value || '0');
+                if (!isNaN(cashVal) && cashVal > 0) {
+                    if (fd.set) fd.set('cash_given', cashVal); else fd.append('cash_given', cashVal);
+                }
+            }
+        } catch (e2) {}
 
         fetch(url, {
             method: 'POST',

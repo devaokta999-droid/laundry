@@ -17,7 +17,65 @@
     }
 
     .macos-nota .container {
-        max-width: 850px;
+        max-width: 880px;
+    }
+
+    .macos-nota-header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .macos-nota-header-title h3 {
+        margin-bottom: .2rem;
+    }
+
+    .macos-nota-header-eyebrow {
+        font-size: 0.8rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #9ca3af;
+        margin-bottom: 0.1rem;
+    }
+
+    .macos-nota-header-subtitle {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .macos-nota-status {
+        text-align: right;
+    }
+
+    .macos-nota-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .macos-nota-pill-success {
+        background: rgba(16, 185, 129, 0.12);
+        color: #047857;
+    }
+
+    .macos-nota-pill-warning {
+        background: rgba(245, 158, 11, 0.12);
+        color: #92400e;
+    }
+
+    .macos-nota-id {
+        font-size: 0.88rem;
+        color: #6b7280;
+        margin-top: 4px;
     }
 
     /* 💎 Kartu ala macOS (Glassmorphism) */
@@ -173,7 +231,19 @@
         @php
             $lastPayment = $nota->payments ? $nota->payments->sortByDesc('created_at')->first() : null;
         @endphp
-        <h3 class="fw-bold text-primary mb-4 text-center">Detail Nota Laundry</h3>
+        <div class="macos-nota-header">
+            <div class="macos-nota-header-title">
+                <div class="macos-nota-header-eyebrow">Nota Digital</div>
+                <h3 class="fw-bold text-primary">Detail Nota Laundry</h3>
+                <p class="macos-nota-header-subtitle">Ringkasan lengkap transaksi dan status pembayaran pelanggan.</p>
+            </div>
+            <div class="macos-nota-status">
+                <span class="macos-nota-pill {{ $nota->sisa <= 0 ? 'macos-nota-pill-success' : 'macos-nota-pill-warning' }}">
+                    {{ $nota->sisa <= 0 ? 'Lunas' : 'Belum Lunas' }}
+                </span>
+                <div class="macos-nota-id">Nota #{{ $nota->id }}</div>
+            </div>
+        </div>
 
         <div class="card shadow-sm mb-4">
             <div class="card-body">
@@ -200,7 +270,7 @@
         <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <h5 class="fw-bold mb-3 text-secondary">Daftar Item</h5>
-                <table class="table table-bordered align-middle text-center">
+                <table class="table align-middle text-center">
                     <thead class="table-light">
                         <tr>
                             <th>No</th>
@@ -227,6 +297,16 @@
                     </tbody>
                 </table>
 
+                @php
+                    $kembalian = $nota->payments
+                        ? $nota->payments->reduce(function ($carry, $p) {
+                            $cash = (float) ($p->cash_given ?? 0);
+                            $applied = (float) ($p->amount ?? 0);
+                            return $carry + max(0, $cash - $applied);
+                        }, 0)
+                        : 0;
+                @endphp
+
                 <table class="total-table mt-4">
                     <tr>
                         <th>Total Banyak Pakaian</th>
@@ -244,10 +324,14 @@
                             <th>Diskon (Rp)</th>
                             <td id="diskonAmount">{{ number_format($nota->payments ? $nota->payments->sum('discount_amount') : 0, 0, ',', '.') }}</td>
                         </tr>
-                    <tr>
-                        <th>Sisa Pembayaran (Rp)</th>
-                        <td id="sisaAmount">{{ number_format($nota->sisa, 0, ',', '.') }}</td>
-                    </tr>
+                      <tr>
+                          <th>Sisa Pembayaran (Rp)</th>
+                          <td id="sisaAmount">{{ number_format($nota->sisa, 0, ',', '.') }}</td>
+                      </tr>
+                      <tr>
+                          <th>Total Uang Kembali (Rp)</th>
+                          <td id="kembalianAmount">{{ number_format($kembalian, 0, ',', '.') }}</td>
+                      </tr>
                 </table>
             </div>
         </div>
@@ -465,6 +549,15 @@
             if (discountPercent) {
                 fd.append('discount_percent', discountPercent.value || 0);
             }
+            // kirim juga total uang cash yang diterima (jika pembayaran cash)
+            try {
+                if (paymentType.value === 'cash' && cashGiven) {
+                    const cashNumeric = parseCurrency(cashGiven);
+                    if (!isNaN(cashNumeric) && cashNumeric > 0) {
+                        if (fd.set) fd.set('cash_given', cashNumeric); else fd.append('cash_given', cashNumeric);
+                    }
+                }
+            } catch(e) {}
             // Ensure the amount sent is numeric (unformatted)
             try {
                 if (payAmount) {

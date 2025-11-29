@@ -57,8 +57,8 @@
             width: 260px;
             height: calc(100vh - 60px);
             backdrop-filter: var(--mac-blur);
-            background: var(--mac-glass-bg);
-            border: 1px solid var(--mac-border);
+            background: radial-gradient(circle at 0% 0%, rgba(255,255,255,0.78), rgba(245,248,255,0.9));
+            border: 1px solid rgba(255,255,255,0.7);
             border-radius: var(--mac-radius);
             box-shadow: var(--mac-shadow);
             padding: 1.5rem 1rem;
@@ -70,16 +70,36 @@
 
         .sidebar-header {
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
+            padding: 0 .2rem;
         }
 
         .sidebar-header img {
             filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+            display: block;
+            margin: 0 auto .25rem;
         }
 
         .sidebar-header h4 {
             color: var(--mac-accent);
             font-weight: 700;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            font-size: .8rem;
+            margin-bottom: .15rem;
+        }
+
+        .sidebar-header span {
+            font-size: .85rem;
+            color: #6b7280;
+        }
+
+        .nav-section-label{
+            font-size: .75rem;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin: .75rem .35rem .25rem;
         }
 
         .nav-link {
@@ -91,11 +111,24 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative;
         }
 
         .nav-link:hover, .nav-link.active {
-            background: rgba(0,122,255,0.15);
+            background: rgba(0,122,255,0.08);
             color: var(--mac-accent);
+        }
+
+        .nav-link.active::before{
+            content: "";
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 18px;
+            border-radius: 999px;
+            background: var(--mac-accent);
         }
 
         .btn-cashier {
@@ -202,18 +235,20 @@
 <div class="sidebar" id="macSidebar">
     <div>
         <div class="sidebar-header mb-4">
-            <img src="{{ asset('images/' . $appLogo) }}" alt="Logo" width="60" class="mb-2 rounded-3 shadow-sm">
+            <img src="{{ asset('images/' . $appLogo) }}" alt="Logo" width="52" class="mb-2 rounded-3 shadow-sm">
             <h4>DEVA LAUNDRY</h4>
+            <span>Premium Laundry Workspace</span>
         </div>
 
         <nav class="nav flex-column">
+            <div class="nav-section-label">Umum</div>
             <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
             <a href="{{ route('about') }}" class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}">Tentang</a>
             <a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">Kontak</a>
 
             @auth
                 @php $role = auth()->user()->role; @endphp
-                <hr>
+                <div class="nav-section-label mt-3">Dashboard</div>
 
                 {{-- Layanan hanya untuk Admin & Karyawan --}}
                 @if(in_array($role, ['admin', 'karyawan']))

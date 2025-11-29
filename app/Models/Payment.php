@@ -13,6 +13,7 @@ class Payment extends Model
         'nota_id',
         'user_id',
         'amount',
+        'cash_given',
         'type',
         'method',
         'discount_percent',

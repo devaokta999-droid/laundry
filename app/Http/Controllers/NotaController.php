@@ -207,18 +207,20 @@ class NotaController extends Controller
      * Request fields: amount (numeric), type (cash|transfer), method (optional)
      */
     public function pay(Request $request, $id)
-    {
-        $nota = Nota::findOrFail($id);
-
-        $data = $request->validate([
-            'amount' => 'required|numeric|min:0.01',
-            'type' => 'required|in:cash,transfer',
-            'method' => 'nullable|string|max:100',
-            'discount_percent' => 'nullable|numeric|min:0|max:100',
-        ]);
-
-        $amount = floatval($data['amount']);
-        $discountPercent = isset($data['discount_percent']) ? floatval($data['discount_percent']) : 0;
+      {
+          $nota = Nota::findOrFail($id);
+  
+          $data = $request->validate([
+              'amount' => 'required|numeric|min:0.01',
+              'cash_given' => 'nullable|numeric|min:0',
+              'type' => 'required|in:cash,transfer',
+              'method' => 'nullable|string|max:100',
+              'discount_percent' => 'nullable|numeric|min:0|max:100',
+          ]);
+  
+          $amount = floatval($data['amount']);
+          $cashGiven = isset($data['cash_given']) ? floatval($data['cash_given']) : null;
+          $discountPercent = isset($data['discount_percent']) ? floatval($data['discount_percent']) : 0;
 
         DB::beginTransaction();
         try {
@@ -264,16 +266,17 @@ class NotaController extends Controller
                 }
 
                 return redirect()->route('admin.nota.show', $nota->id)->with('success', 'Diskon diterapkan. Tidak ada pembayaran yang diperlukan.');
-            }
-
-            // Create payment record (store discount info per payment)
-            $payment = Payment::create([
-                'nota_id' => $nota->id,
-                'user_id' => Auth::id(),
-                'amount' => $amount,
-                'type' => $data['type'],
-                'method' => $data['method'] ?? null,
-                'discount_percent' => $discountPercent > 0 ? $discountPercent : null,
+              }
+  
+              // Create payment record (store discount info per payment)
+              $payment = Payment::create([
+                  'nota_id' => $nota->id,
+                  'user_id' => Auth::id(),
+                  'amount' => $amount,
+                  'cash_given' => $cashGiven,
+                  'type' => $data['type'],
+                  'method' => $data['method'] ?? null,
+                  'discount_percent' => $discountPercent > 0 ? $discountPercent : null,
                 'discount_amount' => $discountAmount > 0 ? $discountAmount : null,
             ]);
 

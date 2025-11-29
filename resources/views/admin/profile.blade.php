@@ -196,9 +196,8 @@
 
 <div class="profile-shell">
     @if(session('success'))
-        <div class="alert alert-success mb-3">
-            {{ session('success') }}
-        </div>
+        {{-- Disimpan sebagai teks tersembunyi, notifikasi ditampilkan via modal pop up --}}
+        <div id="profileSuccessMessage" class="d-none">{{ session('success') }}</div>
     @endif
 
     <div class="profile-window">
@@ -460,8 +459,26 @@
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Modal pop up otomatis untuk notifikasi sukses profil/contact/about/promo
+        try {
+            var msgEl = document.getElementById('profileSuccessMessage');
+            if (msgEl && window.Swal) {
+                var text = msgEl.textContent || msgEl.innerText || 'Pengaturan berhasil diperbarui.';
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: text,
+                    timer: 2200,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            }
+        } catch (e) {}
+
+        // Script promo yang sudah ada
         const list = document.getElementById('promo-list');
         const addBtn = document.getElementById('btn-add-promo');
 

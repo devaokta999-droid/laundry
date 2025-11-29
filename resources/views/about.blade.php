@@ -13,7 +13,7 @@ body {
 
 /* 🧊 Container utama */
 .mac-container {
-    max-width: 1100px;
+    max-width: 1260px;
     margin: 80px auto;
     padding: 20px;
 }
@@ -55,7 +55,7 @@ body {
 .mac-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-    gap: 30px;
+    gap: 36px;
 }
 
 /* 📜 Card */

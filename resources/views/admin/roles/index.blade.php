@@ -94,7 +94,7 @@
             </div>
 
             @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
+                <div id="rolesSuccessMessage" class="d-none">{{ session('success') }}</div>
             @endif
             @if(session('error'))
                 <div class="alert alert-danger">{{ session('error') }}</div>
@@ -162,3 +162,25 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        try {
+            var msgEl = document.getElementById('rolesSuccessMessage');
+            if (msgEl && window.Swal) {
+                var text = msgEl.textContent || msgEl.innerText || 'User baru berhasil dibuat.';
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: text,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showConfirmButton: false
+                });
+            }
+        } catch (e) {}
+    });
+</script>
+@endpush
