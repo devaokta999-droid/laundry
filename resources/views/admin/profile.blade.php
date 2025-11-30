@@ -5,8 +5,9 @@
 @section('content')
 <style>
     .profile-shell {
-        max-width: 1500px;
-        margin: 32px auto 40px;
+        max-width: 1680px;
+        width: 94vw;
+        margin: 40px auto 56px;
         font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
     .profile-window {

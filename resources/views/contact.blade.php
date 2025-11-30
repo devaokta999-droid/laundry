@@ -13,9 +13,10 @@ body {
 
 /* 🧊 Container utama */
 .mac-container {
-    max-width: 1260px;
-    margin: 80px auto;
-    padding: 20px;
+    max-width: 1500px;
+    width: 94vw;
+    margin: 72px auto 88px;
+    padding: 24px;
 }
 
 /* 🌟 Header */
