@@ -17,6 +17,48 @@ use App\Models\Payment;
 
 class NotaController extends Controller
 {
+    protected function buildWeeklySummaries(Carbon $forDate)
+    {
+        $startOfMonth = $forDate->copy()->startOfMonth();
+        $endOfMonth = $forDate->copy()->endOfMonth();
+
+        $cursor = $startOfMonth->copy();
+        $index = 1;
+        $weeks = [];
+
+        while ($cursor->lte($endOfMonth)) {
+            $weekStart = $cursor->copy()->startOfWeek();
+            if ($weekStart->lt($startOfMonth)) {
+                $weekStart = $startOfMonth->copy();
+            }
+            $weekEnd = $cursor->copy()->endOfWeek();
+            if ($weekEnd->gt($endOfMonth)) {
+                $weekEnd = $endOfMonth->copy();
+            }
+
+            $rangeStart = $weekStart->copy()->startOfDay();
+            $rangeEnd = $weekEnd->copy()->endOfDay();
+
+            $total = Nota::whereBetween('created_at', [$rangeStart, $rangeEnd])
+                ->where('sisa', 0)
+                ->sum('total');
+            $count = Nota::whereBetween('created_at', [$rangeStart, $rangeEnd])->count();
+
+            $weeks[] = [
+                'label' => 'Minggu ' . $index,
+                'start' => $weekStart->format('d/m/Y'),
+                'end' => $weekEnd->format('d/m/Y'),
+                'total' => $total,
+                'count' => $count,
+            ];
+
+            $index++;
+            $cursor = $cursor->copy()->addWeek();
+        }
+
+        return $weeks;
+    }
+
     /**
      * dY_ Menampilkan daftar nota.
      */
@@ -531,11 +573,12 @@ class NotaController extends Controller
         // Totals by payment type (cash vs transfer) across all payments (only dari tabel payments)
         $totalCash = Payment::where('type', 'cash')->sum('amount');
         $totalTransfer = Payment::where('type', 'transfer')->sum('amount');
+        $weeklySummaries = $this->buildWeeklySummaries($today);
 
         return view('admin.laporan', compact(
             'harian', 'mingguan', 'bulanan', 'tahunan',
             'nota_harian', 'nota_mingguan', 'nota_bulanan', 'nota_tahunan',
-            'notas', 'totalCash', 'totalTransfer'
+            'notas', 'totalCash', 'totalTransfer', 'weeklySummaries'
         ));
     }
 
@@ -550,8 +593,9 @@ class NotaController extends Controller
         $tahunan = Nota::whereYear('created_at', Carbon::now()->year)->where('sisa', 0)->sum('total');
 
         $notas = Nota::latest()->get();
+        $weeklySummaries = $this->buildWeeklySummaries(Carbon::today());
 
-        return view('admin.laporan', compact('harian', 'mingguan', 'bulanan', 'tahunan', 'notas'));
+        return view('admin.laporan', compact('harian', 'mingguan', 'bulanan', 'tahunan', 'notas', 'weeklySummaries'));
     }
 
     public function exportExcel(Request $request)

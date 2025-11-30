@@ -3,16 +3,18 @@
 @section('content')
 <style>
     .team-shell {
-        max-width: 1500px;
-        margin: 32px auto 40px;
+        max-width: 1680px;
+        width: 94vw;
+        margin: 40px auto 56px;
+        padding: 0 12px;
     }
     .team-window {
         border-radius: 22px;
-        background: rgba(255,255,255,0.92);
+        background: radial-gradient(circle at top left, rgba(255,255,255,0.98), rgba(243,244,246,0.96));
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        box-shadow: 0 24px 60px rgba(15,23,42,0.16);
-        border: 1px solid rgba(255,255,255,0.8);
+        box-shadow: 0 26px 80px rgba(15,23,42,0.20);
+        border: 1px solid rgba(255,255,255,0.9);
         overflow: hidden;
     }
     .team-window-header {
@@ -37,12 +39,14 @@
     .traffic-light.yellow { background: #febc2e; }
     .traffic-light.green { background: #28c840; }
     .team-window-title {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-weight: 600;
-        color: #4b5563;
+        letter-spacing: .03em;
+        color: #6b7280;
     }
     .team-window-body {
-        padding: 1.4rem 1.4rem 1.6rem;
+        padding: 1.6rem 1.6rem 1.8rem;
+        background: linear-gradient(180deg, #f9fafb 0%, #f3f4f6 60%, #e5e7eb 100%);
     }
     .team-header-main {
         display: flex;
@@ -51,9 +55,9 @@
         margin-bottom: 1rem;
     }
     .team-header-main h3 {
-        font-size: 1.35rem;
+        font-size: 1.6rem;
         font-weight: 800;
-        color: #007aff;
+        color: #0f172a;
         margin-bottom: 2px;
     }
     .team-header-main p {
@@ -61,15 +65,84 @@
         color: #6b7280;
         margin-bottom: 0;
     }
+    .team-header-main .btn-primary{
+        border-radius: 999px;
+        padding: 0.55rem 1.2rem;
+        font-weight: 600;
+        background: linear-gradient(135deg, #007aff, #0f9cf5);
+        border: none;
+        box-shadow: 0 14px 30px rgba(37,99,235,0.35);
+    }
+    .team-header-main .btn-primary:hover{
+        filter: brightness(1.05);
+        box-shadow: 0 18px 42px rgba(37,99,235,0.4);
+    }
     .team-table thead th {
         border-bottom: none;
-        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+        background: linear-gradient(135deg, #f5f5f7, #e5e7eb);
         font-weight: 600;
         font-size: 0.85rem;
-        color: #4b5563;
+        color: #6b7280;
+        border-top: none;
+    }
+    .team-table tbody td {
+        border-top: 1px solid rgba(226,232,240,0.9);
+        font-size: 0.9rem;
+        vertical-align: middle;
     }
     .team-table tbody tr:hover {
-        background-color: rgba(0,122,255,0.03);
+        background-color: rgba(15,23,42,0.02);
+    }
+    .team-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 999px;
+        object-fit: cover;
+        box-shadow: 0 10px 25px rgba(15,23,42,0.25);
+        border: 2px solid #ffffff;
+    }
+    .badge-role {
+        display:inline-flex;
+        align-items:center;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        background: rgba(15,23,42,0.04);
+        color:#111827;
+    }
+    .btn-outline-secondary, .btn-outline-danger{
+        border-radius: 999px;
+        padding: 0.28rem 0.9rem;
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+    .btn-outline-secondary{
+        border-color: rgba(148,163,184,0.8);
+        color:#111827;
+    }
+    .btn-outline-secondary:hover{
+        background-color:#e5e7eb;
+        color:#111827;
+    }
+    .btn-outline-danger{
+        border-color: rgba(248,113,113,0.9);
+        color:#b91c1c;
+    }
+    .btn-outline-danger:hover{
+        background-color:#fee2e2;
+        color:#7f1d1d;
+    }
+    @media (max-width: 992px){
+        .team-header-main{
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        .team-shell{
+            width: 100vw;
+            margin-top: 24px;
+        }
     }
 </style>
 <div class="team-shell">

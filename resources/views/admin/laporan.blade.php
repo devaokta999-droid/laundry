@@ -9,7 +9,8 @@
         --muted: #6b7280;
         --glass-border: rgba(0,0,0,0.06);
         --accent: #0f172a;
-        --card-shadow: 0 8px 24px rgba(15,23,42,0.06);
+        /* shadow biru lembut (bukan hitam pekat) */
+        --card-shadow: 0 18px 40px rgba(37,99,235,0.30);
         --traffic-size: 12px;
     }
     html,body,#app, .container-full {
@@ -95,59 +96,89 @@
 
     .card{
         padding:16px;
-        border-radius:14px;
-        border:1px solid var(--glass-border);
+        border-radius:18px;
+        border:1px solid rgba(15,23,42,0.5);
+        background: linear-gradient(135deg, #020617, #111827);
         box-shadow: var(--card-shadow);
-        color:#fff;
-        transition: all 0.3s ease;
+        color:#f9fafb;
+        transition: all 0.25s ease;
         transform: translateY(0);
         cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+    }
+    .card::before{
+        content:"";
+        position:absolute;
+        inset:-40%;
+        opacity:0.16;
+        background: radial-gradient(circle at 0 0, rgba(248,250,252,0.45), transparent 60%);
+        pointer-events:none;
     }
     /* Make all .card elements consistent size and layout */
     .card {
-        min-height: 140px;
+        min-height: 150px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: flex-start;
+        box-sizing: border-box;
     }
     .card:hover {
-        transform: translateY(-4px);
-        filter: brightness(1.08);
-        box-shadow: 0 12px 30px rgba(15,23,42,0.1);
+        transform: translateY(-6px);
+        box-shadow: 0 28px 70px rgba(15,23,42,0.28);
     }
-    .card h6{ margin:0; font-weight:600; font-size:13px; opacity:0.9; }
-    .card h4{ margin-top:8px; font-size:22px; font-weight:700; }
-    .card p.small{ margin:6px 0 0; font-size:13px; opacity:0.95; }
+    .card h6{
+        margin:0;
+        font-weight:700;
+        font-size:13px;
+        text-transform:uppercase;
+        letter-spacing:.08em;
+        color:#e5e7eb;
+    }
+    .card h4{
+        margin:10px 0 4px 0;
+        font-size:24px;
+        font-weight:800;
+        color:#f9fafb;
+    }
+    .card p.small{
+        margin:0;
+        font-size:13px;
+        font-weight:700;
+        color:#e5e7eb;
+    }
 
     /* 🌈 Warna khusus untuk tiap kartu pendapatan */
     .card.harian {
-        background: linear-gradient(135deg, #0051ffff);
+        background: linear-gradient(135deg, #0f172a, #1d4ed8);
     }
     .card.mingguan {
-        background: linear-gradient(135deg, #0066d6ff);
+        background: linear-gradient(135deg, #0f172a, #1d4ed8);
     }
     .card.bulanan {
-        background: linear-gradient(135deg,  #0088e6ff);
+        background: linear-gradient(135deg, #0f172a, #1d4ed8);
     }
     .card.tahunan {
-        background: linear-gradient(135deg,  #00a3ffff);
+        background: linear-gradient(135deg, #0f172a, #1d4ed8);
     }
-
+  
     /* Tambahan styling untuk card sisa total dan total pembayaran */
     .card.sisa-total {
-        background: linear-gradient(135deg, #ff0000ff);
+        background: linear-gradient(135deg, #7f1d1d, #ef4444);
     }
     .card.cash-total {
-        background: linear-gradient(135deg,#13b5c9,#0ea5a7);
+        background: linear-gradient(135deg,#022c22,#10b981);
     }
     .card.transfer-total {
-        background: linear-gradient(135deg,#8b5cf6,#6d28d9);
+        background: linear-gradient(135deg,#1e1b4b,#8b5cf6);
     }
 
     /* Buat semua kartu di dalam .stats sama ukuran dan rapi */
     .stats .card {
-        min-height: 140px;
+        min-height: 150px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -156,11 +187,11 @@
         box-sizing: border-box;
     }
     .stats .card h6 { font-size: 13px; margin-bottom: 6px; }
-    .stats .card h4 { margin: 0 0 6px 0; font-size: 20px; }
-    .stats .card p.small { margin: 0; color: rgba(255,255,255,0.95); font-size: 13px; }
+    .stats .card h4 { margin: 10px 0 4px 0; font-size: 24px; }
+    .stats .card p.small { margin: 0; font-size: 13px; font-weight:700; }
 
-    /* Table area */
-    .content-panel{ flex:1; overflow:auto; padding:8px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.75)); border:1px solid var(--glass-border); }
+    /* Table area - biarkan tinggi mengikuti konten, scroll pakai browser */
+    .content-panel{ flex:none; overflow:visible; padding:8px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.75)); border:1px solid var(--glass-border); }
     table{ width:100%; border-collapse:collapse; min-width:1080px; }
     thead th{ text-align:center; padding:12px; font-weight:700; background:transparent; border-bottom:1px solid rgba(0,0,0,0.06); }
     tbody td{ padding:12px; vertical-align:middle; }
@@ -175,6 +206,39 @@
         .stats{ grid-template-columns: repeat(2,1fr); }
         .search-box input{ width:160px; }
         table{ min-width:760px; }
+    }
+
+    /* Override: hilangkan shadow kartu */
+    .card {
+        box-shadow: none !important;
+    }
+    .card:hover {
+        transform: translateY(-4px);
+        box-shadow: none !important;
+    }
+
+    /* Kartu pendapatan + ringkasan mingguan warna biru dengan teks jelas */
+    .card.harian,
+    .card.mingguan,
+    .card.bulanan,
+    .card.tahunan,
+    .card.weekly-card {
+        background: linear-gradient(135deg, #1d4ed8, #3b82f6) !important;
+        color:#f9fafb !important;
+    }
+
+    /* Warna khusus: total sisa merah, cash hijau, transfer ungu */
+    .card.sisa-total {
+        background: linear-gradient(135deg, #7f1d1d, #ef4444) !important;
+        color:#f9fafb !important;
+    }
+    .card.cash-total {
+        background: linear-gradient(135deg,#022c22,#10b981) !important;
+        color:#f9fafb !important;
+    }
+    .card.transfer-total {
+        background: linear-gradient(135deg,#1e1b4b,#8b5cf6) !important;
+        color:#f9fafb !important;
     }
 </style>
 
@@ -291,6 +355,24 @@
         </div>
     </div>
 
+    @if(!empty($weeklySummaries ?? []))
+    <div style="margin-top:18px;">
+        <h5 style="margin:0 0 8px 2px;">Ringkasan Mingguan (Bulan Ini)</h5>
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            @foreach($weeklySummaries as $week)
+                <div class="card weekly-card" style="flex:1 1 220px; max-width:260px;">
+                    <h6>{{ $week['label'] }}</h6>
+                    <p class="small" style="margin-top:4px; font-size:12px; opacity:.75;">
+                        {{ $week['start'] }} &mdash; {{ $week['end'] }}
+                    </p>
+                    <h4 style="margin-top:10px;">Rp {{ number_format($week['total'] ?? 0,0,',','.') }}</h4>
+                    <p class="small">Nota: {{ $week['count'] }}</p>
+                </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <!-- Tambahan: Dashboard visual sederhana -->
     <div class="content-panel mt-3">
         <h5 style="margin:6px 8px">Dashboard Visual</h5>
@@ -304,7 +386,7 @@
         </div>
 
         <h5 style="margin:6px 8px">Detail Nota Laundry</h5>
-        <div style="overflow:auto; padding:8px">
+        <div style="overflow-x:auto; padding:8px">
             <table class="table table-hover align-middle text-center">
                 <thead>
                     <tr>
@@ -836,8 +918,11 @@
         }, 300);
     });
 
-    // Recompute charts when filters change
+    // Recompute charts when filters change (bulan & tahun)
     document.getElementById('yearFilter')?.addEventListener('change', ()=>{
+        setTimeout(()=>{ updateDashboardCharts(); }, 200);
+    });
+    document.getElementById('monthFilter')?.addEventListener('change', ()=>{
         setTimeout(()=>{ updateDashboardCharts(); }, 200);
     });
 
