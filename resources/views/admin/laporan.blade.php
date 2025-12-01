@@ -355,23 +355,10 @@
         </div>
     </div>
 
-    @if(!empty($weeklySummaries ?? []))
     <div style="margin-top:18px;">
-        <h5 style="margin:0 0 8px 2px;">Ringkasan Mingguan (Bulan Ini)</h5>
-        <div style="display:flex; gap:12px; flex-wrap:wrap;">
-            @foreach($weeklySummaries as $week)
-                <div class="card weekly-card" style="flex:1 1 220px; max-width:260px;">
-                    <h6>{{ $week['label'] }}</h6>
-                    <p class="small" style="margin-top:4px; font-size:12px; opacity:.75;">
-                        {{ $week['start'] }} &mdash; {{ $week['end'] }}
-                    </p>
-                    <h4 style="margin-top:10px;">Rp {{ number_format($week['total'] ?? 0,0,',','.') }}</h4>
-                    <p class="small">Nota: {{ $week['count'] }}</p>
-                </div>
-            @endforeach
-        </div>
+        <h5 id="weeklySummaryTitle" style="margin:0 0 8px 2px;">Ringkasan Mingguan (Bulan Ini)</h5>
+        <div id="weeklySummaryContainer" style="display:flex; gap:12px; flex-wrap:wrap;"></div>
     </div>
-    @endif
 
     <!-- Tambahan: Dashboard visual sederhana -->
     <div class="content-panel mt-3">
@@ -537,10 +524,19 @@
             r.style.display = (matchesQuery && matchesStatus && matchesMonth && matchesYear && matchesPay) ? '' : 'none';
         });
 
-        // Setelah filtering, update ringkasan counts & totals
-        computeTotalsIncludingUnpaid();
-        computeTotalSisa();
-        updateDashboardCharts();
+        // Setelah filtering, update ringkasan counts & totals (gunakan fungsi global bila ada)
+        if (window.computeTotalsIncludingUnpaid) {
+            window.computeTotalsIncludingUnpaid();
+        }
+        if (window.computeTotalSisa) {
+            window.computeTotalSisa();
+        }
+        if (window.updateDashboardCharts) {
+            window.updateDashboardCharts();
+        }
+        if (window.buildWeeklySummaryCards) {
+            window.buildWeeklySummaryCards();
+        }
     }
 
     searchInput.addEventListener('input', applyFilter);
@@ -693,22 +689,56 @@
         return Array.from(document.querySelectorAll('#notesTable tr[data-year]'));
     }
 
+    function getFilterContext(){
+        const now = new Date();
+        const monthEl = document.getElementById('monthFilter');
+        const yearEl = document.getElementById('yearFilter');
+
+        let month = now.getMonth() + 1;
+        let year = now.getFullYear();
+
+        if (monthEl && monthEl.value && monthEl.value !== 'all') {
+            const parsedMonth = parseInt(monthEl.value, 10);
+            if (!isNaN(parsedMonth) && parsedMonth >= 1 && parsedMonth <= 12) {
+                month = parsedMonth;
+            }
+        }
+
+        if (yearEl && yearEl.value && yearEl.value !== 'all') {
+            const parsedYear = parseInt(yearEl.value, 10);
+            if (!isNaN(parsedYear)) {
+                year = parsedYear;
+            }
+        }
+
+        return { month, year };
+    }
+
+    function formatDateId(dateObj){
+        const d = ('0' + dateObj.getDate()).slice(-2);
+        const m = ('0' + (dateObj.getMonth() + 1)).slice(-2);
+        const y = dateObj.getFullYear();
+        return `${d}/${m}/${y}`;
+    }
+
     // Chart instances
     let incomeChart = null;
     let statusDonut = null;
 
     function computeTotalsIncludingUnpaid(){
-        const rows = getRows().filter(r => r.style.display !== 'none');
-        const now = new Date();
-        const todayDay = ('0' + now.getDate()).slice(-2);
-        const todayMonth = now.getMonth() + 1; // 1-12
-        const todayYear = now.getFullYear();
+        const allRows = getRows();
+        const visibleRows = allRows.filter(r => r.style.display !== 'none');
+        const nowReal = new Date();
+        const { month: contextMonth, year: contextYear } = getFilterContext();
 
-        // week start (Monday) and end (Sunday)
-        const day = now.getDay(); // 0 (Sun) - 6 (Sat)
+        // Gunakan tanggal berdasarkan filter (bulan/tahun), tapi tetap pakai hari yang sama dengan hari ini
+        const baseDate = new Date(contextYear, contextMonth - 1, nowReal.getDate());
+
+        // week start (Monday) and end (Sunday) untuk konteks filter
+        const day = baseDate.getDay(); // 0 (Sun) - 6 (Sat)
         const diffToMonday = (day + 6) % 7; // days since Monday
-        const monday = new Date(now);
-        monday.setDate(now.getDate() - diffToMonday);
+        const monday = new Date(baseDate);
+        monday.setDate(baseDate.getDate() - diffToMonday);
         monday.setHours(0,0,0,0);
         const sunday = new Date(monday);
         sunday.setDate(monday.getDate() + 6);
@@ -717,7 +747,8 @@
         let harian = 0, mingguan = 0, bulanan = 0, tahunan = 0;
         let countHarian = 0, countMingguan = 0, countBulanan = 0, countTahunan = 0;
 
-        rows.forEach(r => {
+        // Hitung harian, mingguan, bulanan dari baris yang sedang terlihat (terpengaruh filter bulan)
+        visibleRows.forEach(r => {
             const dateText = r.querySelector('.cell-date')?.textContent?.trim() || '';
             const totalText = r.querySelector('.cell-total')?.textContent?.trim() || '';
             const total = parseRupiah(totalText);
@@ -732,28 +763,35 @@
                 rowDate = new Date(y, m-1, d);
             }
 
-            // Semua nota (termasuk belum lunas) dihitung ke pendapatan sesuai pilihan A
+            // Semua nota (termasuk belum lunas) dihitung ke pendapatan
             if(rowDate){
-                // harian: tanggal sama dengan hari ini
-                if(rowDate.getDate() === now.getDate() && rowDate.getMonth() === now.getMonth() && rowDate.getFullYear() === now.getFullYear()){
+                // harian: tanggal sama dengan tanggal pada konteks filter
+                if(
+                    rowDate.getDate() === baseDate.getDate() &&
+                    rowDate.getMonth() === baseDate.getMonth() &&
+                    rowDate.getFullYear() === baseDate.getFullYear()
+                ){
                     harian += total;
                     countHarian += 1;
                 }
 
-                // mingguan: berada di rentang monday..sunday
+                // mingguan: berada di rentang monday..sunday untuk konteks filter
                 if(rowDate >= monday && rowDate <= sunday){
                     mingguan += total;
                     countMingguan += 1;
                 }
 
-                // bulanan: month & year sama
-                if(rowDate.getMonth() + 1 === todayMonth && rowDate.getFullYear() === todayYear){
+                // bulanan: month & year sama dengan filter
+                if(
+                    (rowDate.getMonth() + 1) === contextMonth &&
+                    rowDate.getFullYear() === contextYear
+                ){
                     bulanan += total;
                     countBulanan += 1;
                 }
 
-                // tahunan: year sama
-                if(rowDate.getFullYear() === todayYear){
+                // tahunan: year sama dengan filter
+                if(rowDate.getFullYear() === contextYear){
                     tahunan += total;
                     countTahunan += 1;
                 }
@@ -778,7 +816,7 @@
         if(countMingguanEl) countMingguanEl.textContent = countMingguan;
         // Compute totals & counts for payment methods (from visible rows)
         let cashSum = 0, transferSum = 0, countCash = 0, countTransfer = 0;
-        rows.forEach(r => {
+        visibleRows.forEach(r => {
             const c = parseInt(r.getAttribute('data-cash') || 0, 10) || 0;
             const t = parseInt(r.getAttribute('data-transfer') || 0, 10) || 0;
             if(c > 0){ cashSum += c; countCash += 1; }
@@ -798,10 +836,133 @@
         // Update remaining counts (bulanan & tahunan only)
         document.getElementById('countBulanan').textContent = countBulanan;
         document.getElementById('countTahunan').textContent = countTahunan;
+
+        // Tambahan: pendapatan TAHUNAN harus hanya mengikuti filter tahun,
+        // tidak terpengaruh filter bulan. Jadi kita ulangi perhitungan tahunan
+        // memakai SEMUA baris yang tahunnya sama dengan contextYear.
+        let tahunanYearOnly = 0;
+        let countTahunanYearOnly = 0;
+        allRows.forEach(r => {
+            const dateText = r.querySelector('.cell-date')?.textContent?.trim() || '';
+            const totalText = r.querySelector('.cell-total')?.textContent?.trim() || '';
+            const total = parseRupiah(totalText);
+
+            const parts = dateText.split('/');
+            if (parts.length === 3) {
+                const d = parseInt(parts[0],10);
+                const m = parseInt(parts[1],10);
+                const y = parseInt(parts[2],10);
+                const rowDate = new Date(y, m-1, d);
+
+                if (rowDate.getFullYear() === contextYear) {
+                    tahunanYearOnly += total;
+                    countTahunanYearOnly += 1;
+                }
+            }
+        });
+
+        if (tahunanEl) tahunanEl.textContent = formatRupiah(tahunanYearOnly);
+        document.getElementById('countTahunan').textContent = countTahunanYearOnly;
+    }
+
+    function buildWeeklySummaryCards(){
+        const container = document.getElementById('weeklySummaryContainer');
+        const titleEl = document.getElementById('weeklySummaryTitle');
+        if (!container || !titleEl) return;
+
+        const { month, year } = getFilterContext();
+
+        const monthNames = [
+            'Januari','Februari','Maret','April','Mei','Juni',
+            'Juli','Agustus','September','Oktober','November','Desember'
+        ];
+
+        const monthLabel = monthNames[month - 1] || 'Bulan Ini';
+        titleEl.textContent = `Ringkasan Mingguan (${monthLabel} ${year})`;
+
+        const startOfMonth = new Date(year, month - 1, 1);
+        const endOfMonth = new Date(year, month, 0); // last day of month
+
+        const weeks = [];
+        let cursor = new Date(startOfMonth);
+
+        while (cursor <= endOfMonth) {
+            let weekStart = new Date(cursor);
+            const dayOfWeek = weekStart.getDay();
+            const diffToMonday = (dayOfWeek + 6) % 7;
+            weekStart.setDate(weekStart.getDate() - diffToMonday);
+            if (weekStart < startOfMonth) {
+                weekStart = new Date(startOfMonth);
+            }
+
+            let weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+            if (weekEnd > endOfMonth) {
+                weekEnd = new Date(endOfMonth);
+            }
+
+            weeks.push({ start: weekStart, end: weekEnd });
+
+            cursor = new Date(weekEnd);
+            cursor.setDate(cursor.getDate() + 1);
+        }
+
+        const visibleRows = getRows().filter(r => r.style.display !== 'none');
+
+        const weekData = weeks.map((w, index) => {
+            let total = 0;
+            let count = 0;
+
+            visibleRows.forEach(r => {
+                const dateText = r.querySelector('.cell-date')?.textContent?.trim() || '';
+                const totalText = r.querySelector('.cell-total')?.textContent?.trim() || '';
+
+                const parts = dateText.split('/');
+                if (parts.length === 3) {
+                    const d = parseInt(parts[0],10);
+                    const m = parseInt(parts[1],10);
+                    const y = parseInt(parts[2],10);
+                    const rowDate = new Date(y, m-1, d);
+
+                    if (rowDate >= w.start && rowDate <= w.end) {
+                        total += parseRupiah(totalText);
+                        count += 1;
+                    }
+                }
+            });
+
+            return {
+                label: 'Minggu ' + (index + 1),
+                start: w.start,
+                end: w.end,
+                total,
+                count
+            };
+        });
+
+        container.innerHTML = '';
+        weekData.forEach(week => {
+            const card = document.createElement('div');
+            card.className = 'card weekly-card';
+            card.style.flex = '1 1 220px';
+            card.style.maxWidth = '260px';
+            card.innerHTML = `
+                <h6>${week.label.toUpperCase()}</h6>
+                <p class="small" style="margin-top:4px; font-size:12px; opacity:.75;">
+                    ${formatDateId(week.start)} &mdash; ${formatDateId(week.end)}
+                </p>
+                <h4 style="margin-top:10px;">${formatRupiah(week.total)}</h4>
+                <p class="small">Nota: ${week.count}</p>
+            `;
+            container.appendChild(card);
+        });
     }
 
     // Jalankan saat halaman siap
-    document.addEventListener('DOMContentLoaded', computeTotalsIncludingUnpaid);
+    document.addEventListener('DOMContentLoaded', () => {
+        computeTotalsIncludingUnpaid();
+        buildWeeklySummaryCards();
+    });
 
     // Jalankan juga setelah klik Refresh
     const refreshBtn = document.getElementById('refreshBtn');
@@ -932,6 +1093,11 @@
         btn.addEventListener('click', ()=> setTimeout(()=>{ updateDashboardCharts(); }, 250));
     });
 
+    // Ekspor fungsi ke global agar script lain dapat memanggilnya
+    window.computeTotalsIncludingUnpaid = computeTotalsIncludingUnpaid;
+    window.updateDashboardCharts = updateDashboardCharts;
+    window.buildWeeklySummaryCards = buildWeeklySummaryCards;
+
 })();
 </script>
 
@@ -1005,6 +1171,9 @@
 
     // Jalankan sekali lagi untuk memastikan nilai ter-update jika DOM sudah dimodifikasi
     setTimeout(computeTotalSisa, 500);
+
+    // Ekspor ke global agar bisa dipanggil dari script filter utama
+    window.computeTotalSisa = computeTotalSisa;
 })();
 </script>
 @endsection
