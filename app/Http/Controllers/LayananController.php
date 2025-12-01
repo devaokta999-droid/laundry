@@ -14,11 +14,11 @@ class LayananController extends Controller
     {
         $this->middleware('auth');
 
-        // Batasi hanya role admin & karyawan yang boleh mengakses semua aksi layanan
+        // Batasi hanya role admin yang boleh mengakses semua aksi layanan
         $this->middleware(function ($request, $next) {
             $user = auth()->user();
-            if (!$user || !in_array($user->role, ['admin', 'karyawan'])) {
-                abort(403, 'Akses ditolak - hanya admin dan karyawan yang dapat mengakses menu layanan.');
+            if (!$user || $user->role !== 'admin') {
+                abort(403, 'Akses ditolak - hanya admin yang dapat mengakses menu layanan.');
             }
             return $next($request);
         });

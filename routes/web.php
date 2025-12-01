@@ -71,32 +71,32 @@ Route::prefix('admin')
         |-------------------------------
         */
         Route::get('services', function (Request $request) {
-            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'karyawan');
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir');
             return app(ServiceController::class)->index();
         })->name('services.index');
 
         Route::get('services/create', function (Request $request) {
-            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'karyawan');
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin');
             return app(ServiceController::class)->create();
         })->name('services.create');
 
         Route::post('services', function (Request $request) {
-            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'karyawan');
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin');
             return app(ServiceController::class)->store($request);
         })->name('services.store');
 
         Route::get('services/{id}/edit', function (Request $request, $id) {
-            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'karyawan');
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin');
             return app(ServiceController::class)->edit($id);
         })->name('services.edit');
 
         Route::put('services/{id}', function (Request $request, $id) {
-            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'karyawan');
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin');
             return app(ServiceController::class)->update($request, $id);
         })->name('services.update');
 
         Route::delete('services/{id}', function (Request $request, $id) {
-            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'karyawan');
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin');
             return app(ServiceController::class)->destroy($id);
         })->name('services.destroy');
 
@@ -122,30 +122,30 @@ Route::prefix('admin')
         |-------------------------------
         */
         Route::get('nota', function (Request $request) {
-            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'karyawan');
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir');
             return app(NotaController::class)->index();
         })->name('nota.index');
 
         Route::post('nota/store', function (Request $request) {
-            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'karyawan');
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir');
             return app(NotaController::class)->store($request);
         })->name('nota.store');
 
         // Hapus banyak nota sekaligus
         Route::delete('nota/bulk-destroy', function (Request $request) {
-            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'karyawan');
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin');
             return app(NotaController::class)->bulkDestroy($request);
         })->name('nota.bulk_destroy');
 
         // dY-"�,? Cetak & Unduh PDF Nota
         Route::get('nota/{id}/print', function (Request $request, $id) {
-            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'karyawan');
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir');
             return app(NotaController::class)->print($id);
         })->name('nota.print');
 
         // dY"? Detail Nota
         Route::get('nota/{id}', function (Request $request, $id) {
-            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir', 'karyawan');
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir');
             $nota = \App\Models\Nota::with('items.item')->findOrFail($id);
             return view('admin.nota.show', compact('nota'));
         })->name('nota.show');

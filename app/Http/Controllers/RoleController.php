@@ -25,7 +25,7 @@ class RoleController extends Controller
     public function index()
     {
         $users = User::orderBy('name')->get();
-        $roles = ['admin', 'kasir', 'karyawan'];
+        $roles = ['admin', 'kasir'];
 
         return view('admin.roles.index', compact('users', 'roles'));
     }
@@ -35,7 +35,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $roles = ['admin', 'kasir', 'karyawan'];
+        $roles = ['admin', 'kasir'];
         return view('admin.roles.create', compact('roles'));
     }
 
@@ -48,7 +48,7 @@ class RoleController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:admin,kasir,karyawan',
+            'role' => 'required|in:admin,kasir',
         ]);
 
         User::create([
@@ -68,7 +68,7 @@ class RoleController extends Controller
      */
     public function edit(User $role)
     {
-        $roles = ['admin', 'kasir', 'karyawan'];
+        $roles = ['admin', 'kasir'];
         $user = $role;
         return view('admin.roles.edit', compact('user', 'roles'));
     }
@@ -86,7 +86,7 @@ class RoleController extends Controller
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email,' . $user->id,
                 'password' => 'nullable|string|min:6',
-                'role' => 'required|in:admin,kasir,karyawan',
+                'role' => 'required|in:admin,kasir',
             ]);
 
             $user->name = $data['name'];
@@ -105,7 +105,7 @@ class RoleController extends Controller
         // Jika datang dari tombol "Simpan" cepat di halaman index (hanya field role),
         // cukup validasi dan update role saja.
         $data = $request->validate([
-            'role' => 'required|in:admin,kasir,karyawan',
+            'role' => 'required|in:admin,kasir',
         ]);
 
         $user->role = $data['role'];

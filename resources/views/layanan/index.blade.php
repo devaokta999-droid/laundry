@@ -4,14 +4,16 @@
 <style>
     /* Apple Pro / macOS-style layout untuk halaman layanan */
     .layanan-macos-page {
-        padding: 40px 0 48px;
-        background: radial-gradient(circle at top left, #f9fafb 0, #e5edff 35%, #eef2ff 70%, #f9fafb 100%);
+        padding: 48px 0 56px;
+        background: radial-gradient(circle at top left, #fdfdfd 0, #e5edff 30%, #e0ecff 55%, #f5f7fb 100%);
         min-height: calc(100vh - 70px);
     }
 
     .layanan-shell {
-        max-width: 1080px;
-        margin: 0 auto;
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 0 24px 0 18px; /* beri sedikit ruang dari sidebar dan sisi kanan */
     }
 
     .layanan-shell-header {
@@ -63,7 +65,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 0.9rem 1.6rem;
+        padding: 1rem 1.8rem;
         border-bottom: 1px solid rgba(226, 232, 240, 0.9);
         background: linear-gradient(135deg, #f9fafb, #e5edff);
     }
@@ -86,9 +88,9 @@
     .mac-traffic-light.green { background: #28c840; }
 
     .layanan-window-title {
-        font-size: .9rem;
-        color: #4b5563;
-        font-weight: 500;
+        font-size: .95rem;
+        color: #374151;
+        font-weight: 600;
     }
 
     .btn-mac-primary {
@@ -126,7 +128,7 @@
     }
 
     .layanan-window-body {
-        padding: 1.7rem 1.6rem 1.6rem;
+        padding: 1.9rem 1.8rem 1.8rem;
     }
 
     .layanan-toolbar {
@@ -176,7 +178,7 @@
 
     .layanan-table {
         margin-bottom: 0;
-        font-size: .9rem;
+        font-size: .92rem;
     }
 
     .layanan-table thead {
@@ -187,8 +189,8 @@
         border-bottom: 1px solid rgba(209, 213, 219, 0.9);
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        font-size: .72rem;
-        color: #4b5563;
+        font-size: .74rem;
+        color: #6b7280;
     }
 
     .layanan-table tbody tr:nth-child(even) {
@@ -201,16 +203,17 @@
 
     .layanan-table td {
         vertical-align: middle !important;
-        color: #374151;
-    }
+        color: #111827;
+        }
 
     .layanan-name {
-        font-weight: 600;
-        color: #111827;
+        font-weight: 700;
+        color: #0f172a;
+        font-size: .98rem;
     }
 
     .layanan-description {
-        max-width: 380px;
+        max-width: 520px;
         margin: 0 auto;
         font-size: .85rem;
         color: #6b7280;
@@ -226,30 +229,41 @@
 
     .btn-chip {
         border-radius: 999px;
-        border: none;
+        border: 0;
         font-size: .8rem;
-        padding: 5px 12px;
-        font-weight: 500;
+        padding: 6px 14px;
+        font-weight: 600;
         display: inline-flex;
         align-items: center;
-        gap: .25rem;
-        color: #fff;
+        gap: .35rem;
+        color: #f9fafb;
+        box-shadow: 0 10px 24px rgba(15,23,42,0.18);
+        transition: all .18s ease;
+    }
+
+    .btn-chip svg {
+        width: 15px;
+        height: 15px;
     }
 
     .btn-chip-edit {
-        background: linear-gradient(135deg, #ffb13d, #ff9500);
+        background: linear-gradient(135deg, #0ea5e9, #6366f1);
     }
 
     .btn-chip-edit:hover {
-        background: linear-gradient(135deg, #ffc862, #ff9f0a);
+        background: linear-gradient(135deg, #38bdf8, #818cf8);
+        transform: translateY(-1px);
+        box-shadow: 0 14px 30px rgba(37,99,235,0.35);
     }
 
     .btn-chip-delete {
-        background: linear-gradient(135deg, #ff3b30, #ff453a);
+        background: linear-gradient(135deg, #f97373, #ef4444);
     }
 
     .btn-chip-delete:hover {
-        background: linear-gradient(135deg, #ff5e57, #ff3b30);
+        background: linear-gradient(135deg, #fca5a5, #f97373);
+        transform: translateY(-1px);
+        box-shadow: 0 14px 30px rgba(220,38,38,0.35);
     }
 
     .empty-state {
@@ -314,8 +328,8 @@
                         {{ $services->count() }} layanan aktif terdaftar.
                     </div>
                     <div class="layanan-search">
-                        <span class="layanan-search-icon">🔍</span>
-                        <input type="text" class="form-control" placeholder="Cari nama layanan (visual saja)" disabled>
+                        <span class="layanan-search-icon"></span>
+                        <input type="text" id="serviceSearch" class="form-control" placeholder="Cari nama atau deskripsi layanan...">
                     </div>
                 </div>
 
@@ -359,14 +373,14 @@
                                     <td>
                                         <div class="layanan-actions">
                                             <a href="{{ route('layanan.edit', $service->id) }}" class="btn-chip btn-chip-edit">
-                                                ✏️ <span>Edit</span>
+                                                <span>Edit</span>
                                             </a>
                                             <form action="{{ route('layanan.destroy', $service->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn-chip btn-chip-delete"
                                                     onclick="return confirm('Yakin ingin menghapus layanan ini?')">
-                                                    🗑 <span>Hapus</span>
+                                                <span>Hapus</span>
                                                 </button>
                                             </form>
                                         </div>
@@ -392,6 +406,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // SweetAlert success
             var msgEl = document.getElementById('layananSuccessMessage');
             if (!msgEl) return;
             var text = msgEl.textContent || msgEl.innerText || 'Layanan berhasil ditambahkan.';
@@ -408,4 +423,36 @@
         });
     </script>
 @endif
+
+<script>
+    // Pencarian client-side untuk tabel layanan
+    document.addEventListener('DOMContentLoaded', function () {
+        var searchInput = document.getElementById('serviceSearch');
+        if (!searchInput) return;
+
+        var rows = Array.prototype.slice.call(
+            document.querySelectorAll('.layanan-table tbody tr')
+        );
+
+        searchInput.addEventListener('input', function () {
+            var q = (this.value || '').toLowerCase().trim();
+
+            rows.forEach(function (row) {
+                var nameEl = row.querySelector('.layanan-name');
+                var descEl = row.querySelector('.layanan-description');
+
+                var name = nameEl ? (nameEl.textContent || '').toLowerCase() : '';
+                var desc = descEl ? (descEl.textContent || '').toLowerCase() : '';
+
+                if (!q) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = (name.indexOf(q) !== -1 || desc.indexOf(q) !== -1)
+                        ? ''
+                        : 'none';
+                }
+            });
+        });
+    });
+</script>
 @endsection

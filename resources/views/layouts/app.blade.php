@@ -250,24 +250,24 @@
                 @php $role = auth()->user()->role; @endphp
                 <div class="nav-section-label mt-3">Dashboard</div>
 
-                {{-- Layanan hanya untuk Admin & Karyawan --}}
-                @if(in_array($role, ['admin', 'karyawan']))
+                {{-- Layanan hanya untuk Admin --}}
+                @if($role === 'admin')
                     <a href="{{ route('layanan.index') }}"
                        class="nav-link {{ request()->routeIs('layanan.index') ? 'active' : '' }}">
                         Layanan
                     </a>
                 @endif
 
-                {{-- Kasir, Admin, Karyawan dapat mengakses NOTA --}}
-                @if(in_array($role, ['kasir', 'admin', 'karyawan']))
+                {{-- Kasir & Admin dapat mengakses NOTA --}}
+                @if(in_array($role, ['kasir', 'admin']))
                     <a href="{{ route('admin.nota.index') }}" 
                        class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">
                        Nota
                     </a>
                 @endif
 
-                {{-- Admin & Karyawan dapat mengakses LAPORAN --}}
-                @if(in_array($role, ['admin', 'karyawan']))
+                {{-- Admin dapat mengakses LAPORAN --}}
+                @if($role === 'admin')
                     <a href="{{ route('admin.laporan') }}" 
                        class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
                        Laporan

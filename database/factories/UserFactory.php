@@ -28,7 +28,7 @@ class UserFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'role' => $this->faker->randomElement(['admin', 'kasir', 'user', 'karyawan']), // ✅ sesuai enum di migration
+            'role' => $this->faker->randomElement(['admin', 'kasir', 'user']), // ✅ sesuai enum di migration
             'phone' => $this->faker->phoneNumber(),
             'address' => $this->faker->address(),
             'remember_token' => Str::random(10),

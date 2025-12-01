@@ -60,8 +60,8 @@
     }
 </style>
 
-<div class="container py-5">
-    <div class="col-lg-6 mx-auto">
+<div class="container-fluid py-5">
+    <div class="col-lg-10 mx-auto">
         <div class="card-macos">
             <h3 class="text-center mb-4" style="color:#007aff;">
                 Tambah Layanan Baru
