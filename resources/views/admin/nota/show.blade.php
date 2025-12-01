@@ -345,13 +345,6 @@
 
             <a href="{{ route('admin.nota.print', $nota->id) }}" class="btn btn-primary me-2" target="_blank">Cetak PDF</a>
             <a href="{{ route('admin.nota.print_direct', $nota->id) }}" class="btn btn-primary" target="_blank">Print Langsung</a>
-
-            <form action="{{ route('admin.nota.destroy', $nota->id) }}" method="POST" class="d-inline" 
-                  onsubmit="return confirm('Apakah kamu yakin ingin menghapus nota ini? Tindakan ini tidak bisa dibatalkan.');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-primary">Hapus Nota</button>
-            </form>
             <a href="{{ route('admin.nota.index') }}" class="btn btn-outline-dark">Kembali</a>
         </div>
     </div>

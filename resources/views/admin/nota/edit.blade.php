@@ -105,31 +105,24 @@
 
                         <tbody>
                             @php
+                                // Hanya tampilkan item yang memang ada di nota
                                 $rowNumber = 0;
-                                $groupedNotaItems = $nota->items->groupBy(function ($item) {
-                                    return strtolower(trim(optional($item->item)->name ?? ''));
-                                });
-                                $catalogNamesLower = $catalogItems->pluck('name')->map(function ($name) {
-                                    return strtolower(trim($name));
-                                })->all();
                             @endphp
 
-                            {{-- Tampilkan semua item dari katalog sebagai baris default --}}
-                            @foreach ($catalogItems as $catalog)
+                            @foreach ($nota->items as $item)
                                 @php
-                                    $key = strtolower(trim($catalog->name));
-                                    $notaItem = isset($groupedNotaItems[$key]) ? $groupedNotaItems[$key]->first() : null;
-                                    $qty = $notaItem ? $notaItem->quantity : 0;
-                                    $price = $notaItem ? $notaItem->price : $catalog->price;
-                                    $subtotal = $qty * $price;
                                     $index = $rowNumber++;
+                                    $name = $item->item->name ?? $item->name ?? '';
+                                    $price = $item->price;
+                                    $qty = $item->quantity;
+                                    $subtotal = $item->subtotal ?? ($price * $qty);
                                 @endphp
                                 <tr>
                                     <td class="text-center">{{ $rowNumber }}</td>
 
                                     <td>
                                         <input type="text" name="name[{{ $index }}]"
-                                            value="{{ $catalog->name }}"
+                                            value="{{ $name }}"
                                             class="form-control input-mac name-input" data-index="{{ $index }}">
                                     </td>
 
@@ -157,52 +150,6 @@
                                         <button type="button" class="btn btn-danger btn-sm remove-row">X</button>
                                     </td>
                                 </tr>
-                            @endforeach
-
-                            {{-- Tambahkan item tambahan yang tidak ada di katalog --}}
-                            @foreach ($nota->items as $item)
-                                @php
-                                    $name = $item->item->name ?? '';
-                                    $key = strtolower(trim($name));
-                                @endphp
-                                @if (!in_array($key, $catalogNamesLower))
-                                    @php
-                                        $index = $rowNumber++;
-                                    @endphp
-                                    <tr>
-                                        <td class="text-center">{{ $rowNumber }}</td>
-
-                                        <td>
-                                            <input type="text" name="name[{{ $index }}]"
-                                                value="{{ $name }}"
-                                                class="form-control input-mac name-input" data-index="{{ $index }}">
-                                        </td>
-
-                                        <td>
-                                            <input type="number" name="price[{{ $index }}]"
-                                                value="{{ $item->price }}"
-                                                class="form-control input-mac price-input" 
-                                                data-index="{{ $index }}" min="0" step="0.01">
-                                        </td>
-
-                                        <td>
-                                            <input type="number" name="quantity[{{ $index }}]"
-                                                value="{{ $item->quantity }}"
-                                                class="form-control input-mac qty-input" 
-                                                data-index="{{ $index }}" min="0">
-                                        </td>
-
-                                        <td>
-                                            <input type="text" id="subtotal_{{ $index }}"
-                                                value="{{ $item->subtotal }}"
-                                                class="form-control input-mac bg-light subtotal-field" readonly>
-                                        </td>
-
-                                        <td class="text-center">
-                                            <button type="button" class="btn btn-danger btn-sm remove-row">X</button>
-                                        </td>
-                                    </tr>
-                                @endif
                             @endforeach
                         </tbody>
                     </table>
