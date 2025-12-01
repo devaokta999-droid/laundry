@@ -32,7 +32,7 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <form method="POST" action="{{ route('admin.roles.update', $user) }}">
+            <form method="POST" action="{{ route('admin.roles.update', $user) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -57,6 +57,16 @@
                     <div class="form-text">Kosongkan jika tidak ingin mengubah password.</div>
                 </div>
 
+                <div class="mb-3">
+                    <label class="form-label">Foto Profil</label>
+                    @if($user->avatar)
+                        <div class="mb-2">
+                            <img src="{{ asset('storage/'.$user->avatar) }}" alt="{{ $user->name }}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;">
+                        </div>
+                    @endif
+                    <input type="file" name="avatar" class="form-control" accept="image/*">
+                    <div class="form-text">Upload gambar baru jika ingin mengganti foto profil. Biarkan kosong jika tidak ingin mengubah.</div>
+                </div>
                 <div class="mb-3">
                     <label class="form-label">Role</label>
                     <select name="role" class="form-select" required>

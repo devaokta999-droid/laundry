@@ -165,6 +165,31 @@
             background: var(--mac-accent);
             color: #fff;
         }
+        .sidebar-user-btn{
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            gap:8px;
+        }
+        .sidebar-user-avatar{
+            width:22px;
+            height:22px;
+            border-radius:999px;
+            overflow:hidden;
+            background:linear-gradient(135deg,#4f46e5,#0ea5e9);
+            color:#fff;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            font-size:.7rem;
+            font-weight:700;
+        }
+        .sidebar-user-avatar img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            display:block;
+        }
 
         .sidebar-toggle {
             display: none;
@@ -298,8 +323,16 @@
             <a href="{{ route('login') }}" class="btn btn-primary w-100">Login</a>
         @else
             <div class="dropup w-100">
-                <button class="btn btn-outline-primary dropdown-toggle w-100" data-bs-toggle="dropdown">
-                    {{ auth()->user()->name }}
+                <button class="btn btn-outline-primary dropdown-toggle w-100 sidebar-user-btn" data-bs-toggle="dropdown">
+                    @php $u = auth()->user(); @endphp
+                    <span class="sidebar-user-avatar">
+                        @if(!empty($u->avatar))
+                            <img src="{{ asset('storage/'.$u->avatar) }}" alt="{{ $u->name }}">
+                        @else
+                            {{ strtoupper(mb_substr($u->name,0,1,'UTF-8')) }}
+                        @endif
+                    </span>
+                    <span>{{ $u->name }}</span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end w-100">
                     <li>

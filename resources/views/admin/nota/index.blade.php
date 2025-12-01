@@ -326,14 +326,6 @@
         
         {{-- ✅ Perubahan hanya di bagian ini --}}
         <div class="position-relative nota-search-wrapper">
-            <span class="position-absolute top-50 translate-middle-y ps-2" style="left: 8px;">
-                {{-- Ikon Search hitam-putih --}}
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="black" viewBox="0 0 16 16">
-                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 
-                    1.415-1.414l-3.85-3.85zm-5.242.656a5.5 5.5 
-                    0 1 1 0-11 5.5 5.5 0 0 1 0 11z"/>
-                </svg>
-            </span>
             <input type="text" id="searchNota" class="form-control nota-search-input" placeholder="Cari nama pelanggan atau tanggal...">
         </div>
     </div>
@@ -349,24 +341,10 @@
         </button>
     </div>
 
-    <form method="POST" action="{{ route('admin.nota.bulk_destroy') }}" id="bulkDeleteForm">
-        @csrf
-        @method('DELETE')
-        <div class="d-flex justify-content-between mb-2">
-            <div>
-                <button type="submit" class="btn btn-sm btn-outline-danger btn-mac-pill"
-                        onclick="return confirm('Yakin ingin menghapus nota yang dipilih?')">
-                    Hapus Terpilih
-                </button>
-            </div>
-        </div>
-        <div class="table-responsive">
+    <div class="table-responsive">
         <table class="table table-striped align-middle text-center" id="tableRiwayat">
             <thead class="table-light">
                 <tr>
-                    <th>
-                        <input type="checkbox" id="select_all_nota">
-                    </th>
                     <th>#</th>
                     <th>Nama Pelanggan</th>
                     <th>Kasir</th>
@@ -383,9 +361,6 @@
             <tbody>
                 @forelse($notas as $n)
                 <tr data-nota-id="{{ $n->id }}">
-                    <td>
-                        <input type="checkbox" name="ids[]" class="nota-checkbox" value="{{ $n->id }}">
-                    </td>
                     <td>{{ $loop->iteration }}</td>
                     <td class="nama-customer">{{ $n->customer_name }}</td>
                     <td class="nama-kasir">{{ optional($n->user)->name ?? '-' }}</td>
@@ -448,8 +423,7 @@
                 @endforelse
             </tbody>
         </table>
-        </div>
-    </form>
+    </div>
 </div>
 
 {{-- ✅ Script Dinamis --}}

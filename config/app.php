@@ -35,7 +35,8 @@ return [
     | Application Timezone
     |--------------------------------------------------------------------------
     */
-    'timezone' => 'Asia/Jakarta',
+    // Gunakan WITA (Indonesia Tengah)
+    'timezone' => 'Asia/Makassar',
 
     /*
     |--------------------------------------------------------------------------

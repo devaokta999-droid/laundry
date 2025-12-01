@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class RoleController extends Controller
 {
@@ -49,13 +50,20 @@ class RoleController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
             'role' => 'required|in:admin,kasir',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
+
+        $avatarPath = null;
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        }
 
         User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
             'role' => $data['role'],
+            'avatar' => $avatarPath,
         ]);
 
         return redirect()
@@ -87,11 +95,20 @@ class RoleController extends Controller
                 'email' => 'required|email|unique:users,email,' . $user->id,
                 'password' => 'nullable|string|min:6',
                 'role' => 'required|in:admin,kasir',
+                'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             ]);
 
             $user->name = $data['name'];
             $user->email = $data['email'];
             $user->role = $data['role'];
+
+            if ($request->hasFile('avatar')) {
+                if ($user->avatar) {
+                    Storage::disk('public')->delete($user->avatar);
+                }
+                $user->avatar = $request->file('avatar')->store('avatars', 'public');
+            }
+
             if (!empty($data['password'])) {
                 $user->password = bcrypt($data['password']);
             }

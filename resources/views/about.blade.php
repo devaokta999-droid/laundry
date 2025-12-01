@@ -153,6 +153,25 @@ body {
     color: #555;
 }
 
+/* Jam operasional rapi */
+.mac-hours-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:0.95rem;
+    color:#374151;
+}
+.mac-hours-day{
+    width:80px;
+    font-weight:600;
+}
+.mac-hours-sep{
+    width:10px;
+}
+.mac-hours-time{
+    flex:1;
+}
+
 /* 📱 Responsif */
 @media (max-width: 768px) {
     .mac-header h1 {
@@ -210,12 +229,42 @@ body {
 
             <div style="margin-top:24px; padding-top:16px; border-top:1px solid #e5e7eb;">
                 <h3 style="font-size:1.1rem; font-weight:700; color:#007aff; margin-bottom:10px;">Jam Operasional</h3>
-                @foreach($hoursLines as $idx => $line)
-                    <p style="margin:{{ $idx === 0 ? '0' : '2px 0 0' }}; color:#374151; font-size:0.95rem;">
-                        {{ $line }}
-                    </p>
-                @endforeach
-                <p style="margin-top:6px; color:#6b7280; font-size:0.85rem;">
+                <div class="mac-hours-row">
+                    <span class="mac-hours-day">Senin</span>
+                    <span class="mac-hours-sep">:</span>
+                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                </div>
+                <div class="mac-hours-row">
+                    <span class="mac-hours-day">Selasa</span>
+                    <span class="mac-hours-sep">:</span>
+                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                </div>
+                <div class="mac-hours-row">
+                    <span class="mac-hours-day">Rabu</span>
+                    <span class="mac-hours-sep">:</span>
+                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                </div>
+                <div class="mac-hours-row">
+                    <span class="mac-hours-day">Kamis</span>
+                    <span class="mac-hours-sep">:</span>
+                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                </div>
+                <div class="mac-hours-row">
+                    <span class="mac-hours-day">Jumat</span>
+                    <span class="mac-hours-sep">:</span>
+                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                </div>
+                <div class="mac-hours-row">
+                    <span class="mac-hours-day">Sabtu</span>
+                    <span class="mac-hours-sep">:</span>
+                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                </div>
+                <div class="mac-hours-row">
+                    <span class="mac-hours-day">Minggu</span>
+                    <span class="mac-hours-sep">:</span>
+                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                </div>
+                <p style="margin-top:8px; color:#6b7280; font-size:0.85rem;">
                     Silakan datang pada jam operasional tersebut untuk pelayanan antar-jemput maupun drop-off langsung di outlet.
                 </p>
             </div>

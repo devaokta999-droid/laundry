@@ -16,7 +16,7 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <form method="POST" action="{{ route('admin.roles.store') }}">
+            <form method="POST" action="{{ route('admin.roles.store') }}" enctype="multipart/form-data">
                 @csrf
 
                 <div class="mb-3">
@@ -39,6 +39,12 @@
                         </button>
                     </div>
                     <div class="form-text">Minimal 6 karakter. Gunakan tombol Show/Hide untuk melihat password.</div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Foto Profil</label>
+                    <input type="file" name="avatar" class="form-control" accept="image/*">
+                    <div class="form-text">Pilih file gambar (opsional) untuk foto profil pada daftar role.</div>
                 </div>
 
                 <div class="mb-3">

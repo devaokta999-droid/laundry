@@ -222,12 +222,6 @@
                 <button type="submit" class="btn btn-primary w-100 mb-2">Sign In</button>
             </form>
 
-            <form method="POST" action="{{ route('password.forgot') }}" id="forgotForm">
-                @csrf
-                <input type="hidden" name="email" id="forgot-email">
-                <button type="button" class="btn btn-link p-0" onclick="submitForgotPassword()">Lupa password?</button>
-            </form>
-
             <div class="login-footer">
                 © {{ date('Y') }} Deva Laundry
             </div>
@@ -251,16 +245,5 @@
         }
     }
 
-    function submitForgotPassword() {
-        const emailInput = document.getElementById('login-email');
-        const hiddenEmail = document.getElementById('forgot-email');
-        if (!emailInput.value) {
-            alert('Isi email dulu sebelum reset password.');
-            emailInput.focus();
-            return;
-        }
-        hiddenEmail.value = emailInput.value;
-        document.getElementById('forgotForm').submit();
-    }
 </script>
 @endsection

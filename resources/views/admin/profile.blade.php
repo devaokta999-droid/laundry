@@ -100,6 +100,13 @@
         font-size: 2.1rem;
         font-weight: 700;
         box-shadow: 0 12px 32px rgba(79,70,229,0.55);
+        overflow: hidden;
+    }
+    .profile-avatar-circle img{
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        display:block;
     }
     .profile-avatar-meta h4 {
         margin: 0;
@@ -223,7 +230,11 @@
                     <div class="profile-card mb-3">
                         <div class="profile-avatar">
                             <div class="profile-avatar-circle">
-                                {{ strtoupper(substr($user->name, 0, 1)) }}
+                                @if(!empty($user->avatar))
+                                    <img src="{{ asset('storage/'.$user->avatar) }}" alt="{{ $user->name }}">
+                                @else
+                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                @endif
                             </div>
                             <div class="profile-avatar-meta">
                                 <h4>{{ $user->name }}</h4>

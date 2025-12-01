@@ -71,6 +71,25 @@
     .roles-table tbody tr:hover {
         background-color: rgba(0,122,255,0.03);
     }
+    .roles-avatar-circle{
+        width:32px;
+        height:32px;
+        border-radius:50%;
+        overflow:hidden;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
+        background:linear-gradient(135deg,#e5e7eb,#cbd5f5);
+        font-size:0.8rem;
+        font-weight:700;
+        color:#374151;
+    }
+    .roles-avatar-circle img{
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        display:block;
+    }
 </style>
 <div class="roles-shell">
     <div class="roles-window">
@@ -127,7 +146,18 @@
                         @foreach($users as $user)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $user->name }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="roles-avatar-circle">
+                                            @if($user->avatar)
+                                                <img src="{{ asset('storage/'.$user->avatar) }}" alt="{{ $user->name }}">
+                                            @else
+                                                {{ strtoupper(mb_substr($user->name,0,1,'UTF-8')) }}
+                                            @endif
+                                        </div>
+                                        <span>{{ $user->name }}</span>
+                                    </div>
+                                </td>
                                 <td>{{ $user->email }}</td>
                                 <td><span class="badge bg-primary text-uppercase">{{ $user->role ?? '-' }}</span></td>
                                 <td>

@@ -389,10 +389,12 @@
                         <input type="number" step="0.01" min="0" max="100" name="discount_percent" id="discountPercent" class="form-control" value="0">
                         <div class="form-text mb-2">Masukkan diskon yang diberikan kepada pelanggan (persentase dari total nota).</div>
 
-                        <div class="mb-2">
-                            <label class="form-label">Total Setelah Diskon (Rp)</label>
-                            <input type="text" id="discountedTotal" class="form-control" readonly>
-                        </div>
+                        @if($nota->sisa > 0)
+                            <div class="mb-2">
+                                <label class="form-label">Sisa Pembayaran Saat Ini (Rp)</label>
+                                <input type="text" id="currentRemaining" class="form-control" value="{{ number_format($nota->sisa,0,',','.') }}" readonly>
+                            </div>
+                        @endif
 
                         <div class="mb-2" id="cashGivenWrapperShow">
                             <label class="form-label">Uang Diterima (Cash) (Rp)</label>
@@ -406,7 +408,7 @@
 
                         <label class="form-label">Jumlah Bayar (Rp)</label>
                         <input type="text" name="amount" id="payAmount" class="form-control" value="{{ number_format($nota->sisa,0,',','.') }}" required>
-                        <div class="form-text">Masukkan jumlah uang yang dibayarkan. Untuk lunas, biarkan sama dengan sisa (setelah diskon jika ada).</div>
+                        <div class="form-text">Masukkan jumlah uang yang dibayarkan. Untuk lunas, biarkan sama dengan sisa setelah diskon.</div>
                     </div>
 
                     <div id="payAlert" class="alert alert-danger d-none" role="alert"></div>
@@ -431,7 +433,7 @@
         const btnEditNota = document.getElementById('btnEditNota');
         const payAmount = document.getElementById('payAmount');
         const discountPercent = document.getElementById('discountPercent');
-        const discountedTotal = document.getElementById('discountedTotal');
+        const discountedTotal = null;
         const discountAmount = document.getElementById('discountAmount');
         const paymentsTable = document.getElementById('paymentsTable');
         const cashGivenWrapper = document.getElementById('cashGivenWrapperShow');
@@ -464,43 +466,44 @@
 
         function updateChangeShow(){
             if (!cashGiven || !changeAmount) return;
-            const originalEl = document.getElementById('originalTotal');
-            const base = originalEl ? parseCurrency(originalEl) : parseCurrency(document.getElementById('totalAmount'));
-            const terbayarVal = parseCurrency(document.getElementById('uangMuka')) || 0;
+
+            const remainingEl = document.getElementById('currentRemaining') || document.getElementById('sisaAmount');
+            const baseRemaining = remainingEl ? parseCurrency(remainingEl) : 0;
+
             const percentVal = parseFloat(discountPercent?.value || 0) || 0;
-            const dAmount = Math.round((base * (percentVal/100)));
-            const dTotal = Math.max(0, Math.round(base - dAmount));
-            const remaining = Math.max(0, dTotal - terbayarVal);
+            const dAmount = Math.round(baseRemaining * (percentVal / 100));
+            const discountedRemaining = Math.max(0, Math.round(baseRemaining - dAmount));
+
             const tender = parseCurrency(cashGiven) || 0;
-            const applied = Math.min(tender || remaining, remaining);
+            const applied = Math.min(tender, discountedRemaining || 0);
             const kembali = Math.max(0, tender - applied);
-            if (payAmount) payAmount.value = formatCurrency(applied);
-            changeAmount.value = formatCurrency(kembali);
+
+            if (discountAmount) discountAmount.value = formatCurrency(dAmount);
+            if (payAmount) payAmount.value = formatCurrency(applied || discountedRemaining);
+            changeAmount.value = kembali > 0 ? formatCurrency(kembali) : (cashGiven.value ? formatCurrency(0) : '');
         }
 
         // Initialize discounted display and live calculation
         try {
             // ensure default shown values
-            const origEl = document.getElementById('originalTotal');
-            const baseVal = origEl ? parseCurrency(origEl) : parseCurrency(document.getElementById('totalAmount'));
-            if (discountedTotal) discountedTotal.value = formatCurrency(baseVal);
+            const remainingEl = document.getElementById('currentRemaining') || document.getElementById('sisaAmount');
+            const remainingBase = remainingEl ? parseCurrency(remainingEl) : 0;
             if (discountAmount) discountAmount.value = formatCurrency(0);
+            if (payAmount) payAmount.value = formatCurrency(remainingBase);
 
             // on input percent -> update discounted fields
             if (discountPercent) {
                 discountPercent.addEventListener('input', function(){
-                    const originalEl = document.getElementById('originalTotal');
-                    const base = originalEl ? parseCurrency(originalEl) : parseCurrency(document.getElementById('totalAmount'));
-                    const terbayarVal = parseCurrency(document.getElementById('uangMuka')) || 0;
+                    const remainingEl = document.getElementById('currentRemaining') || document.getElementById('sisaAmount');
+                    const base = remainingEl ? parseCurrency(remainingEl) : 0;
                     const percent = parseFloat(this.value || 0) || 0;
                     const dAmount = Math.round((base * (percent/100)));
                     const dTotal = Math.max(0, Math.round(base - dAmount));
-                    if (discountedTotal) discountedTotal.value = formatCurrency(dTotal);
                     if (discountAmount) discountAmount.value = formatCurrency(dAmount);
                     if (paymentType.value === 'cash') {
                         updateChangeShow();
                     } else if (payAmount) {
-                        payAmount.value = formatCurrency(Math.max(0, Math.round(dTotal - terbayarVal)));
+                        payAmount.value = formatCurrency(dTotal);
                     }
                 });
             }
@@ -510,18 +513,16 @@
             if (modalEl) {
                 modalEl.addEventListener('show.bs.modal', function (){
                     try {
-                        const originalEl = document.getElementById('originalTotal');
-                        const base = originalEl ? parseCurrency(originalEl) : parseCurrency(document.getElementById('totalAmount'));
-                        const terbayarVal = parseCurrency(document.getElementById('uangMuka')) || 0;
+                        const remainingEl = document.getElementById('currentRemaining') || document.getElementById('sisaAmount');
+                        const base = remainingEl ? parseCurrency(remainingEl) : 0;
                         const percentVal = parseFloat(discountPercent.value || 0) || 0;
                         const dAmount = Math.round((base * (percentVal/100)));
                         const dTotal = Math.max(0, Math.round(base - dAmount));
-                        if (discountedTotal) discountedTotal.value = formatCurrency(dTotal);
                         if (discountAmount) discountAmount.value = formatCurrency(dAmount);
                         if (paymentType.value === 'cash') {
                             updateChangeShow();
                         } else if (payAmount) {
-                            payAmount.value = formatCurrency(Math.max(0, Math.round(dTotal - terbayarVal)));
+                            payAmount.value = formatCurrency(dTotal);
                         }
                     }catch(e){}
                 });
