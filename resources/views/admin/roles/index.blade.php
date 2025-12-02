@@ -2,93 +2,321 @@
 
 @section('content')
 <style>
+    :root {
+        --apple-accent: #0a74ff;
+        --apple-glass: rgba(255, 255, 255, 0.94);
+        --apple-border: rgba(229, 233, 244, 0.95);
+        --apple-shadow: 0 30px 80px rgba(15, 23, 42, 0.22);
+        --apple-muted: #6b7280;
+        --apple-bg: linear-gradient(135deg, #f6f7fb, #eef2ff);
+    }
+
     .roles-shell {
-        max-width: 1500px;
-        margin: 32px auto 40px;
+        max-width: none;
+        width: 100%;
+        margin: 24px 0 48px;
+        padding: 0;
     }
+
     .roles-window {
-        border-radius: 22px;
-        background: rgba(255,255,255,0.92);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        box-shadow: 0 24px 60px rgba(15,23,42,0.16);
-        border: 1px solid rgba(255,255,255,0.8);
+        width: 100%;
+        border-radius: 34px;
+        background: #ffffff;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        box-shadow: 0 24px 45px rgba(15, 23, 42, 0.18);
         overflow: hidden;
+        position: relative;
     }
+
     .roles-window-header {
+        position: relative;
         display: flex;
         align-items: center;
-        padding: 0.6rem 1rem;
-        border-bottom: 1px solid rgba(226,232,240,0.9);
-        background: linear-gradient(135deg, #f5f5f7, #e5e7eb);
+        padding: 0.8rem 1.2rem;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+        background: var(--apple-bg);
     }
+
     .traffic-lights {
         display: flex;
-        gap: 0.4rem;
-        margin-right: 0.8rem;
+        gap: 0.45rem;
+        margin-right: 1rem;
     }
+
     .traffic-light {
         width: 12px;
         height: 12px;
         border-radius: 999px;
-        border: 1px solid rgba(0,0,0,0.08);
+        border: 1px solid rgba(0, 0, 0, 0.08);
     }
+
     .traffic-light.red { background: #ff5f57; }
-    .traffic-light.yellow { background: #febc2e; }
-    .traffic-light.green { background: #28c840; }
+    .traffic-light.yellow { background: #febc35; }
+    .traffic-light.green { background: #2ecc71; }
+
     .roles-window-title {
         font-size: 0.95rem;
         font-weight: 600;
-        color: #4b5563;
+        color: #475467;
+        letter-spacing: 0.05em;
     }
+
     .roles-window-body {
-        padding: 1.4rem 1.4rem 1.6rem;
+        position: relative;
+        padding: 2.4rem 2.6rem 2.8rem;
+        background: #ffffff;
+        border-bottom-left-radius: 32px;
+        border-bottom-right-radius: 32px;
     }
+
+    .roles-window-body,
+    .roles-window-body p,
+    .roles-window-body span {
+        color: #020202;
+    }
+
     .roles-header-main {
         display: flex;
+        align-items: flex-start;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
     }
+
     .roles-header-main h3 {
-        font-size: 1.35rem;
+        font-size: 1.5rem;
         font-weight: 800;
-        color: #007aff;
-        margin-bottom: 2px;
+        color: #0b1c4d;
+        margin-bottom: 0.25rem;
     }
+
     .roles-header-main p {
+        font-size: 0.95rem;
+        color: #4b5568;
+        margin: 0;
+        max-width: 460px;
+    }
+
+    .roles-status {
+        font-size: 0.8rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--apple-muted);
+    }
+
+    .roles-summary {
         font-size: 0.9rem;
-        color: #6b7280;
-        margin-bottom: 0;
+        color: #4b5568;
+        margin-bottom: 1.25rem;
+        line-height: 1.5;
     }
-    .roles-table thead th {
-        border-bottom: none;
-        background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+
+    .roles-summary strong {
+        color: #0b1c4d;
+    }
+
+    .roles-note {
+        font-size: 0.92rem;
+        color: #050505;
+        margin-bottom: 0.85rem;
+        line-height: 1.5;
+    }
+
+    .btn-apple {
+        border-radius: 999px;
+        padding: 0.6rem 1.4rem;
+        background: linear-gradient(145deg, #1c82ff, #0a5bfa);
+        color: #fff;
         font-weight: 600;
-        font-size: 0.85rem;
-        color: #4b5563;
+        border: none;
+        box-shadow: 0 16px 30px rgba(10, 77, 173, 0.35);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
     }
+
+    .btn-apple:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 22px 36px rgba(10, 45, 107, 0.4);
+    }
+
+    .btn-apple-ghost {
+        border-radius: 999px;
+        padding: 0.55rem 1.2rem;
+        background: rgba(15, 23, 42, 0.05);
+        color: #0b1c4d;
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .roles-table-wrapper {
+        border-radius: 20px;
+        border: 1px solid rgba(15, 23, 42, 0.1);
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    .roles-table {
+        margin-bottom: 0;
+        font-size: 0.94rem;
+    }
+
+    .roles-table thead {
+        background: #ffffff;
+        border-bottom: 2px solid rgba(15, 23, 42, 0.08);
+    }
+
+    .roles-table thead th {
+        text-transform: uppercase;
+        font-size: 0.74rem;
+        letter-spacing: 0.14em;
+        color: #030303;
+        border-bottom: none;
+        text-align: center;
+    }
+
+    .roles-table tbody tr {
+        background: #ffffff;
+        box-shadow: inset 0 -1px 0 rgba(15, 23, 42, 0.05);
+        transition: background 0.2s ease;
+    }
+
+    .roles-table tbody tr:nth-child(even) {
+        background: #f1f4ff;
+    }
+
     .roles-table tbody tr:hover {
-        background-color: rgba(0,122,255,0.03);
+        background: rgba(30, 110, 255, 0.07);
     }
-    .roles-avatar-circle{
-        width:32px;
-        height:32px;
-        border-radius:50%;
-        overflow:hidden;
-        display:inline-flex;
-        align-items:center;
-        justify-content:center;
-        background:linear-gradient(135deg,#e5e7eb,#cbd5f5);
-        font-size:0.8rem;
-        font-weight:700;
-        color:#374151;
+
+    .roles-table td {
+        vertical-align: middle !important;
+        padding: 1rem 1.2rem;
+        text-align: center;
+        color: #020202;
     }
-    .roles-avatar-circle img{
-        width:100%;
-        height:100%;
-        object-fit:cover;
-        display:block;
+
+    .roles-table .roles-avatar-wrap {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        justify-content: center;
+    }
+
+    .roles-avatar-circle {
+        width: 38px;
+        height: 38px;
+        border-radius: 999px;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #dbe4ff, #cbd5f5);
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #1f2b5b;
+        box-shadow: 0 6px 18px rgba(15, 23, 42, 0.15);
+    }
+
+    .roles-avatar-circle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .roles-table select.form-select {
+        min-width: 150px;
+        border-radius: 12px;
+        border: 1px solid rgba(15, 23, 42, 0.15);
+        box-shadow: inset 0 1px 4px rgba(15, 23, 42, 0.07);
+        font-size: 0.85rem;
+        padding-right: 1.25rem;
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .roles-actions {
+        display: flex;
+        justify-content: center;
+        gap: 0.35rem;
+        flex-wrap: wrap;
+    }
+
+    .badge-apple {
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(10, 116, 255, 0.08);
+        color: #0b4fbd;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        font-size: 0.78rem;
+    }
+
+    .small-ghost-btn {
+        border-radius: 999px;
+        padding: 0.3rem 0.85rem;
+        background: rgba(14, 165, 233, 0.1);
+        color: #0c65c7;
+        font-weight: 600;
+        border: 1px solid rgba(14, 165, 233, 0.35);
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .small-ghost-btn:hover {
+        background: rgba(14, 165, 233, 0.2);
+        transform: translateY(-1px);
+    }
+
+    .small-danger-btn {
+        border-radius: 999px;
+        padding: 0.28rem 0.75rem;
+        background: rgba(248, 113, 113, 0.15);
+        color: #c92b2b;
+        font-weight: 600;
+        border: 1px solid rgba(220, 38, 38, 0.4);
+    }
+
+    .small-danger-btn:hover {
+        background: rgba(248, 113, 113, 0.25);
+        transform: translateY(-1px);
+    }
+
+    .small-primary-btn {
+        border-radius: 999px;
+        padding: 0.28rem 0.95rem;
+        background: linear-gradient(135deg, #0f6fff, #1c7dff);
+        color: #fff;
+        font-weight: 600;
+        border: none;
+        box-shadow: 0 10px 24px rgba(8, 32, 135, 0.35);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .small-primary-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 28px rgba(8, 32, 135, 0.45);
+    }
+
+    @media (max-width: 992px) {
+        .roles-window-body {
+            padding: 1.5rem 1.4rem 1.8rem;
+        }
+
+        .roles-header-main {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .roles-table thead th,
+        .roles-table td {
+            font-size: 0.72rem;
+        }
     }
 </style>
 <div class="roles-shell">
@@ -107,8 +335,8 @@
                     <h3>Kelola Role & Permission</h3>
                     <p>Atur akses Admin, Kasir, Karyawan, dan pengguna lain dengan gaya macOS yang rapi.</p>
                 </div>
-                <a href="{{ route('admin.roles.create') }}" class="btn btn-primary btn-sm">
-                    + Tambah User dengan Role
+                <a href="{{ route('admin.roles.create') }}" class="btn-apple">
+                    <span>+ Tambah User dengan Role</span>
                 </a>
             </div>
 
@@ -119,14 +347,14 @@
                 <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
 
-            <p class="text-muted mb-1" style="font-size:.9rem;">
+            <p class="roles-note mb-1">
                 <strong>Ringkasan hak akses:</strong><br>
                 - <strong>Admin</strong> dapat mengakses semua menu dan fitur.<br>
                 - <strong>Karyawan</strong> hanya dapat mengakses menu <strong>Layanan</strong>, <strong>Nota</strong>, dan <strong>Laporan</strong>.<br>
                 - <strong>Kasir</strong> hanya dapat mengakses menu <strong>Nota</strong> saja.
             </p>
 
-            <p class="text-muted mb-3">
+            <p class="roles-note mb-3">
                 Hanya admin yang dapat mengubah role pengguna. Role menentukan hak akses menu dan fitur (Layanan, Nota, Laporan, dll).
             </p>
 
@@ -159,7 +387,7 @@
                                     </div>
                                 </td>
                                 <td>{{ $user->email }}</td>
-                                <td><span class="badge bg-primary text-uppercase">{{ $user->role ?? '-' }}</span></td>
+                                <td><span class="badge-apple">{{ $user->role ?? '-' }}</span></td>
                                 <td>
                                     <form method="POST" action="{{ route('admin.roles.update', $user) }}" class="d-flex gap-2">
                                         @csrf
@@ -171,17 +399,19 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        <button type="submit" class="btn btn-sm btn-primary">Simpan</button>
+                                        <button type="submit" class="small-primary-btn">Simpan</button>
                                     </form>
                                 </td>
                                 <td>
-                                    <a href="{{ route('admin.roles.edit', $user) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                    <form method="POST" action="{{ route('admin.roles.destroy', $user) }}" class="d-inline"
-                                          onsubmit="return confirm('Yakin ingin menghapus user ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
-                                    </form>
+                                    <div class="roles-actions">
+                                        <a href="{{ route('admin.roles.edit', $user) }}" class="small-ghost-btn">Edit</a>
+                                        <form method="POST" action="{{ route('admin.roles.destroy', $user) }}" class="d-inline"
+                                              onsubmit="return confirm('Yakin ingin menghapus user ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="small-danger-btn">Hapus</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

@@ -2,18 +2,32 @@
 
 @section('content')
 <style>
-    /* Apple Pro / macOS-style layout untuk halaman layanan */
+    :root {
+        --apple-card: rgba(255, 255, 255, 0.95);
+        --apple-border: rgba(225, 230, 244, 0.9);
+        --apple-glow: rgba(15, 23, 42, 0.08);
+        --apple-muted: #6b7280;
+        --apple-accent: #0b74ff;
+        --apple-soft: rgba(255, 255, 255, 0.4);
+    }
+
+    #page-content {
+        padding: 2.5rem 1.75rem;
+    }
+
     .layanan-macos-page {
         padding: 48px 0 56px;
-        background: radial-gradient(circle at top left, #fdfdfd 0, #e5edff 30%, #e0ecff 55%, #f5f7fb 100%);
+        background: linear-gradient(135deg, #f6f7fb, #eef2ff);
         min-height: calc(100vh - 70px);
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
     }
 
     .layanan-shell {
-        width: 100%;
-        max-width: 100%;
-        margin: 0;
-        padding: 0 24px 0 18px; /* beri sedikit ruang dari sidebar dan sisi kanan */
+        width: min(1200px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 0 12px;
     }
 
     .layanan-shell-header {
@@ -27,92 +41,91 @@
     .layanan-shell-title {
         display: flex;
         flex-direction: column;
-        gap: .25rem;
+        gap: 0.25rem;
     }
 
     .layanan-eyebrow {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         text-transform: uppercase;
-        letter-spacing: 0.18em;
-        color: #9ca3af;
+        letter-spacing: 0.24em;
+        color: #9aa2b9;
     }
 
     .layanan-shell-title h3 {
         font-weight: 800;
         letter-spacing: -0.03em;
-        color: #0f172a;
+        color: #111827;
         margin: 0;
     }
 
     .layanan-shell-title p {
         margin: 0;
-        font-size: .9rem;
-        color: #6b7280;
+        font-size: 0.9rem;
+        color: #53617c;
     }
 
     .layanan-window {
-        border-radius: 24px;
-        background: rgba(255, 255, 255, 0.9);
-        box-shadow:
-            0 26px 60px rgba(15, 23, 42, 0.15),
-            0 0 0 1px rgba(148, 163, 184, 0.18);
-        backdrop-filter: blur(22px);
-        -webkit-backdrop-filter: blur(22px);
+        border-radius: 32px;
+        background: #ffffff;
+        border: 1px solid rgba(15, 23, 42, 0.08);
+        box-shadow: 0 30px 70px rgba(15, 23, 42, 0.25);
         overflow: hidden;
+        position: relative;
     }
 
     .layanan-window-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 1rem 1.8rem;
-        border-bottom: 1px solid rgba(226, 232, 240, 0.9);
-        background: linear-gradient(135deg, #f9fafb, #e5edff);
+        padding: 1.25rem 2rem;
+        border-bottom: 1px solid rgba(226, 232, 240, 1);
+        background: #fdfdfd;
     }
 
     .mac-traffic-lights {
         display: inline-flex;
-        gap: 0.4rem;
+        gap: 0.45rem;
         align-items: center;
     }
 
     .mac-traffic-light {
         width: 12px;
         height: 12px;
-        border-radius: 999px;
+        border-radius: 50%;
         border: 1px solid rgba(0, 0, 0, 0.08);
     }
 
     .mac-traffic-light.red { background: #ff5f57; }
-    .mac-traffic-light.yellow { background: #febc2e; }
-    .mac-traffic-light.green { background: #28c840; }
+    .mac-traffic-light.yellow { background: #febc35; }
+    .mac-traffic-light.green { background: #2fcc71; }
 
     .layanan-window-title {
-        font-size: .95rem;
-        color: #374151;
+        font-size: 0.95rem;
+        color: #454f6b;
         font-weight: 600;
+        letter-spacing: 0.045em;
     }
 
     .btn-mac-primary {
-        background: linear-gradient(135deg, #0a84ff, #0051cc);
+        background: linear-gradient(135deg, var(--apple-accent), #0035a8);
         border-radius: 999px;
         border: 1px solid rgba(255, 255, 255, 0.7);
         color: #fff;
         font-weight: 600;
-        font-size: 0.9rem;
-        padding: 9px 18px;
+        font-size: 0.92rem;
+        padding: 10px 20px;
         display: inline-flex;
         align-items: center;
-        gap: .4rem;
+        gap: 0.45rem;
         text-decoration: none;
-        box-shadow: 0 10px 26px rgba(15, 23, 42, 0.3);
-        transition: all 0.22s ease;
+        box-shadow: 0 14px 30px rgba(15, 23, 42, 0.25);
+        transition: all 0.25s ease;
     }
 
     .btn-mac-primary:hover {
-        background: linear-gradient(135deg, #4ba5ff, #0a84ff);
+        background: linear-gradient(135deg, #3a8bff, var(--apple-accent));
         transform: translateY(-1px);
-        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.35);
+        box-shadow: 0 18px 40px rgba(10, 20, 60, 0.32);
         color: #fff;
     }
 
@@ -120,7 +133,7 @@
         width: 18px;
         height: 18px;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.18);
+        background: rgba(255, 255, 255, 0.2);
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -128,7 +141,8 @@
     }
 
     .layanan-window-body {
-        padding: 1.9rem 1.8rem 1.8rem;
+        padding: 2rem;
+        background: #ffffff;
     }
 
     .layanan-toolbar {
@@ -136,93 +150,108 @@
         align-items: center;
         justify-content: space-between;
         gap: 1rem;
-        margin-bottom: 1rem;
+        margin-bottom: 1.4rem;
         flex-wrap: wrap;
     }
 
     .layanan-count {
-        font-size: .85rem;
-        color: #6b7280;
+        font-size: 0.85rem;
+        color: #020202;
     }
 
     .layanan-search {
         position: relative;
-        max-width: 260px;
+        max-width: 280px;
         width: 100%;
     }
 
     .layanan-search input {
         border-radius: 999px;
-        padding: 7px 12px 7px 32px;
-        font-size: .85rem;
-        border: 1px solid rgba(148, 163, 184, 0.4);
-        background: #f9fafb;
+        padding: 10px 14px 10px 38px;
+        font-size: 0.9rem;
+        border: 1px solid rgba(15, 23, 42, 0.12);
+        background: #f4f7ff;
+        color: #020202;
+        box-shadow: inset 0 2px 6px rgba(15, 23, 42, 0.08);
     }
 
     .layanan-search-icon {
         position: absolute;
-        left: 10px;
+        left: 14px;
         top: 50%;
         transform: translateY(-50%);
-        font-size: .85rem;
+        pointer-events: none;
+    }
+
+    .layanan-search-icon::after {
+        content: "⌕";
+        font-size: 0.95rem;
         color: #9ca3af;
     }
 
     .layanan-table-wrapper {
-        border-radius: 16px;
+        border-radius: 22px;
         overflow: hidden;
-        border: 1px solid rgba(226, 232, 240, 0.9);
-        background: rgba(255, 255, 255, 0.96);
-        box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+        border: 1px solid rgba(226, 232, 240, 0.95);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(244, 247, 255, 0.95));
+        box-shadow: 0 24px 50px rgba(15, 23, 42, 0.18);
     }
 
     .layanan-table {
         margin-bottom: 0;
-        font-size: .92rem;
+        font-size: 0.94rem;
     }
 
     .layanan-table thead {
-        background: linear-gradient(135deg, #f3f4f6, #e5f1ff);
+        background: #f8f9ff;
+        border-bottom: 2px solid rgba(15, 23, 42, 0.08);
     }
 
     .layanan-table thead th {
-        border-bottom: 1px solid rgba(209, 213, 219, 0.9);
+        border-bottom: none;
         text-transform: uppercase;
-        letter-spacing: 0.06em;
-        font-size: .74rem;
-        color: #6b7280;
+        letter-spacing: 0.1em;
+        font-size: 0.74rem;
+        color: #030303;
+        text-align: center;
+    }
+
+    .layanan-table tbody tr {
+        background: #ffffff;
+        transition: background 0.2s ease;
     }
 
     .layanan-table tbody tr:nth-child(even) {
-        background: #f9fafb;
+        background: #f4f6ff;
     }
 
     .layanan-table tbody tr:hover {
-        background: #eef4ff;
+        background: rgba(10, 30, 120, 0.08);
     }
 
     .layanan-table td {
         vertical-align: middle !important;
-        color: #111827;
-        }
+        color: #020202;
+        padding: 1rem 1.25rem;
+    }
 
     .layanan-name {
         font-weight: 700;
-        color: #0f172a;
-        font-size: .98rem;
+        color: #0b204a;
+        font-size: 1rem;
     }
 
     .layanan-description {
-        max-width: 520px;
         margin: 0 auto;
-        font-size: .85rem;
-        color: #6b7280;
+        font-size: 0.86rem;
+        color: #4b5268;
+        max-width: 540px;
     }
 
     .layanan-actions {
         display: inline-flex;
         align-items: center;
-        gap: .4rem;
+        gap: 0.35rem;
         flex-wrap: wrap;
         justify-content: center;
     }
@@ -230,40 +259,35 @@
     .btn-chip {
         border-radius: 999px;
         border: 0;
-        font-size: .8rem;
-        padding: 6px 14px;
+        font-size: 0.85rem;
+        padding: 6px 16px;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
-        gap: .35rem;
+        gap: 0.35rem;
         color: #f9fafb;
-        box-shadow: 0 10px 24px rgba(15,23,42,0.18);
-        transition: all .18s ease;
-    }
-
-    .btn-chip svg {
-        width: 15px;
-        height: 15px;
+        box-shadow: 0 8px 20px rgba(15,23,42,0.2);
+        transition: all 0.2s ease;
     }
 
     .btn-chip-edit {
-        background: linear-gradient(135deg, #0ea5e9, #6366f1);
+        background: linear-gradient(135deg, #00c6ff, #6366f1);
     }
 
     .btn-chip-edit:hover {
-        background: linear-gradient(135deg, #38bdf8, #818cf8);
+        background: linear-gradient(135deg, #46b1ff, #a5b4fc);
         transform: translateY(-1px);
-        box-shadow: 0 14px 30px rgba(37,99,235,0.35);
+        box-shadow: 0 12px 26px rgba(63, 81, 181, 0.35);
     }
 
     .btn-chip-delete {
-        background: linear-gradient(135deg, #f97373, #ef4444);
+        background: linear-gradient(135deg, #fb7185, #ef4444);
     }
 
     .btn-chip-delete:hover {
-        background: linear-gradient(135deg, #fca5a5, #f97373);
+        background: linear-gradient(135deg, #fb7185, #f43f5e);
         transform: translateY(-1px);
-        box-shadow: 0 14px 30px rgba(220,38,38,0.35);
+        box-shadow: 0 12px 26px rgba(220,38,38,0.35);
     }
 
     .empty-state {
@@ -273,7 +297,13 @@
         font-size: 0.95rem;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1200px) {
+        #page-content {
+            padding: 2rem 1rem;
+        }
+    }
+
+    @media (max-width: 992px) {
         .layanan-shell-header {
             flex-direction: column;
             align-items: flex-start;
@@ -282,7 +312,7 @@
         .layanan-window-header {
             flex-direction: column;
             align-items: flex-start;
-            gap: .75rem;
+            gap: 0.75rem;
         }
 
         .layanan-toolbar {
