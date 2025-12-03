@@ -35,9 +35,9 @@
         border-radius: 999px;
         border: 1px solid rgba(0,0,0,0.08);
     }
-    .traffic-light.red { background: #ff5f57; }
-    .traffic-light.yellow { background: #febc2e; }
-    .traffic-light.green { background: #28c840; }
+    .traffic-light.red { background: #ff0d00ff; }
+    .traffic-light.yellow { background: #ffae00ff; }
+    .traffic-light.green { background: #00ff26ff; }
     .team-window-title {
         font-size: 0.9rem;
         font-weight: 600;
@@ -159,7 +159,7 @@
             <div class="team-header-main">
                 <div>
                     <h3>Kelola Tim Profesional</h3>
-                    <p>Atur anggota tim yang tampil di halaman Tentang Kami dengan tampilan ala macOS.</p>
+                    <p>Atur anggota tim yang tampil di halaman Tentang Kami.</p>
                 </div>
                 <a href="{{ route('admin.team.create') }}" class="btn btn-sm btn-primary">+ Tambah Anggota Tim</a>
             </div>

@@ -50,14 +50,14 @@
         border: 1px solid rgba(0, 0, 0, 0.08);
     }
 
-    .traffic-light.red { background: #ff5f57; }
-    .traffic-light.yellow { background: #febc35; }
-    .traffic-light.green { background: #2ecc71; }
+    .traffic-light.red { background: #ff0d00ff; }
+    .traffic-light.yellow { background: #ffaa00ff; }
+    .traffic-light.green { background: #00ff6aff; }
 
     .roles-window-title {
         font-size: 0.95rem;
         font-weight: 600;
-        color: #475467;
+        color: #000000ff;
         letter-spacing: 0.05em;
     }
 
@@ -333,7 +333,7 @@
             <div class="roles-header-main">
                 <div>
                     <h3>Kelola Role & Permission</h3>
-                    <p>Atur akses Admin, Kasir, Karyawan, dan pengguna lain dengan gaya macOS yang rapi.</p>
+                    <p>Atur akses Admin, Kasir, Karyawan, dan pengguna lain.</p>
                 </div>
                 <a href="{{ route('admin.roles.create') }}" class="btn-apple">
                     <span>+ Tambah User dengan Role</span>

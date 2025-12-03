@@ -118,9 +118,9 @@
             border-radius: 999px;
             border: 1px solid rgba(0,0,0,0.08);
         }
-        .traffic-light.red { background: #ff5f57; }
-        .traffic-light.yellow { background: #febc2e; }
-        .traffic-light.green { background: #28c840; }
+        .traffic-light.red { background: #ff0000ff; }
+        .traffic-light.yellow { background: #ffae00ff; }
+        .traffic-light.green { background: #00ff26ff; }
 
         /* Apple-style card sections */
         .nota-section-card{
@@ -240,7 +240,7 @@
             <span class="traffic-light yellow"></span>
             <span class="traffic-light green"></span>
         </div>
-        <span class="text-muted" style="font-size:.9rem;">Buat nota baru dan kelola riwayat pembayaran dengan gaya ala macOS.</span>
+        <span class="text-muted" style="font-size:.9rem;">Buat nota baru dan kelola riwayat pembayaran.</span>
     </div>
 
     {{-- ✅ Notifikasi sukses & error --}}

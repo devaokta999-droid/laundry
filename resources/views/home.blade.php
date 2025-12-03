@@ -364,7 +364,7 @@
     <div class="mac-section-header">
         <div class="mac-section-eyebrow">Services</div>
         <h3 class="mac-title">Layanan Kami</h3>
-        <p class="mac-section-subtitle">Pilihan layanan cuci, setrika, dan perawatan kain yang disusun rapi seperti rak di Apple Store.</p>
+        <p class="mac-section-subtitle">Pilihan layanan cuci, setrika, dan perawatan kain yang disusun rapi seperti rak di layanan deva laundry.</p>
     </div>
     <div class="mac-row">
         @forelse($services as $s)

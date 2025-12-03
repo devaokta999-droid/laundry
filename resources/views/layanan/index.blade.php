@@ -332,7 +332,7 @@
             <div class="layanan-shell-title">
                 <span class="layanan-eyebrow">Service Catalog</span>
                 <h3>Layanan Deva Laundry</h3>
-                <p>Atur dan kelola layanan yang tampil untuk pelanggan dengan tampilan premium.</p>
+                <p>Atur dan kelola layanan yang tampil untuk pelanggan.</p>
             </div>
             <a href="{{ route('layanan.create') }}" class="btn-mac-primary">
                 <span class="btn-mac-primary-icon">+</span>
@@ -348,7 +348,7 @@
                         <span class="mac-traffic-light yellow"></span>
                         <span class="mac-traffic-light green"></span>
                     </div>
-                    <span class="layanan-window-title">Layanan Laundry • Deva Studio</span>
+                    <span class="layanan-window-title">Layanan Deva Laundry</span>
                 </div>
             </div>
 

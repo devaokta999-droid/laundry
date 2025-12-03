@@ -232,37 +232,37 @@ body {
                 <div class="mac-hours-row">
                     <span class="mac-hours-day">Senin</span>
                     <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
                 </div>
                 <div class="mac-hours-row">
                     <span class="mac-hours-day">Selasa</span>
                     <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
                 </div>
                 <div class="mac-hours-row">
                     <span class="mac-hours-day">Rabu</span>
                     <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
                 </div>
                 <div class="mac-hours-row">
                     <span class="mac-hours-day">Kamis</span>
                     <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
                 </div>
                 <div class="mac-hours-row">
                     <span class="mac-hours-day">Jumat</span>
                     <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
                 </div>
                 <div class="mac-hours-row">
                     <span class="mac-hours-day">Sabtu</span>
                     <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
                 </div>
                 <div class="mac-hours-row">
                     <span class="mac-hours-day">Minggu</span>
                     <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">08.30 – 17.00 WITA</span>
+                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
                 </div>
                 <p style="margin-top:8px; color:#6b7280; font-size:0.85rem;">
                     Silakan datang pada jam operasional tersebut untuk pelayanan antar-jemput maupun drop-off langsung di outlet.
