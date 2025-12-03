@@ -268,6 +268,7 @@
         <nav class="nav flex-column">
             <div class="nav-section-label">Umum</div>
             <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
+            <a href="{{ route('status.index') }}" class="nav-link {{ request()->routeIs('status.index') ? 'active' : '' }}">Status Laundry</a>
             <a href="{{ route('about') }}" class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}">Tentang</a>
             <a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">Kontak</a>
 
@@ -275,11 +276,11 @@
                 @php $role = auth()->user()->role; @endphp
                 <div class="nav-section-label mt-3">Dashboard</div>
 
-                {{-- Layanan hanya untuk Admin --}}
-                @if($role === 'admin')
-                    <a href="{{ route('layanan.index') }}"
-                       class="nav-link {{ request()->routeIs('layanan.index') ? 'active' : '' }}">
-                        Layanan
+                {{-- Admin & Kasir dapat mengakses Status Laundry Dashboard --}}
+                @if(in_array($role, ['admin', 'kasir']))
+                    <a href="{{ route('admin.orders.status') }}"
+                       class="nav-link {{ request()->routeIs('admin.orders.status') ? 'active' : '' }}">
+                        Status Laundry
                     </a>
                 @endif
 
@@ -296,6 +297,14 @@
                     <a href="{{ route('admin.laporan') }}" 
                        class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
                        Laporan
+                    </a>
+                @endif
+
+                {{-- Layanan hanya untuk Admin --}}
+                @if($role === 'admin')
+                    <a href="{{ route('layanan.index') }}"
+                       class="nav-link {{ request()->routeIs('layanan.index') ? 'active' : '' }}">
+                        Layanan
                     </a>
                 @endif
 

@@ -20,13 +20,6 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input class="form-control" type="email" name="customer_email"
-                        value="{{ auth()->check() ? auth()->user()->email : old('customer_email') }}"
-                        placeholder="Masukkan email (opsional)">
-                </div>
-
-                <div class="mb-3">
                     <label class="form-label">Telepon</label>
                     <input class="form-control" name="customer_phone"
                         value="{{ auth()->check() ? auth()->user()->phone : old('customer_phone') }}"

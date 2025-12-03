@@ -324,10 +324,12 @@
                             <th>Diskon (Rp)</th>
                             <td id="diskonAmount">{{ number_format($nota->payments ? $nota->payments->sum('discount_amount') : 0, 0, ',', '.') }}</td>
                         </tr>
+                      @if($nota->sisa > 0)
                       <tr>
                           <th>Sisa Pembayaran (Rp)</th>
                           <td id="sisaAmount">{{ number_format($nota->sisa, 0, ',', '.') }}</td>
                       </tr>
+                      @endif
                       <tr>
                           <th>Total Uang Kembali (Rp)</th>
                           <td id="kembalianAmount">{{ number_format($kembalian, 0, ',', '.') }}</td>
@@ -384,31 +386,34 @@
                         </select>
                     </div>
 
+                    @if($nota->sisa > 0)
+                        <div class="mb-3">
+                            <label class="form-label">Sisa Pembayaran Saat Ini (Rp)</label>
+                            <input type="text" id="currentRemaining" class="form-control" value="{{ number_format($nota->sisa,0,',','.') }}" readonly>
+                        </div>
+                    @endif
+
                     <div class="mb-3">
                         <label class="form-label">Diskon (%) <small class="text-muted">opsional</small></label>
                         <input type="number" step="0.01" min="0" max="100" name="discount_percent" id="discountPercent" class="form-control" value="0">
-                        <div class="form-text mb-2">Masukkan diskon yang diberikan kepada pelanggan (persentase dari total nota).</div>
+                        <div class="form-text">Masukkan diskon yang diberikan kepada pelanggan (persentase dari total nota).</div>
+                    </div>
 
-                        @if($nota->sisa > 0)
-                            <div class="mb-2">
-                                <label class="form-label">Sisa Pembayaran Saat Ini (Rp)</label>
-                                <input type="text" id="currentRemaining" class="form-control" value="{{ number_format($nota->sisa,0,',','.') }}" readonly>
-                            </div>
-                        @endif
-
-                        <div class="mb-2" id="cashGivenWrapperShow">
-                            <label class="form-label">Uang Diterima (Cash) (Rp)</label>
-                            <input type="text" id="cashGiven" class="form-control">
-                            <div class="form-text">Isi jika pembayaran tunai, untuk menghitung kembalian.</div>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Kembalian (Rp)</label>
-                            <input type="text" id="changeAmount" class="form-control" readonly>
-                        </div>
-
+                    <div class="mb-3">
                         <label class="form-label">Jumlah Bayar (Rp)</label>
                         <input type="text" name="amount" id="payAmount" class="form-control" value="{{ number_format($nota->sisa,0,',','.') }}" required>
                         <div class="form-text">Masukkan jumlah uang yang dibayarkan. Untuk lunas, biarkan sama dengan sisa setelah diskon.</div>
+                    </div>
+
+                    <div class="mb-3" id="cashGivenWrapperShow">
+                        <label class="form-label">Uang Diterima (Cash) (Rp)</label>
+                        <input type="text" id="cashGiven" class="form-control">
+                        <div class="form-text">Isi jika pembayaran tunai, untuk menghitung kembalian.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Kembalian (Rp)</label>
+                        <input type="text" id="changeAmount" class="form-control" readonly>
                     </div>
 
                     <div id="payAlert" class="alert alert-danger d-none" role="alert"></div>
@@ -443,11 +448,9 @@
         paymentType.addEventListener('change', function(){
             if (this.value === 'transfer') {
                 methodWrapper.style.display = '';
-                if (cashGivenWrapper) cashGivenWrapper.style.display = 'none';
                 if (changeAmount) changeAmount.value = '';
             } else {
                 methodWrapper.style.display = 'none';
-                if (cashGivenWrapper) cashGivenWrapper.style.display = '';
             }
         });
 

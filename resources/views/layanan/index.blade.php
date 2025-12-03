@@ -25,7 +25,7 @@
     }
 
     .layanan-shell {
-        width: min(1200px, calc(100% - 32px));
+        width: min(1750px, calc(100% - 32px));
         margin: 0 auto;
         padding: 0 12px;
     }

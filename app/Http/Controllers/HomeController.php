@@ -42,6 +42,25 @@ $contactInstagram = SiteSetting::getValue('contact_instagram', '@devalaundry');
 $contactFacebook = SiteSetting::getValue('contact_facebook', '@devalaundry');
 $contactTikTok = SiteSetting::getValue('contact_tiktok', '@devalaundry.official');
 
+// Hero beranda
+$heroEyebrow = SiteSetting::getValue('hero_eyebrow', 'Premium Laundry Experience');
+$heroTitle = SiteSetting::getValue('hero_title', 'Deva Laundry');
+$heroSubtitle = SiteSetting::getValue('hero_subtitle', 'Cuci bersih, wangi, cepat, dan rapi - solusi pakaian harian dan spesial kamu.');
+$heroBulletsText = SiteSetting::getValue('hero_bullets', implode(PHP_EOL, [
+    'Antar-jemput area sekitar',
+    'Estimasi selesai tepat waktu',
+    'Pencucian rapi dan terstandar',
+]));
+$heroBullets = array_filter(preg_split('/\r\n|\r|\n/', (string) $heroBulletsText));
+
+$heroCardBadge = SiteSetting::getValue('hero_card_badge', 'Hari ini kamu sudah laundry?');
+$heroCardTitle = SiteSetting::getValue('hero_card_title', 'Berikan pakaian kamu pengalaman premium.');
+$heroCardText = SiteSetting::getValue('hero_card_text', implode(PHP_EOL, [
+    'Serahkan proses cuci, kering, dan setrika ke tim Deva Laundry. Kamu cukup pesan dari rumah.',
+    'Pantau pesanan, atur jadwal, dan nikmati pakaian yang selalu siap dipakai.',
+]));
+$heroCardParagraphs = array_filter(preg_split('/\r\n|\r|\n/', (string) $heroCardText));
+
 return view('home', compact(
     'services',
     'promos',
@@ -50,7 +69,14 @@ return view('home', compact(
     'contactMapsLink',
     'contactInstagram',
     'contactFacebook',
-    'contactTikTok'
+    'contactTikTok',
+    'heroEyebrow',
+    'heroTitle',
+    'heroSubtitle',
+    'heroBullets',
+    'heroCardBadge',
+    'heroCardTitle',
+    'heroCardParagraphs'
 ));
 }
 
@@ -82,7 +108,10 @@ public function about(){
     ]));
     $hoursLines = array_filter(preg_split('/\r\n|\r|\n/', $hoursText));
 
-    return view('about', compact('teams', 'vision', 'missions', 'locationText', 'whyTitle', 'whyParagraphs', 'hoursLines'));
+    $aboutHeroTitle = SiteSetting::getValue('about_hero_title', 'Tentang Deva Laundry');
+    $aboutHeroTagline = SiteSetting::getValue('about_hero_tagline', 'Bersih • Rapi • Wangi • Tepat Waktu');
+
+    return view('about', compact('teams', 'vision', 'missions', 'locationText', 'whyTitle', 'whyParagraphs', 'hoursLines', 'aboutHeroTitle', 'aboutHeroTagline'));
 }
 
 

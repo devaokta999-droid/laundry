@@ -356,6 +356,22 @@
                             </div>
 
                             <hr class="my-3">
+                            <div class="section-heading mb-2">Header Halaman Tentang</div>
+                            <div class="section-description">
+                                Atur judul besar dan tagline pendek yang tampil di bagian atas halaman Tentang.
+                            </div>
+                            <div class="profile-form-group mb-2">
+                                <label>Judul Header</label>
+                                <input type="text" name="about_hero_title" class="form-control"
+                                       value="{{ old('about_hero_title', $settings['about_hero_title'] ?? 'Tentang Deva Laundry') }}">
+                            </div>
+                            <div class="profile-form-group mb-0">
+                                <label>Tagline Pendek</label>
+                                <input type="text" name="about_hero_tagline" class="form-control"
+                                       value="{{ old('about_hero_tagline', $settings['about_hero_tagline'] ?? 'Bersih • Rapi • Wangi • Tepat Waktu') }}">
+                            </div>
+
+                            <hr class="my-3">
                             <div class="section-heading mb-2">Visi &amp; Misi Kami</div>
                             <div class="section-description">
                                 Tampilkan visi dan misi Deva Laundry yang akan muncul di halaman Tentang Kami.
@@ -402,6 +418,53 @@
                                 <small class="text-muted">Gunakan enter untuk membuat baris baru (misalnya hari dan jam di baris terpisah).</small>
                             </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="profile-card mb-3">
+                            <div class="section-title">Beranda</div>
+                            <div class="section-heading">Hero Halaman Beranda</div>
+                            <p class="section-description">
+                                Ubah teks utama di banner biru pada halaman beranda (judul besar Deva Laundry,
+                                subjudul, bullet point, dan teks kartu di sebelah kanan).
+                            </p>
+
+                            <div class="profile-form-group mb-2">
+                                <label>Label Kecil Atas (Eyebrow)</label>
+                                <input type="text" name="hero_eyebrow" class="form-control"
+                                       value="{{ old('hero_eyebrow', $settings['hero_eyebrow'] ?? 'Premium Laundry Experience') }}">
+                            </div>
+                            <div class="profile-form-group mb-2">
+                                <label>Judul Besar</label>
+                                <input type="text" name="hero_title" class="form-control"
+                                       value="{{ old('hero_title', $settings['hero_title'] ?? 'Deva Laundry') }}">
+                            </div>
+                            <div class="profile-form-group mb-3">
+                                <label>Subjudul / Deskripsi Singkat</label>
+                                <textarea name="hero_subtitle" class="form-control" rows="2">{{ old('hero_subtitle', $settings['hero_subtitle'] ?? '') }}</textarea>
+                            </div>
+
+                            <div class="profile-form-group mb-3">
+                                <label>Bullet Point (setiap baris = 1 poin)</label>
+                                <textarea name="hero_bullets" class="form-control" rows="3">{{ old('hero_bullets', $settings['hero_bullets'] ?? '') }}</textarea>
+                                <small class="text-muted">Contoh: Antar-jemput area sekitar, Estimasi selesai tepat waktu, dll.</small>
+                            </div>
+
+                            <hr class="my-3">
+                            <div class="section-heading mb-2">Kartu Kanan Hero</div>
+                            <div class="profile-form-group mb-2">
+                                <label>Badge Kecil (atas kartu)</label>
+                                <input type="text" name="hero_card_badge" class="form-control"
+                                       value="{{ old('hero_card_badge', $settings['hero_card_badge'] ?? '') }}">
+                            </div>
+                            <div class="profile-form-group mb-2">
+                                <label>Judul Kartu</label>
+                                <input type="text" name="hero_card_title" class="form-control"
+                                       value="{{ old('hero_card_title', $settings['hero_card_title'] ?? '') }}">
+                            </div>
+                            <div class="profile-form-group mb-0">
+                                <label>Isi Kartu (setiap baris = 1 paragraf)</label>
+                                <textarea name="hero_card_text" class="form-control" rows="3">{{ old('hero_card_text', $settings['hero_card_text'] ?? '') }}</textarea>
                             </div>
                         </div>
 

@@ -257,11 +257,13 @@
         <div class="row mb-3">
             <div class="col-md-4">
                 <label class="fw-semibold">Nama Pelanggan</label>
-                <input type="text" name="customer_name" class="form-control" required>
+                <input type="text" name="customer_name" class="form-control" required
+                       value="{{ old('customer_name', $prefill['customer_name'] ?? '') }}">
             </div>
             <div class="col-md-4">
                 <label class="fw-semibold">Alamat</label>
-                <input type="text" name="customer_address" class="form-control">
+                <input type="text" name="customer_address" class="form-control"
+                       value="{{ old('customer_address', $prefill['customer_address'] ?? '') }}">
             </div>
             <div class="col-md-2">
                 <label class="fw-semibold">Tanggal Keluar</label>
@@ -281,6 +283,7 @@
             {{-- ❌ Perhatikan penyesuaian kelas col-md-X di atas untuk menampung tombol ini --}}
             {{-- Sebelumnya: col-md-2 untuk Tanggal Keluar. Sekarang: col-md-2 untuk Tgl Keluar dan col-md-2 untuk Refresh --}}
         </div>
+        <input type="hidden" name="linked_order_id" value="{{ old('linked_order_id', $prefill['order_id'] ?? '') }}">
 
         {{-- ✅ Daftar Jenis Pakaian --}}
         <table class="table align-middle text-center" id="notaTable">

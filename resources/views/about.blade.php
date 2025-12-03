@@ -4,21 +4,21 @@
 
 @section('content')
 <style>
-/* 🌈 macOS Modern Clean Style */
+/* dYO^ macOS Modern Clean Style */
 body {
     background: linear-gradient(135deg, #eaf3ff, #ffffff);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: #333;
 }
 
-/* 🧊 Container utama */
+/* dYS Container utama */
 .mac-container {
     max-width: 1260px;
     margin: 80px auto;
     padding: 20px;
 }
 
-/* 🪞 Header */
+/* dY�z Header */
 .mac-header {
     text-align: center;
     background: rgba(255,255,255,0.75);
@@ -51,14 +51,14 @@ body {
     font-size: 1.1rem;
 }
 
-/* 🧩 Dua kolom utama */
+/* dYc Dua kolom utama */
 .mac-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
     gap: 36px;
 }
 
-/* 📜 Card */
+/* dY"o Card */
 .mac-card {
     background: rgba(255,255,255,0.85);
     backdrop-filter: blur(12px);
@@ -85,7 +85,7 @@ body {
     color: #444;
 }
 
-/* 💎 Tombol */
+/* dY'Z Tombol */
 .mac-btn {
     display: inline-flex;
     align-items: center;
@@ -104,7 +104,7 @@ body {
     box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
 
-/* 👥 Tim Kami */
+/* dY`� Tim Kami */
 .mac-team {
     margin-top: 80px;
     text-align: center;
@@ -172,7 +172,7 @@ body {
     flex:1;
 }
 
-/* 📱 Responsif */
+/* dY"� Responsif */
 @media (max-width: 768px) {
     .mac-header h1 {
         font-size: 2.2rem;
@@ -184,17 +184,28 @@ body {
 </style>
 
 <div class="mac-container">
-    {{-- 🪞 Header --}}
+    {{-- dY�z Header --}}
     <div class="mac-header">
         @php
             $aboutLogo = \App\Models\SiteSetting::getValue('logo_path', 'header.png');
         @endphp
         <img src="{{ asset('images/' . $aboutLogo) }}" alt="Logo Deva Laundry">
-        <h1>Tentang Deva Laundry</h1>
-        <p>Bersih • Rapi • Wangi • Tepat Waktu</p>
+        <h1>{{ $aboutHeroTitle }}</h1>
+        <p>{{ $aboutHeroTagline }}</p>
     </div>
 
-    {{-- 🧩 Dua Kolom --}}
+    {{-- dYc Dua Kolom --}}
+    @php
+        $hoursText = \App\Models\SiteSetting::getValue('about_hours', implode(PHP_EOL, [
+            'Senin �?" Minggu',
+            '08.30 �?" 17.00 WITA',
+        ]));
+        $hoursRows = collect(preg_split('/\r\n|\r|\n/', $hoursText))
+            ->map(fn($line) => trim($line))
+            ->filter()
+            ->values();
+    @endphp
+
     <div class="mac-grid">
         {{-- Kolom Kiri --}}
         <div class="mac-card">
@@ -209,7 +220,7 @@ body {
             </ul>
 
             <div style="margin-top:25px; border-top:1px solid #eee; padding-top:15px;">
-                <h3 style="color:#007aff; font-weight:600;">📍 Lokasi Kami</h3>
+                <h3 style="color:#007aff; font-weight:600;">Lokasi Kami</h3>
                 <p>{{ $locationText }}</p>
             </div>
         </div>
@@ -229,41 +240,11 @@ body {
 
             <div style="margin-top:24px; padding-top:16px; border-top:1px solid #e5e7eb;">
                 <h3 style="font-size:1.1rem; font-weight:700; color:#007aff; margin-bottom:10px;">Jam Operasional</h3>
-                <div class="mac-hours-row">
-                    <span class="mac-hours-day">Senin</span>
-                    <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
-                </div>
-                <div class="mac-hours-row">
-                    <span class="mac-hours-day">Selasa</span>
-                    <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
-                </div>
-                <div class="mac-hours-row">
-                    <span class="mac-hours-day">Rabu</span>
-                    <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
-                </div>
-                <div class="mac-hours-row">
-                    <span class="mac-hours-day">Kamis</span>
-                    <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
-                </div>
-                <div class="mac-hours-row">
-                    <span class="mac-hours-day">Jumat</span>
-                    <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
-                </div>
-                <div class="mac-hours-row">
-                    <span class="mac-hours-day">Sabtu</span>
-                    <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
-                </div>
-                <div class="mac-hours-row">
-                    <span class="mac-hours-day">Minggu</span>
-                    <span class="mac-hours-sep">:</span>
-                    <span class="mac-hours-time">09.00 – 17.00 WITA</span>
-                </div>
+                @foreach($hoursRows as $line)
+                    <div class="mac-hours-row">
+                        <span class="mac-hours-time">{{ $line }}</span>
+                    </div>
+                @endforeach
                 <p style="margin-top:8px; color:#6b7280; font-size:0.85rem;">
                     Silakan datang pada jam operasional tersebut untuk pelayanan antar-jemput maupun drop-off langsung di outlet.
                 </p>
@@ -271,7 +252,7 @@ body {
         </div>
     </div>
 
-    {{-- 👥 Tim Kami --}}
+    {{-- dY`� Tim Kami --}}
     <div class="mac-team">
         <h2>Tim Profesional Kami</h2>
         <div class="mac-team-grid">
@@ -299,7 +280,7 @@ body {
     </div>
 </div>
 
-{{-- 🔗 FontAwesome Icons --}}
+{{-- dY"- FontAwesome Icons --}}
 @push('scripts')
 <script src="https://kit.fontawesome.com/a2b1f3b59d.js" crossorigin="anonymous"></script>
 @endpush

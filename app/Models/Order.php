@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Nota;
 
 class Order extends Model
 {
@@ -26,6 +27,7 @@ class Order extends Model
         'delivery_date',
         'delivery_time',
         'status',
+        'nota_id',
     ];
 
     /**
@@ -45,6 +47,11 @@ class Order extends Model
     protected $attributes = [
         'status' => 'pending',
     ];
+
+    public function nota()
+    {
+        return $this->belongsTo(Nota::class);
+    }
 
     /**
      * 🔹 Relasi ke User (Pelanggan)

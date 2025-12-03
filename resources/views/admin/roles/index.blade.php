@@ -125,21 +125,31 @@
 
     .btn-apple {
         border-radius: 999px;
-        padding: 0.6rem 1.4rem;
+        padding: 0.65rem 1.8rem;
         background: linear-gradient(145deg, #1c82ff, #0a5bfa);
-        color: #fff;
-        font-weight: 600;
+        color: #ffffff;
+        font-weight: 700;
         border: none;
         box-shadow: 0 16px 30px rgba(10, 77, 173, 0.35);
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.55rem;
+        letter-spacing: 0.04em;
+        text-transform: none;
+        font-size: 0.95rem;
     }
 
     .btn-apple:hover {
         transform: translateY(-1px);
         box-shadow: 0 22px 36px rgba(10, 45, 107, 0.4);
+        background: linear-gradient(145deg, #2a8fff, #0f6fff);
+    }
+
+    .btn-apple span {
+        color: #ffffff;
+        text-decoration: none;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
     }
 
     .btn-apple-ghost {

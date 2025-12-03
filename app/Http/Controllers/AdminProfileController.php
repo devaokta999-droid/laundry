@@ -66,6 +66,17 @@ class AdminProfileController extends Controller
             'about_why_title' => 'nullable|string|max:255',
             'about_why_text' => 'nullable|string',
             'about_hours' => 'nullable|string',
+            'about_hero_title' => 'nullable|string|max:255',
+            'about_hero_tagline' => 'nullable|string|max:255',
+
+            // Hero beranda
+            'hero_eyebrow' => 'nullable|string|max:255',
+            'hero_title' => 'nullable|string|max:255',
+            'hero_subtitle' => 'nullable|string',
+            'hero_bullets' => 'nullable|string',
+            'hero_card_badge' => 'nullable|string|max:255',
+            'hero_card_title' => 'nullable|string|max:255',
+            'hero_card_text' => 'nullable|string',
 
             // Promo dinamis
             'promo_titles' => 'nullable|array',
@@ -181,6 +192,26 @@ class AdminProfileController extends Controller
                 'Senin — Minggu',
                 '08.30 – 17.00 WITA',
             ]),
+
+            // Hero beranda defaults
+            'hero_eyebrow' => 'Premium Laundry Experience',
+            'hero_title' => 'Deva Laundry',
+            'hero_subtitle' => 'Cuci bersih, wangi, cepat, dan rapi - solusi pakaian harian dan spesial kamu.',
+            'hero_bullets' => implode(PHP_EOL, [
+                'Antar-jemput area sekitar',
+                'Estimasi selesai tepat waktu',
+                'Pencucian rapi dan terstandar',
+            ]),
+            'hero_card_badge' => 'Hari ini kamu sudah laundry?',
+            'hero_card_title' => 'Berikan pakaian kamu pengalaman premium.',
+            'hero_card_text' => implode(PHP_EOL, [
+                'Serahkan proses cuci, kering, dan setrika ke tim Deva Laundry. Kamu cukup pesan dari rumah.',
+                'Pantau pesanan, atur jadwal, dan nikmati pakaian yang selalu siap dipakai.',
+            ]),
+
+            // About hero (halaman Tentang)
+            'about_hero_title' => 'Tentang Deva Laundry',
+            'about_hero_tagline' => 'Bersih • Rapi • Wangi • Tepat Waktu',
 
             // Promo defaults (disimpan sebagai JSON)
             'promos' => json_encode([

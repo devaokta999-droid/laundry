@@ -13,6 +13,8 @@ use App\Http\Controllers\NotaController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeamMemberController;
 use App\Http\Controllers\AdminProfileController;
+use App\Http\Controllers\StatusController;
+use App\Models\Order;
 use App\Http\Middleware\RoleMiddleware;
 
 /*
@@ -31,6 +33,7 @@ Route::get('/services', [ServiceController::class, 'index'])->name('services.ind
 // dY� Pemesanan laundry �?" pelanggan bisa pesan tanpa login
 Route::get('/order/create', [OrderController::class, 'create'])->name('order.create');
 Route::post('/order', [OrderController::class, 'store'])->name('order.store');
+Route::get('/status-laundry', [StatusController::class, 'customer'])->name('status.index');
 
 /*
 |--------------------------------------------------------------------------
@@ -123,7 +126,7 @@ Route::prefix('admin')
         */
         Route::get('nota', function (Request $request) {
             app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir');
-            return app(NotaController::class)->index();
+            return app(NotaController::class)->index($request);
         })->name('nota.index');
 
         Route::post('nota/store', function (Request $request) {
@@ -173,6 +176,20 @@ Route::prefix('admin')
         // dY" Export Laporan ke Excel
         Route::get('laporan/export-excel', [NotaController::class, 'exportExcel'])
             ->name('laporan.exportExcel');
+
+        /*
+        |------------------------------------------------------------------
+        | Status Laundry (Admin & Kasir)
+        |------------------------------------------------------------------
+        */
+        Route::get('orders/status', function (Request $request) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir');
+            return app(StatusController::class)->admin($request);
+        })->name('orders.status');
+        Route::get('orders/{order}/create-nota', function (Request $request, Order $order) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin');
+            return app(StatusController::class)->createNota($request, $order);
+        })->name('orders.status.create_nota');
     });
 
         /*

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Nota;
 use App\Models\NotaItem;
 use App\Models\ItemLaundry;
+use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -62,12 +63,18 @@ class NotaController extends Controller
     /**
      * dY_ Menampilkan daftar nota.
      */
-    public function index()
+    public function index(Request $request)
     {
         $notas = Nota::with('items.item', 'payments.user', 'user')->latest()->get();
         $items = ItemLaundry::orderBy('name')->get();
 
-        return view('admin.nota.index', compact('notas', 'items'));
+        $prefill = [
+            'order_id' => $request->query('order_id'),
+            'customer_name' => $request->query('customer_name'),
+            'customer_address' => $request->query('customer_address'),
+        ];
+
+        return view('admin.nota.index', compact('notas', 'items', 'prefill'));
     }
 
     /**
@@ -168,6 +175,18 @@ class NotaController extends Controller
                 'uang_muka' => $uangMuka,
                 'sisa' => $sisa,
             ]);
+
+            // Jika nota dibuat dari halaman Status Laundry (linked_order_id),
+            // tandai order sebagai selesai dan simpan relasi nota_id.
+            $linkedOrderId = $r->input('linked_order_id');
+            if (!empty($linkedOrderId)) {
+                $order = Order::find($linkedOrderId);
+                if ($order) {
+                    $order->nota_id = $nota->id;
+                    $order->status = 'selesai';
+                    $order->save();
+                }
+            }
 
             foreach ($items as $row) {
                 $item = ItemLaundry::firstOrCreate(

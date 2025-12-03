@@ -325,9 +325,9 @@
     <section class="mac-hero">
         <div class="mac-hero-inner">
             <div class="mac-hero-copy">
-                <p class="mac-eyebrow">Premium Laundry Experience</p>
-                <h1>Deva Laundry</h1>
-                <p class="lead">Cuci bersih, wangi, cepat, dan rapi - solusi pakaian harian dan spesial kamu.</p>
+                <p class="mac-eyebrow">{{ $heroEyebrow }}</p>
+                <h1>{{ $heroTitle }}</h1>
+                <p class="lead">{{ $heroSubtitle }}</p>
                 <div class="cta mac-hero-cta">
                     <a href="{{ route('order.create') }}" class="mac-btn btn-primary mac-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -335,7 +335,7 @@
                         </svg>
                         Pesan sekarang
                     </a>
-                    <a target="_blank" href="https://wa.me/6282147037006" class="mac-btn btn-ghost mac-btn">
+                    <a target="_blank" href="https://wa.me/{{ preg_replace('/\D/', '', $contactPhone) }}?text={{ urlencode('Halo Deva Laundry') }}" class="mac-btn btn-ghost mac-btn">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M21 12a9 9 0 10-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M22 22l-4.35-1.74" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -344,16 +344,19 @@
                     </a>
                 </div>
                 <div class="mac-hero-meta">
-                    <span>Antar-jemput area sekitar</span>
-                    <span>Estimasi selesai tepat waktu</span>
-                    <span>Pencucian rapi dan terstandar</span>
+                    @foreach($heroBullets as $bullet)
+                        @if(trim($bullet) !== '')
+                            <span>{{ $bullet }}</span>
+                        @endif
+                    @endforeach
                 </div>
             </div>
             <div class="mac-hero-card">
-                <div class="mac-badge">Hari ini kamu sudah laundry?</div>
-                <h5>Berikan pakaian kamu pengalaman premium.</h5>
-                <p>Serahkan proses cuci, kering, dan setrika ke tim Deva Laundry. Kamu cukup pesan dari rumah.</p>
-                <p class="mb-0">Pantau pesanan, atur jadwal, dan nikmati pakaian yang selalu siap dipakai.</p>
+                <div class="mac-badge">{{ $heroCardBadge }}</div>
+                <h5>{{ $heroCardTitle }}</h5>
+                @foreach($heroCardParagraphs as $paragraph)
+                    <p class="{{ $loop->last ? 'mb-0' : '' }}">{{ $paragraph }}</p>
+                @endforeach
             </div>
         </div>
     </section>

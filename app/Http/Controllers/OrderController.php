@@ -44,6 +44,7 @@ class OrderController extends Controller
             $items[] = [
                 'service_id' => $service->id,
                 'title' => $service->title,
+                'description' => $service->description,
                 'qty' => $qty,
             ];
         }
