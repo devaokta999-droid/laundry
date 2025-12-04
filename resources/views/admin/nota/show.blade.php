@@ -345,7 +345,6 @@
                 <a href="{{ route('admin.nota.edit', $nota->id) }}" id="btnEditNota" class="btn btn-primary me-2">Edit Nota</a>
             @endif
 
-            <a href="{{ route('admin.nota.print', $nota->id) }}" class="btn btn-primary me-2" target="_blank">Cetak PDF</a>
             <a href="{{ route('admin.nota.print_direct', $nota->id) }}" class="btn btn-primary" target="_blank">Print Langsung</a>
             <a href="{{ route('admin.nota.index') }}" class="btn btn-outline-dark">Kembali</a>
         </div>
@@ -367,21 +366,21 @@
                     <div class="mb-3">
                         <label class="form-label">Tipe Pembayaran</label>
                         <select name="type" id="paymentType" class="form-select" required>
-                            <option value="cash">Cash</option>
-                            <option value="transfer">Transfer</option>
+                            <option value="cash">CASH</option>
+                            <option value="transfer">TRANSFER</option>
                         </select>
                     </div>
 
                     <div class="mb-3" id="methodWrapper" style="display:none;">
                         <label class="form-label">Metode Transfer</label>
                         <select name="method" id="paymentMethod" class="form-select">
-                            <option value="gopay">Gopay</option>
-                            <option value="dana">Dana</option>
-                            <option value="shopeepay">ShopeePay</option>
-                            <option value="paylater">PayLater</option>
-                            <option value="bca">BCA</option>
-                            <option value="bni">BNI</option>
-                            <option value="qris">QRIS</option>
+                            <option value="GOPAY">Gopay</option>
+                            <option value="DANA">Dana</option>
+                            <option value="SHOPEEPAY">ShopeePay</option>
+                            <option value="PAYLATER">PayLater</option>
+                            <option value="BCA">BCA</option>
+                            <option value="BNI">BNI</option>
+                            <option value="QRIS">QRIS</option>
                             <option value="lainnya">Lainnya</option>
                         </select>
                     </div>

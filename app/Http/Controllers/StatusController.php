@@ -44,6 +44,13 @@ class StatusController extends Controller
             });
         }
 
+        $statusFilter = $request->input('status', '');
+        if ($statusFilter === 'selesai') {
+            $orders = $orders->where('status', 'selesai');
+        } elseif ($statusFilter === 'proses') {
+            $orders = $orders->where('status', '!=', 'selesai');
+        }
+
         $orders = $orders->paginate(20)->withQueryString();
         return view('admin.status-orders', compact('orders'));
     }

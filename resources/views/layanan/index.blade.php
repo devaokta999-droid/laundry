@@ -12,12 +12,12 @@
     }
 
     #page-content {
-        padding: 2.5rem 1.75rem;
+        padding: 2.75rem 0.75rem;
     }
 
     .layanan-macos-page {
-        padding: 48px 0 56px;
-        background: linear-gradient(135deg, #f6f7fb, #eef2ff);
+        padding: 56px 0 64px;
+        background: radial-gradient(circle at top left, #eef2ff, #e0f2fe 40%, #f5f5ff 100%);
         min-height: calc(100vh - 70px);
         display: flex;
         justify-content: center;
@@ -25,9 +25,9 @@
     }
 
     .layanan-shell {
-        width: min(1750px, calc(100% - 32px));
+        width: min(1920px, calc(100% - 24px));
         margin: 0 auto;
-        padding: 0 12px;
+        padding: 0 4px;
     }
 
     .layanan-shell-header {
@@ -65,10 +65,10 @@
     }
 
     .layanan-window {
-        border-radius: 32px;
-        background: #ffffff;
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        box-shadow: 0 30px 70px rgba(15, 23, 42, 0.25);
+        border-radius: 36px;
+        background: rgba(255,255,255,0.98);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        box-shadow: 0 38px 90px rgba(15, 23, 42, 0.30);
         overflow: hidden;
         position: relative;
     }
@@ -258,36 +258,40 @@
 
     .btn-chip {
         border-radius: 999px;
-        border: 0;
+        border: 1px solid transparent;
         font-size: 0.85rem;
         padding: 6px 16px;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
         gap: 0.35rem;
-        color: #f9fafb;
-        box-shadow: 0 8px 20px rgba(15,23,42,0.2);
+        background: transparent;
+        box-shadow: none;
         transition: all 0.2s ease;
     }
 
     .btn-chip-edit {
-        background: linear-gradient(135deg, #00c6ff, #6366f1);
+        border-color: #2563eb;
+        color: #1d4ed8;
     }
 
     .btn-chip-edit:hover {
-        background: linear-gradient(135deg, #46b1ff, #a5b4fc);
+        background: rgba(37, 99, 235, 0.06);
+        color: #1d4ed8;
         transform: translateY(-1px);
-        box-shadow: 0 12px 26px rgba(63, 81, 181, 0.35);
+        box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.25);
     }
 
     .btn-chip-delete {
-        background: linear-gradient(135deg, #fb7185, #ef4444);
+        border-color: #ef4444;
+        color: #b91c1c;
     }
 
     .btn-chip-delete:hover {
-        background: linear-gradient(135deg, #fb7185, #f43f5e);
+        background: rgba(239, 68, 68, 0.06);
+        color: #b91c1c;
         transform: translateY(-1px);
-        box-shadow: 0 12px 26px rgba(220,38,38,0.35);
+        box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.25);
     }
 
     .empty-state {

@@ -212,6 +212,10 @@
     @endphp
 
     <table class="total" width="100%">
+        <tr style="border-top:1px dashed #007bff;">
+            <td class="label"><strong>Total Item</strong></td>
+            <td class="value"><strong>{{ $totalQty }} Pcs</strong></td>
+        </tr>
         <tr>
             <td class="label">Total Awal</td>
             <td class="value">Rp {{ number_format($originalTotal, 0, ',', '.') }}</td>
@@ -229,16 +233,12 @@
             <td class="value">Rp {{ number_format($totalDibayar, 0, ',', '.') }}</td>
         </tr>
         <tr>
-            <td class="label">Kembalian</td>
-            <td class="value">Rp {{ number_format($kembalian, 0, ',', '.') }}</td>
-        </tr>
-        <tr>
             <td class="label">Sisa</td>
             <td class="value">Rp {{ number_format($nota->sisa, 0, ',', '.') }}</td>
         </tr>
-        <tr style="border-top:1px dashed #007bff;">
-            <td class="label"><strong>Total Item</strong></td>
-            <td class="value"><strong>{{ $totalQty }} Pcs</strong></td>
+        <tr>
+            <td class="label">Kembalian</td>
+            <td class="value">Rp {{ number_format($kembalian, 0, ',', '.') }}</td>
         </tr>
     </table>
 
@@ -249,9 +249,9 @@
     </div>
 
     <div class="footer">
-        Terima kasih telah menggunakan <strong>DEVA LAUNDRY</strong><br>
+        Terima kasih telah menggunakan jasa <strong>DEVA LAUNDRY</strong><br>
         Kebersihan & Ketepatan Waktu adalah Prioritas Kami.<br>
-        <small>Jangan lupa bawa nota ini saat pengambilan cucian.</small>
+        <small>Harap lapor langsung dalam waktu 24 jam jika ada kesalah dari kami</small>
     </div>
 </div>
 

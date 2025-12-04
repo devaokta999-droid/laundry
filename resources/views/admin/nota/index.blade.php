@@ -26,18 +26,23 @@
         @media (max-width: 992px){
             .nota-actions{gap:0.35rem}
         }
-        /* Compact badge for unpaid notes */
+        /* Badges Lunas / Belum Lunas (lebih besar & jelas) */
+        .badge-lunas,
         .badge-belum{
-            background: #ff4d4f;
-            color: #fff;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 11px;
-            line-height: 1;
-            display: inline-block;
-            vertical-align: middle;
-            min-width: 62px;
-            text-align: center;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            padding:4px 10px;
+            border-radius:999px;
+            font-size:12px;
+            font-weight:600;
+            line-height:1.2;
+            min-width:80px;
+            text-align:center;
+        }
+        .badge-belum{
+            background:#ff4d4f;
+            color:#fff;
         }
         /* macOS-style date picker wrapper */
         .macos-date-wrapper {
@@ -404,9 +409,6 @@
                             {{-- Tombol Print langsung (kiri dari Cetak PDF) --}}
                             <a href="{{ route('admin.nota.print_direct', $n->id) }}" class="btn btn-sm btn-outline-secondary btn-mac-pill" target="_blank" title="Cetak langsung ke printer">Print</a>
 
-                            {{-- Tombol Cetak PDF (sudah ada, jangan dihapus) --}}
-                            <a href="{{ route('admin.nota.print', $n->id) }}" class="btn btn-sm btn-outline-primary btn-mac-pill" target="_blank">Cetak PDF</a>
-
                             {{-- Tombol Show Nota --}}
                             <a href="{{ route('admin.nota.show', $n->id) }}" class="btn btn-sm btn-outline-info btn-mac-pill" target="_blank" title="Lihat detail nota">Show Nota</a>
 
@@ -456,13 +458,13 @@
                     <div class="mb-3" id="methodWrapperIdx" style="display:none;">
                         <label class="form-label">Metode Transfer</label>
                         <select name="method" id="paymentMethodIdx" class="form-select">
-                            <option value="gopay">Gopay</option>
-                            <option value="dana">Dana</option>
-                            <option value="shopeepay">ShopeePay</option>
-                            <option value="paylater">PayLater</option>
-                            <option value="bca">BCA</option>
-                            <option value="bni">BNI</option>
-                            <option value="qris">QRIS</option>
+                            <option value="GOPAY">Gopay</option>
+                            <option value="DANA">Dana</option>
+                            <option value="SHOPEEPAY">ShopeePay</option>
+                            <option value="PAYLATER">PayLater</option>
+                            <option value="BCA">BCA</option>
+                            <option value="BNI">BNI</option>
+                            <option value="QRIS">QRIS</option>
                             <option value="lainnya">Lainnya</option>
                         </select>
                     </div>

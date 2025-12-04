@@ -34,6 +34,45 @@
         display: flex;
         gap: 0.8rem;
     }
+    .mac-select {
+        min-width: 150px;
+        max-width: 170px;
+        padding: 8px 38px 8px 16px;
+        font-size: 0.85rem;
+        border-radius: 999px;
+        border: 1px solid rgba(37, 99, 235, 0.15);
+        background: radial-gradient(circle at 0 0, #ffffff, #eef2ff);
+        box-shadow:
+            0 10px 25px rgba(15,23,42,0.12),
+            inset 0 1px 0 rgba(255,255,255,0.9);
+        color: #0f172a;
+        font-weight: 500;
+        outline: none;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23586588' d='M5.23 7.21a.75.75 0 011.06.02L10 11.177l3.71-3.946a.75.75 0 111.1 1.022l-4.25 4.52a.75.75 0 01-1.1 0l-4.25-4.52a.75.75 0 01.02-1.06z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: calc(100% - 14px) 50%;
+        background-size: 14px;
+    }
+    .mac-select:hover {
+        border-color: rgba(37, 99, 235, 0.3);
+        box-shadow:
+            0 14px 30px rgba(15,23,42,0.16),
+            inset 0 1px 0 rgba(255,255,255,0.95);
+    }
+    .mac-select:focus {
+        border-color: rgba(37, 99, 235, 0.7);
+        box-shadow:
+            0 0 0 1px rgba(191, 219, 254, 0.9),
+            0 18px 40px rgba(15,23,42,0.22);
+    }
+    .mac-search-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
     .mac-btn {
         border-radius: 999px;
         padding: 10px 24px;
@@ -84,16 +123,32 @@
     }
 </style>
 <div class="mac-shell">
-    <div class="mac-panel mac-panel-gradient mb-4">
+        <div class="mac-panel mac-panel-gradient mb-4">
         <div>
             <h1 class="mac-panel-title">Status Laundry Customer</h1>
-            <p class="mac-panel-subtitle">Pantau semua order dengan gaya Apple Pro Premium. Status mengikuti kolom database.</p>
+            <p class="mac-panel-subtitle">Pantau semua order Status mengikuti kolom dari database.</p>
         </div>
         <div class="mac-search">
-            <input type="text" name="keyword" form="statusSearch" class="form-control mac-input" placeholder="Nama atau nomor telepon" value="{{ request('keyword') }}">
+            <input
+                type="text"
+                name="keyword"
+                form="statusSearch"
+                class="form-control mac-input"
+                placeholder="Nama atau nomor telepon"
+                value="{{ request('keyword') }}">
+
+            <select
+                name="status"
+                form="statusSearch"
+                class="form-select mac-input mac-select">
+                <option value="">Semua status</option>
+                <option value="selesai" {{ request('status') === 'selesai' ? 'selected' : '' }}>Selesai</option>
+                <option value="proses" {{ request('status') === 'proses' ? 'selected' : '' }}>Sedang diproses</option>
+            </select>
+
             <div class="mac-search-actions">
                 <button form="statusSearch" type="submit" class="btn btn-primary mac-btn"> Cari </button>
-                <a href="{{ route('admin.orders.status') }}" class="btn btn-outline-secondary mac-btn ms-2">Reset</a>
+                <a href="{{ route('admin.orders.status') }}" class="btn btn-outline-secondary mac-btn">Reset</a>
             </div>
         </div>
         <form id="statusSearch" method="GET" class="d-none"></form>
@@ -165,15 +220,11 @@
 
                             $messageLines = [
                                 'Deva Laundry - Status Pesanan',
-                                '==============================',
+                                '============================',
                                 '',
                                 'Nama   : ' . $order->customer_name,
                                 'Kontak : ' . $safePhone,
                                 'Alamat : ' . $safeAddress,
-                                '',
-                                'Layanan:',
-                                $serviceBlock,
-                                '',
                                 'Status cucian : ' . $statusLabel,
                             ];
                             if ($amountLine) {
@@ -181,7 +232,8 @@
                                 $messageLines[] = $amountLine;
                             }
                             $messageLines[] = "";
-                            $messageLines[] = "Terima kasih telah menggunakan Deva Laundry.";
+                            $messageLines[] = "Mau dicari ke OUTLET atau kami antar ke alamat tujuan Anda?";
+                            $messageLines[] = "Terima kasih telah menggunakan jasa Deva Laundry.";
                             $message = implode("\n", array_filter($messageLines, function ($line) {
                                 return $line !== '';
                             }));
@@ -231,4 +283,16 @@
         {{ $orders->links() }}
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var statusSelect = document.querySelector('select[name="status"][form="statusSearch"]');
+        var searchForm = document.getElementById('statusSearch');
+        if (!statusSelect || !searchForm) return;
+
+        statusSelect.addEventListener('change', function () {
+            searchForm.submit();
+        });
+    });
+</script>
 @endsection

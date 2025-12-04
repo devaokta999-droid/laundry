@@ -216,7 +216,7 @@
 </div>
 
 <script>
-    const indexUrl = "{{ route('admin.nota.index') }}";
+    const showUrl = "{{ route('admin.nota.show', $nota->id) }}";
     let rowIndex = {{ $rowNumber ?? 0 }};
     let currentRowIndex = null; // index of the row currently selected for catalog fill
 
@@ -541,7 +541,7 @@
                 return;
             }
             if (response.ok) {
-                window.location.href = indexUrl;
+                window.location.href = showUrl;
                 return;
             }
             if (response.status === 422) {
