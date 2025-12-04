@@ -18,8 +18,8 @@
     }
 
     .mac-container {
-        max-width: 1500px;
-        width: min(96vw, 1500px);
+        max-width: 1920px;
+        width: 100%;
         padding: 24px;
     }
 
@@ -29,7 +29,7 @@
         backdrop-filter: blur(18px);
         -webkit-backdrop-filter: blur(18px);
         border-radius: 26px;
-        padding: 48px 24px 40px;
+        padding: 82px 36px 64px;
         border: 1px solid rgba(148,163,184,0.28);
         box-shadow: 0 22px 60px rgba(15,23,42,0.16);
         margin-bottom: 50px;
@@ -112,8 +112,12 @@
     .mac-actions {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
         margin-top: 1.4rem;
+        align-items: flex-start;
+        margin-left: 32px; /* sejajar dengan teks setelah ikon */
+        max-width: 360px;
+        width: 100%;
     }
 
     .mac-btn {
@@ -122,23 +126,42 @@
         justify-content: center;
         gap: 10px;
         border-radius: 999px;
-        padding: 0.78rem 1.7rem;
+        padding: 0.45rem 1.1rem;
         font-weight: 600;
-        font-size: 0.96rem;
-        color: #ffffff;
+        font-size: 0.86rem;
+        color: #0f9cf5;
         text-decoration: none;
-        border: 1px solid rgba(255,255,255,0.6);
-        background: linear-gradient(135deg, #0f9cf5, #0066d6);
-        box-shadow: 0 12px 30px rgba(37,99,235,0.35);
+        border: 1px solid #0f9cf5;
+        background: transparent;
+        box-shadow: none;
         transition: all 0.2s ease;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
     }
     .mac-btn i {
         font-size: 1.1rem;
     }
     .mac-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 18px 38px rgba(37,99,235,0.45);
-        background: linear-gradient(135deg, #0ea5e9, #2563eb);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(15,23,42,0.12);
+        background: rgba(239,246,255,0.9);
+    }
+
+    /* Animasi denyut halus pada tombol */
+    @keyframes mac-btn-pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(15,156,245,0.35);
+        }
+        70% {
+            box-shadow: 0 0 0 10px rgba(15,156,245,0);
+        }
+        100% {
+            box-shadow: 0 0 0 0 rgba(15,156,245,0);
+        }
+    }
+    .mac-btn {
+        animation: mac-btn-pulse 1.9s ease-out infinite;
     }
 
     .mac-map {

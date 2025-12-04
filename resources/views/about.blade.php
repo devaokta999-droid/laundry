@@ -13,7 +13,8 @@ body {
 
 /* dYS Container utama */
 .mac-container {
-    max-width: 1260px;
+    max-width: 1920px;
+    width: 100%;
     margin: 80px auto;
     padding: 20px;
 }

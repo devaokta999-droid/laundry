@@ -30,6 +30,7 @@ class AdminProfileController extends Controller
             $settings[$key] = SiteSetting::getValue($key, $default);
         }
 
+        // Promo
         $promos = [];
         $promosJson = SiteSetting::getValue('promos', $defaults['promos']);
         if ($promosJson) {
@@ -45,7 +46,20 @@ class AdminProfileController extends Controller
             ];
         }
 
-        return view('admin.profile', compact('user', 'settings', 'promos'));
+        // Metode pembayaran
+        $paymentMethods = [];
+        $paymentsJson = SiteSetting::getValue('payment_methods', $defaults['payment_methods']);
+        if ($paymentsJson) {
+            $decodedPayments = json_decode($paymentsJson, true);
+            if (is_array($decodedPayments)) {
+                $paymentMethods = $decodedPayments;
+            }
+        }
+        if (empty($paymentMethods)) {
+            $paymentMethods = json_decode($defaults['payment_methods'], true) ?? [];
+        }
+
+        return view('admin.profile', compact('user', 'settings', 'promos', 'paymentMethods'));
     }
 
     public function update(Request $request)
@@ -84,13 +98,22 @@ class AdminProfileController extends Controller
             'promo_descs' => 'nullable|array',
             'promo_descs.*' => 'nullable|string',
 
+            // Metode pembayaran dinamis
+            'payment_names' => 'nullable|array',
+            'payment_names.*' => 'nullable|string|max:255',
+            'payment_logos' => 'nullable|array',
+            // Tanpa batas ukuran file eksplisit; dibatasi oleh konfigurasi PHP/server saja
+            'payment_logos.*' => 'nullable|image|mimes:jpg,jpeg,png,webp',
+            'existing_payment_logos' => 'nullable|array',
+            'existing_payment_logos.*' => 'nullable|string',
+
             // Logo
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
             'reset_logo' => 'nullable|boolean',
         ]);
 
         foreach ($this->defaultSettings() as $key => $default) {
-            if (in_array($key, ['promos', 'logo_path'], true)) {
+            if (in_array($key, ['promos', 'payment_methods', 'logo_path'], true)) {
                 continue;
             }
             $value = $data[$key] ?? null;
@@ -136,6 +159,7 @@ class AdminProfileController extends Controller
             SiteSetting::setValue('logo_path', 'logo/' . $filename);
         }
 
+        // Simpan promo
         $titles = $request->input('promo_titles', []);
         $descs = $request->input('promo_descs', []);
         $promos = [];
@@ -157,6 +181,50 @@ class AdminProfileController extends Controller
             ];
         }
         SiteSetting::setValue('promos', json_encode($promos));
+
+        // Simpan metode pembayaran
+        $paymentNames = $request->input('payment_names', []);
+        $existingPaymentLogos = $request->input('existing_payment_logos', []);
+        $paymentLogoFiles = $request->file('payment_logos', []);
+        $payments = [];
+        foreach ($paymentNames as $idx => $name) {
+            $name = trim((string) $name);
+
+            $logoPath = trim((string) ($existingPaymentLogos[$idx] ?? ''));
+            if (isset($paymentLogoFiles[$idx]) && $paymentLogoFiles[$idx] && $paymentLogoFiles[$idx]->isValid()) {
+                $file = $paymentLogoFiles[$idx];
+                $destination = public_path('images/payments');
+                if (!is_dir($destination)) {
+                    mkdir($destination, 0755, true);
+                }
+
+                $filename = time() . '_' . $idx . '_' . preg_replace('/\s+/', '_', $file->getClientOriginalName());
+                $file->move($destination, $filename);
+
+                // Hapus logo lama jika berupa file lokal (bukan URL eksternal)
+                if ($logoPath && !preg_match('#^https?://#i', $logoPath)) {
+                    $oldPath = public_path($logoPath);
+                    if (is_file($oldPath)) {
+                        @unlink($oldPath);
+                    }
+                }
+
+                $logoPath = 'images/payments/' . $filename;
+            }
+
+            if ($name === '' && $logoPath === '') {
+                continue;
+            }
+
+            $payments[] = [
+                'name' => $name !== '' ? $name : 'Metode Pembayaran',
+                'logo_path' => $logoPath,
+            ];
+        }
+        if (empty($payments)) {
+            $payments = json_decode($this->defaultSettings()['payment_methods'], true) ?? [];
+        }
+        SiteSetting::setValue('payment_methods', json_encode($payments));
 
         return redirect()
             ->route('admin.profile')
@@ -217,6 +285,20 @@ class AdminProfileController extends Controller
             'promos' => json_encode([
                 ['title' => 'Promo 1', 'desc' => 'Diskon 20% untuk cucian pertama'],
                 ['title' => 'Promo 2', 'desc' => 'Gratis pengambilan di area tertentu'],
+            ]),
+
+            // Payment methods defaults (disimpan sebagai JSON)
+            'payment_methods' => json_encode([
+                ['name' => 'BRImo', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/0/0f/Logo_BRI_Brimo.png'],
+                ['name' => 'Mastercard', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png'],
+                ['name' => 'OCTO Mobile', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Octo_Mobile_logo.svg'],
+                ['name' => 'Livin by Mandiri', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/5/55/Livin%27_by_Mandiri_logo.png'],
+                ['name' => 'GPN', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/3/39/Gerbang_Pembayaran_Nasional_logo.svg'],
+                ['name' => 'JCB', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/2/2a/JCB_logo.svg'],
+                ['name' => 'blu by BCA Digital', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Blu_by_BCA_Digital_logo.svg'],
+                ['name' => 'Gopay', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Logo_Gopay.svg'],
+                ['name' => 'DANA', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Logo_dana_blue.svg'],
+                ['name' => 'OVO', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/6/69/Logo_ovo_purple.svg'],
             ]),
 
             // Logo default

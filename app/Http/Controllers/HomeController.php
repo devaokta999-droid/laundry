@@ -12,72 +12,111 @@ use App\Models\SiteSetting;
 
 class HomeController extends Controller
 {
-public function index(){
-$services = Service::latest()->take(6)->get();
+public function index()
+{
+    $services = Service::latest()->take(6)->get();
 
-$defaultPromos = [
-    ['title' => 'Promo 1', 'desc' => 'Diskon 20% untuk cucian pertama'],
-    ['title' => 'Promo 2', 'desc' => 'Gratis pengambilan di area tertentu'],
-];
+    // Promo beranda
+    $defaultPromos = [
+        ['title' => 'Promo 1', 'desc' => 'Diskon 20% untuk cucian pertama'],
+        ['title' => 'Promo 2', 'desc' => 'Gratis pengambilan di area tertentu'],
+    ];
 
-$promosJson = SiteSetting::getValue('promos', json_encode($defaultPromos));
-$promos = $defaultPromos;
-if ($promosJson) {
-    $decoded = json_decode($promosJson, true);
-    if (is_array($decoded) && count($decoded) > 0) {
-        $promos = [];
-        foreach ($decoded as $promo) {
-            $promos[] = [
-                'title' => $promo['title'] ?? 'Promo',
-                'desc' => $promo['desc'] ?? '',
-            ];
+    $promosJson = SiteSetting::getValue('promos', json_encode($defaultPromos));
+    $promos = $defaultPromos;
+    if ($promosJson) {
+        $decoded = json_decode($promosJson, true);
+        if (is_array($decoded) && count($decoded) > 0) {
+            $promos = [];
+            foreach ($decoded as $promo) {
+                $promos[] = [
+                    'title' => $promo['title'] ?? 'Promo',
+                    'desc' => $promo['desc'] ?? '',
+                ];
+            }
         }
     }
-}
 
-$contactPhone = SiteSetting::getValue('contact_phone', config('app.admin_whatsapp', '+62 821-4703-7006'));
-$contactEmail = SiteSetting::getValue('contact_email', 'hello@devalaundry.example');
-$contactMapsLink = SiteSetting::getValue('contact_maps_link', 'https://maps.app.goo.gl/z7jsgdWsD8JC4MFo8');
-$contactInstagram = SiteSetting::getValue('contact_instagram', '@devalaundry');
-$contactFacebook = SiteSetting::getValue('contact_facebook', '@devalaundry');
-$contactTikTok = SiteSetting::getValue('contact_tiktok', '@devalaundry.official');
+    // Metode pembayaran
+    $defaultPaymentMethods = [
+        ['name' => 'BRImo', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/0/0f/Logo_BRI_Brimo.png'],
+        ['name' => 'Mastercard', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png'],
+        ['name' => 'OCTO Mobile', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Octo_Mobile_logo.svg'],
+        ['name' => 'Livin by Mandiri', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/5/55/Livin%27_by_Mandiri_logo.png'],
+        ['name' => 'GPN', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/3/39/Gerbang_Pembayaran_Nasional_logo.svg'],
+        ['name' => 'JCB', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/2/2a/JCB_logo.svg'],
+        ['name' => 'blu by BCA Digital', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/4/4e/Blu_by_BCA_Digital_logo.svg'],
+        ['name' => 'Gopay', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/5/5e/Logo_Gopay.svg'],
+        ['name' => 'DANA', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/9/9d/Logo_dana_blue.svg'],
+        ['name' => 'OVO', 'logo_url' => 'https://upload.wikimedia.org/wikipedia/commons/6/69/Logo_ovo_purple.svg'],
+    ];
 
-// Hero beranda
-$heroEyebrow = SiteSetting::getValue('hero_eyebrow', 'Premium Laundry Experience');
-$heroTitle = SiteSetting::getValue('hero_title', 'Deva Laundry');
-$heroSubtitle = SiteSetting::getValue('hero_subtitle', 'Cuci bersih, wangi, cepat, dan rapi - solusi pakaian harian dan spesial kamu.');
-$heroBulletsText = SiteSetting::getValue('hero_bullets', implode(PHP_EOL, [
-    'Antar-jemput area sekitar',
-    'Estimasi selesai tepat waktu',
-    'Pencucian rapi dan terstandar',
-]));
-$heroBullets = array_filter(preg_split('/\r\n|\r|\n/', (string) $heroBulletsText));
+    $paymentsJson = SiteSetting::getValue('payment_methods', json_encode($defaultPaymentMethods));
+    $paymentMethods = $defaultPaymentMethods;
+    if ($paymentsJson) {
+        $decodedPayments = json_decode($paymentsJson, true);
+        if (is_array($decodedPayments) && count($decodedPayments) > 0) {
+            $paymentMethods = [];
+            foreach ($decodedPayments as $payment) {
+                $rawLogo = $payment['logo_path'] ?? $payment['logo_url'] ?? '';
+                if ($rawLogo !== '' && !preg_match('#^https?://#i', $rawLogo)) {
+                    $logoUrl = asset($rawLogo);
+                } else {
+                    $logoUrl = $rawLogo;
+                }
 
-$heroCardBadge = SiteSetting::getValue('hero_card_badge', 'Hari ini kamu sudah laundry?');
-$heroCardTitle = SiteSetting::getValue('hero_card_title', 'Berikan pakaian kamu pengalaman premium.');
-$heroCardText = SiteSetting::getValue('hero_card_text', implode(PHP_EOL, [
-    'Serahkan proses cuci, kering, dan setrika ke tim Deva Laundry. Kamu cukup pesan dari rumah.',
-    'Pantau pesanan, atur jadwal, dan nikmati pakaian yang selalu siap dipakai.',
-]));
-$heroCardParagraphs = array_filter(preg_split('/\r\n|\r|\n/', (string) $heroCardText));
+                $paymentMethods[] = [
+                    'name' => $payment['name'] ?? 'Metode Pembayaran',
+                    'logo_url' => $logoUrl,
+                ];
+            }
+        }
+    }
 
-return view('home', compact(
-    'services',
-    'promos',
-    'contactPhone',
-    'contactEmail',
-    'contactMapsLink',
-    'contactInstagram',
-    'contactFacebook',
-    'contactTikTok',
-    'heroEyebrow',
-    'heroTitle',
-    'heroSubtitle',
-    'heroBullets',
-    'heroCardBadge',
-    'heroCardTitle',
-    'heroCardParagraphs'
-));
+    $contactPhone = SiteSetting::getValue('contact_phone', config('app.admin_whatsapp', '+62 821-4703-7006'));
+    $contactEmail = SiteSetting::getValue('contact_email', 'hello@devalaundry.example');
+    $contactMapsLink = SiteSetting::getValue('contact_maps_link', 'https://maps.app.goo.gl/z7jsgdWsD8JC4MFo8');
+    $contactInstagram = SiteSetting::getValue('contact_instagram', '@devalaundry');
+    $contactFacebook = SiteSetting::getValue('contact_facebook', '@devalaundry');
+    $contactTikTok = SiteSetting::getValue('contact_tiktok', '@devalaundry.official');
+
+    // Hero beranda
+    $heroEyebrow = SiteSetting::getValue('hero_eyebrow', 'Premium Laundry Experience');
+    $heroTitle = SiteSetting::getValue('hero_title', 'Deva Laundry');
+    $heroSubtitle = SiteSetting::getValue('hero_subtitle', 'Cuci bersih, wangi, cepat, dan rapi - solusi pakaian harian dan spesial kamu.');
+    $heroBulletsText = SiteSetting::getValue('hero_bullets', implode(PHP_EOL, [
+        'Antar-jemput area sekitar',
+        'Estimasi selesai tepat waktu',
+        'Pencucian rapi dan terstandar',
+    ]));
+    $heroBullets = array_filter(preg_split('/\r\n|\r|\n/', (string) $heroBulletsText));
+
+    $heroCardBadge = SiteSetting::getValue('hero_card_badge', 'Hari ini kamu sudah laundry?');
+    $heroCardTitle = SiteSetting::getValue('hero_card_title', 'Berikan pakaian kamu pengalaman premium.');
+    $heroCardText = SiteSetting::getValue('hero_card_text', implode(PHP_EOL, [
+        'Serahkan proses cuci, kering, dan setrika ke tim Deva Laundry. Kamu cukup pesan dari rumah.',
+        'Pantau pesanan, atur jadwal, dan nikmati pakaian yang selalu siap dipakai.',
+    ]));
+    $heroCardParagraphs = array_filter(preg_split('/\r\n|\r|\n/', (string) $heroCardText));
+
+    return view('home', compact(
+        'services',
+        'promos',
+        'paymentMethods',
+        'contactPhone',
+        'contactEmail',
+        'contactMapsLink',
+        'contactInstagram',
+        'contactFacebook',
+        'contactTikTok',
+        'heroEyebrow',
+        'heroTitle',
+        'heroSubtitle',
+        'heroBullets',
+        'heroCardBadge',
+        'heroCardTitle',
+        'heroCardParagraphs'
+    ));
 }
 
 

@@ -5,8 +5,8 @@
 @section('content')
 <style>
     .profile-shell {
-        max-width: 1680px;
-        width: 94vw;
+        max-width: 1780px;
+        width: 100%;
         margin: 40px auto 56px;
         font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
@@ -468,7 +468,7 @@
                             </div>
                         </div>
 
-                        <div class="profile-card mb-0">
+                        <div class="profile-card mb-3">
                             <div class="section-title">Promo</div>
                             <div class="section-heading">Promo di Halaman Beranda</div>
                             <p class="section-description">
@@ -520,6 +520,79 @@
                             </div>
 
                             <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="btn-add-promo">+ Tambah Promo</button>
+                        </div>
+
+                        <div class="profile-card mb-0">
+                            <div class="section-title">Payment</div>
+                            <div class="section-heading">Metode Pembayaran</div>
+                            <p class="section-description">
+                                Atur logo dan nama metode pembayaran yang tampil di beranda pada bagian Metode Pembayaran.
+                                Gunakan URL logo yang valid (misalnya dari CDN atau storage aplikasi).
+                            </p>
+
+                            <div id="payment-list">
+                                @php
+                                    $oldPaymentNames = old('payment_names', []);
+                                    $oldExistingLogos = old('existing_payment_logos', []);
+                                    $useOldPayments = count($oldPaymentNames) > 0 || count($oldExistingLogos) > 0;
+                                    $paymentItems = $useOldPayments
+                                        ? collect($oldPaymentNames)->map(function ($name, $i) use ($oldExistingLogos) {
+                                            return [
+                                                'name' => $name,
+                                                'logo_raw' => $oldExistingLogos[$i] ?? '',
+                                            ];
+                                        })->all()
+                                        : ($paymentMethods ?? []);
+                                @endphp
+
+                                @forelse($paymentItems as $index => $payment)
+                                    @php
+                                        $storedLogo = $payment['logo_path'] ?? $payment['logo_url'] ?? ($payment['logo_raw'] ?? '');
+                                        $previewLogo = $storedLogo
+                                            ? (preg_match('#^https?://#i', $storedLogo) ? $storedLogo : asset($storedLogo))
+                                            : '';
+                                    @endphp
+                                    <div class="border rounded-3 p-3 mb-3 payment-item bg-light bg-opacity-60">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <strong>Metode {{ $index + 1 }}</strong>
+                                            <button type="button" class="btn btn-sm btn-outline-danger btn-remove-payment">Hapus</button>
+                                        </div>
+                                        <div class="profile-form-group mb-2">
+                                            <label>Nama Metode Pembayaran</label>
+                                            <input type="text" name="payment_names[]" class="form-control"
+                                                   value="{{ $payment['name'] ?? '' }}">
+                                        </div>
+                                        <div class="profile-form-group mb-0">
+                                            <label>Logo (upload gambar)</label>
+                                            @if($previewLogo)
+                                                <div class="mb-2">
+                                                    <img src="{{ $previewLogo }}" alt="Logo {{ $payment['name'] ?? '' }}" style="max-height:40px;">
+                                                </div>
+                                            @endif
+                                            <input type="hidden" name="existing_payment_logos[]" value="{{ $storedLogo }}">
+                                            <input type="file" name="payment_logos[]" class="form-control">
+                                        </div>
+                                    </div>
+                                @empty
+                                    <div class="border rounded-3 p-3 mb-3 payment-item bg-light bg-opacity-60">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <strong>Metode 1</strong>
+                                            <button type="button" class="btn btn-sm btn-outline-danger btn-remove-payment">Hapus</button>
+                                        </div>
+                                        <div class="profile-form-group mb-2">
+                                            <label>Nama Metode Pembayaran</label>
+                                            <input type="text" name="payment_names[]" class="form-control">
+                                        </div>
+                                        <div class="profile-form-group mb-0">
+                                            <label>Logo (upload gambar)</label>
+                                            <input type="hidden" name="existing_payment_logos[]" value="">
+                                            <input type="file" name="payment_logos[]" class="form-control">
+                                        </div>
+                                    </div>
+                                @endforelse
+                            </div>
+
+                            <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="btn-add-payment">+ Tambah Metode Pembayaran</button>
                         </div>
 
                         <div class="profile-footer">
@@ -596,6 +669,51 @@
         }
 
         attachRemoveHandlers(document);
+
+        // Script metode pembayaran
+        const paymentList = document.getElementById('payment-list');
+        const addPaymentBtn = document.getElementById('btn-add-payment');
+
+        function attachPaymentRemoveHandlers(scope) {
+            (scope || document).querySelectorAll('.btn-remove-payment').forEach(function (btn) {
+                btn.onclick = function () {
+                    const item = this.closest('.payment-item');
+                    if (!item || !paymentList) return;
+                    if (paymentList.querySelectorAll('.payment-item').length <= 1) {
+                        item.querySelectorAll('input').forEach(el => el.value = '');
+                        return;
+                    }
+                    item.remove();
+                };
+            });
+        }
+
+        if (addPaymentBtn && paymentList) {
+            addPaymentBtn.addEventListener('click', function () {
+                const count = paymentList.querySelectorAll('.payment-item').length;
+                const wrapper = document.createElement('div');
+                wrapper.className = 'border rounded-3 p-3 mb-3 payment-item bg-light bg-opacity-60';
+                wrapper.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>Metode ${count + 1}</strong>
+                        <button type="button" class="btn btn-sm btn-outline-danger btn-remove-payment">Hapus</button>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Nama Metode Pembayaran</label>
+                        <input type="text" name="payment_names[]" class="form-control">
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label">Logo (upload gambar)</label>
+                        <input type="hidden" name="existing_payment_logos[]" value="">
+                        <input type="file" name="payment_logos[]" class="form-control">
+                    </div>
+                `;
+                paymentList.appendChild(wrapper);
+                attachPaymentRemoveHandlers(wrapper);
+            });
+        }
+
+        attachPaymentRemoveHandlers(document);
     });
 </script>
 @endpush

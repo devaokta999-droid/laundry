@@ -188,6 +188,64 @@
     box-shadow: 0 18px 40px rgba(6,30,66,0.08);
 }
 
+/* ---------- HOME WIDTH ---------- */
+.home-wide-container {
+    max-width: 1780px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ---------- PAYMENT LOGOS (Apple-like minimal) ---------- */
+.pay-section {
+    padding: 24px 0 36px;
+    background: #f5f7ff;
+    border-radius: 24px;
+    box-shadow: 0 16px 46px rgba(15,23,42,0.05);
+}
+.pay-row {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 16px 20px;
+    align-items: center;
+    justify-items: center;
+}
+.pay-logo-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 170px;
+    min-height: 68px;
+    transition: transform .14s ease-out, filter .14s ease-out;
+}
+.pay-logo-card img {
+    max-height: 54px;
+    max-width: 140px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 14px rgba(15,23,42,0.18));
+}
+.pay-logo-card:hover {
+    transform: translateY(-3px);
+    filter: drop-shadow(0 10px 26px rgba(15,23,42,0.24));
+}
+@media (max-width: 991.98px) {
+    .pay-row {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px 22px;
+    }
+}
+@media (max-width: 767.98px) {
+    .pay-row {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .pay-logo-card {
+        max-width: 170px;
+        min-height: 64px;
+    }
+}
+
 /* ---------- FOOTER (glass style) ---------- */
 .mac-footer-pro {
     background: radial-gradient(circle at 0% 0%, rgba(10,132,255,0.95) 0%, rgba(0,40,100,0.98) 45%, rgba(0,15,45,1) 100%);
@@ -320,8 +378,8 @@
 }
 </style>
 
-{{-- ---------- HERO ---------- --}}
-<div class="container">
+  {{-- ---------- HERO ---------- --}}
+  <div class="container-fluid home-wide-container">
     <section class="mac-hero">
         <div class="mac-hero-inner">
             <div class="mac-hero-copy">
@@ -363,7 +421,7 @@
 </div>
 
 {{-- ---------- SERVICES ---------- --}}
-<div class="container mac-section">
+  <div class="container-fluid home-wide-container mac-section">
     <div class="mac-section-header">
         <div class="mac-section-eyebrow">Services</div>
         <h3 class="mac-title">Layanan Kami</h3>
@@ -389,8 +447,8 @@
 </div>
 
 {{-- ---------- PROMO ---------- --}}
-@if(!empty($promos))
-    <div class="container mac-section">
+  @if(!empty($promos))
+    <div class="container-fluid home-wide-container mac-section">
         <div class="mac-section-header">
             <div class="mac-section-eyebrow">Offers</div>
             <h3 class="mac-title">Promo Spesial</h3>
@@ -409,8 +467,38 @@
     </div>
 @endif
 
+{{-- ---------- PAYMENT METHODS ---------- --}}
+  <div class="container-fluid home-wide-container pay-section">
+    <div class="mac-section-header">
+        <div class="mac-section-eyebrow">Payment</div>
+        <h3 class="mac-title">Metode Pembayaran</h3>
+        <p class="mac-section-subtitle">
+            Kami mendukung berbagai metode pembayaran digital agar proses transaksi di Deva Laundry terasa cepat dan praktis.
+        </p>
+    </div>
+    <div class="pay-row">
+        @forelse($paymentMethods as $method)
+            <div class="pay-logo-card">
+                @if(!empty($method['logo_url'] ?? ''))
+                    <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
+                @else
+                    <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
+                        {{ $method['name'] ?? 'Metode Pembayaran' }}
+                    </span>
+                @endif
+            </div>
+        @empty
+            <div class="pay-logo-card">
+                <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
+                    Metode pembayaran belum diatur.
+                </span>
+            </div>
+        @endforelse
+    </div>
+</div>
+
 {{-- ---------- FOOTER ---------- --}}
-<div class="container">
+<div class="container-fluid home-wide-container">
     <footer class="mac-footer-pro">
         <div class="footer-meta">Stay Fresh, Stay Ready</div>
         <div class="footer-title">Deva Laundry</div>
