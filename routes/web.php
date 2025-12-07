@@ -14,6 +14,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TeamMemberController;
 use App\Http\Controllers\AdminProfileController;
 use App\Http\Controllers\StatusController;
+use App\Http\Controllers\ReviewController;
 use App\Models\Order;
 use App\Http\Middleware\RoleMiddleware;
 
@@ -26,6 +27,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::get('/promos', [HomeController::class, 'promos'])->name('promos');
+Route::get('/reviews/create', [ReviewController::class, 'create'])->name('reviews.create');
+Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
 // dY' Semua orang (termasuk tamu) bisa melihat daftar layanan
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
@@ -116,6 +119,7 @@ Route::prefix('admin')
         |-------------------------------
         */
         Route::resource('team', TeamMemberController::class)->except(['show']);
+        Route::resource('reviews', ReviewController::class)->except(['show', 'create', 'store']);
         Route::get('profile', [AdminProfileController::class, 'show'])->name('profile');
         Route::post('profile', [AdminProfileController::class, 'update'])->name('profile.update');
 

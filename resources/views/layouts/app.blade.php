@@ -271,6 +271,7 @@
             <a href="{{ route('status.index') }}" class="nav-link {{ request()->routeIs('status.index') ? 'active' : '' }}">Status Laundry</a>
             <a href="{{ route('about') }}" class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}">Tentang</a>
             <a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">Kontak</a>
+            <a href="{{ route('reviews.create') }}" class="nav-link {{ request()->routeIs('reviews.create') ? 'active' : '' }}">Rating & Ulasan</a>
 
             @auth
                 @php $role = auth()->user()->role; @endphp
@@ -292,11 +293,15 @@
                     </a>
                 @endif
 
-                {{-- Admin dapat mengakses LAPORAN --}}
+                {{-- Admin dapat mengakses LAPORAN & RATING/ULASAN --}}
                 @if($role === 'admin')
                     <a href="{{ route('admin.laporan') }}" 
                        class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
                        Laporan
+                    </a>
+                    <a href="{{ route('admin.reviews.index') }}" 
+                       class="nav-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                        Rating & Ulasan
                     </a>
                 @endif
 

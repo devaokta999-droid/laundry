@@ -188,6 +188,138 @@
     box-shadow: 0 18px 40px rgba(6,30,66,0.08);
 }
 
+/* ---------- REVIEWS (Testimonials Slider) ---------- */
+.review-slider {
+    position: relative;
+    overflow: hidden;
+}
+.review-shell {
+    background: radial-gradient(circle at 0% 0%, #ffffff 0, #eef2ff 40%, #e0e7ff 100%);
+    border-radius: 26px;
+    padding: 26px 26px 40px;
+    box-shadow:
+        0 26px 60px rgba(15,23,42,0.14),
+        0 0 0 1px rgba(255,255,255,0.8);
+    border: 1px solid rgba(148,163,184,0.12);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+}
+.review-slider-inner {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 6px;
+}
+.review-slider-inner::-webkit-scrollbar {
+    display: none;
+}
+.review-col {
+    flex: 0 0 calc(25% - 18px);
+    scroll-snap-align: start;
+}
+.review-card {
+    position: relative;
+    background: rgba(255,255,255,0.96);
+    border-radius: 18px;
+    padding: 18px 18px 38px;
+    box-shadow:
+        0 18px 40px rgba(15,23,42,0.08),
+        0 0 0 1px rgba(226,232,240,0.9);
+    border: 1px solid rgba(226,232,240,0.9);
+    text-align: center;
+    min-height: 160px;
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.review-card:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 26px 60px rgba(15,23,42,0.16),
+        0 0 0 1px rgba(191,219,254,0.9);
+}
+.review-quote-icon {
+    font-size: 2.4rem;
+    line-height: 1;
+    color: #e5e7eb;
+    margin-bottom: 12px;
+}
+.review-text {
+    font-size: 0.9rem;
+    color: #374151;
+    line-height: 1.7;
+    margin-bottom: 18px;
+}
+.review-stars {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    margin-bottom: 20px;
+}
+.review-star {
+    font-size: 0.98rem;
+}
+.review-star.filled {
+    color: #fbbf24;
+}
+.review-star.empty {
+    color: #e5e7eb;
+}
+.review-footer {
+    position: absolute;
+    left: 50%;
+    bottom: -42px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.review-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: 0 8px 20px rgba(15,23,42,0.18);
+    margin-bottom: 6px;
+}
+.review-avatar.variant-1 {
+    background: radial-gradient(circle at 30% 0, #fde68a, #f97316);
+}
+.review-avatar.variant-2 {
+    background: radial-gradient(circle at 30% 0, #bfdbfe, #3b82f6);
+}
+.review-avatar.variant-3 {
+    background: radial-gradient(circle at 30% 0, #bbf7d0, #22c55e);
+}
+.review-avatar.variant-4 {
+    background: radial-gradient(circle at 30% 0, #fee2e2, #f97373);
+}
+.review-name {
+    font-weight: 700;
+    color: #0f766e;
+    font-size: 0.9rem;
+}
+@media (max-width: 1199.98px) {
+    .review-col {
+        flex: 0 0 calc(33.333% - 18px);
+    }
+}
+@media (max-width: 991.98px) {
+    .review-col {
+        flex: 0 0 calc(50% - 18px);
+    }
+}
+@media (max-width: 575.98px) {
+    .review-col {
+        flex: 0 0 100%;
+    }
+}
+
 /* ---------- HOME WIDTH ---------- */
 .home-wide-container {
     max-width: 1780px;
@@ -467,6 +599,45 @@
     </div>
 @endif
 
+{{-- ---------- CUSTOMER REVIEWS ---------- --}}
+@if(isset($reviews) && $reviews->count() > 0)
+<div class="container-fluid home-wide-container mac-section">
+    <div class="mac-section-header">
+        <div class="mac-section-eyebrow">Testimonials</div>
+        <h3 class="mac-title">Rating & Ulasan Pelanggan</h3>
+        <p class="mac-section-subtitle">
+            Beberapa pengalaman langsung dari pelanggan Deva Laundry.
+        </p>
+    </div>
+    <div class="review-shell review-slider">
+        <div class="review-slider-inner" id="reviewSliderInner">
+            @foreach($reviews as $review)
+                @php
+                    $initial = mb_strtoupper(mb_substr($review->name ?? 'U', 0, 1));
+                @endphp
+                <div class="review-col">
+                    <div class="review-card">
+                        <div class="review-quote-icon">“</div>
+                        <p class="review-text">{{ $review->comment }}</p>
+                        <div class="review-stars">
+                            @for($i = 1; $i <= 5; $i++)
+                                <span class="review-star {{ $i <= $review->rating ? 'filled' : 'empty' }}">★</span>
+                            @endfor
+                        </div>
+                        <div class="review-footer">
+                            <div class="review-avatar">
+                                <span>{{ $initial }}</span>
+                            </div>
+                            <div class="review-name">{{ $review->name }}</div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    </div>
+</div>
+@endif
+
 {{-- ---------- PAYMENT METHODS ---------- --}}
   <div class="container-fluid home-wide-container pay-section">
     <div class="mac-section-header">
@@ -529,4 +700,40 @@
         </div>
     </footer>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var slider = document.getElementById('reviewSliderInner');
+        if (slider) {
+            var total = slider.children.length;
+            var visibleCount = 4;
+            var currentPage = 0;
+
+            if (total > visibleCount) {
+                function scrollToPage(page) {
+                    var containerWidth = slider.clientWidth;
+                    var target = page * containerWidth;
+                    slider.scrollTo({
+                        left: target,
+                        behavior: 'smooth'
+                    });
+                }
+
+                function nextPage() {
+                    var maxPage = Math.ceil(total / visibleCount) - 1;
+                    currentPage = (currentPage + 1) % (maxPage + 1);
+                    scrollToPage(currentPage);
+                }
+
+                setInterval(nextPage, 6000);
+            }
+
+            var avatars = document.querySelectorAll('.review-avatar');
+            avatars.forEach(function (avatar, index) {
+                var variant = (index % 4) + 1;
+                avatar.classList.add('variant-' + variant);
+            });
+        }
+    });
+</script>
 @endsection

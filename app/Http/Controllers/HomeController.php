@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Service;
 use App\Models\TeamMember;
 use App\Models\SiteSetting;
+use App\Models\Review;
 
 
 class HomeController extends Controller
@@ -15,6 +16,10 @@ class HomeController extends Controller
 public function index()
 {
     $services = Service::latest()->take(6)->get();
+    $reviews = Review::where('is_visible', true)
+        ->orderByDesc('created_at')
+        ->take(6)
+        ->get();
 
     // Promo beranda
     $defaultPromos = [
@@ -115,7 +120,8 @@ public function index()
         'heroBullets',
         'heroCardBadge',
         'heroCardTitle',
-        'heroCardParagraphs'
+        'heroCardParagraphs',
+        'reviews'
     ));
 }
 
