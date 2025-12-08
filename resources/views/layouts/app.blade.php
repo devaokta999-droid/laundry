@@ -123,26 +123,36 @@
             font-weight: 500;
             border-radius: 999px;
             margin-bottom: 4px;
-            padding: 8px 14px 8px 32px;
+            padding: 8px 14px 8px 14px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             position: relative;
             font-size: .88rem;
             text-decoration: none;
         }
 
-        .nav-link::before {
-            content: "";
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 7px;
-            height: 7px;
+        .nav-icon-circle {
+            width: 22px;
+            height: 22px;
             border-radius: 999px;
-            background: rgba(148,163,184,0.6);
-            box-shadow: 0 0 0 3px rgba(226,232,240,0.9);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(148,163,184,0.18);
+            box-shadow: 0 0 0 1px rgba(226,232,240,0.9);
+            flex-shrink: 0;
+        }
+
+        .nav-icon-circle svg {
+            width: 12px;
+            height: 12px;
+            stroke-width: 2;
+        }
+
+        .nav-link.active .nav-icon-circle {
+            background: rgba(37,99,235,0.15);
+            box-shadow: 0 0 0 1px rgba(191,219,254,0.9);
         }
 
         .nav-link:hover {
@@ -301,11 +311,52 @@
 
         <nav class="nav flex-column">
             <div class="nav-section-label">Umum</div>
-            <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Beranda</a>
-            <a href="{{ route('status.index') }}" class="nav-link {{ request()->routeIs('status.index') ? 'active' : '' }}">Status Laundry</a>
-            <a href="{{ route('about') }}" class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}">Tentang</a>
-            <a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">Kontak</a>
-            <a href="{{ route('reviews.create') }}" class="nav-link {{ request()->routeIs('reviews.create') ? 'active' : '' }}">Rating & Ulasan</a>
+            <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
+                <span class="nav-icon-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M3 10.5 12 3l9 7.5" />
+                        <path d="M5 10v9h14v-9" />
+                    </svg>
+                </span>
+                <span>Beranda</span>
+            </a>
+            <a href="{{ route('status.index') }}" class="nav-link {{ request()->routeIs('status.index') ? 'active' : '' }}">
+                <span class="nav-icon-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 18V9" />
+                        <path d="M10 18V5" />
+                        <path d="M16 18v-7" />
+                        <path d="M20 19H4" />
+                    </svg>
+                </span>
+                <span>Status Laundry</span>
+            </a>
+            <a href="{{ route('about') }}" class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}">
+                <span class="nav-icon-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 16v-4" />
+                        <path d="M12 8h.01" />
+                    </svg>
+                </span>
+                <span>Tentang</span>
+            </a>
+            <a href="{{ route('contact') }}" class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">
+                <span class="nav-icon-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M4 4h16v12H5.5L4 17.5z" />
+                    </svg>
+                </span>
+                <span>Kontak</span>
+            </a>
+            <a href="{{ route('reviews.create') }}" class="nav-link {{ request()->routeIs('reviews.create') ? 'active' : '' }}">
+                <span class="nav-icon-circle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="m12 3 2.4 4.86 5.36.78-3.88 3.78.92 5.35L12 15.9l-4.8 2.87.92-5.35L4.24 8.64l5.36-.78z" />
+                    </svg>
+                </span>
+                <span>Rating & Ulasan</span>
+            </a>
 
             @auth
                 @php $role = auth()->user()->role; @endphp
@@ -315,7 +366,15 @@
                 @if(in_array($role, ['admin', 'kasir']))
                     <a href="{{ route('admin.orders.status') }}"
                        class="nav-link {{ request()->routeIs('admin.orders.status') ? 'active' : '' }}">
-                        Status Laundry
+                        <span class="nav-icon-circle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M4 18V9" />
+                                <path d="M10 18V5" />
+                                <path d="M16 18v-7" />
+                                <path d="M20 19H4" />
+                            </svg>
+                        </span>
+                        <span>Status Laundry</span>
                     </a>
                 @endif
 
@@ -323,7 +382,12 @@
                 @if(in_array($role, ['kasir', 'admin']))
                     <a href="{{ route('admin.nota.index') }}" 
                        class="nav-link {{ request()->routeIs('admin.nota.index') ? 'active' : '' }}">
-                       Nota
+                        <span class="nav-icon-circle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M6 4h11a1 1 0 0 1 1 1v14l-3-2-3 2-3-2-3 2V5a1 1 0 0 1 1-1z" />
+                            </svg>
+                        </span>
+                        <span>Nota</span>
                     </a>
                 @endif
 
@@ -331,11 +395,21 @@
                 @if($role === 'admin')
                     <a href="{{ route('admin.laporan') }}" 
                        class="nav-link {{ request()->routeIs('admin.laporan') ? 'active' : '' }}">
-                       Laporan
+                        <span class="nav-icon-circle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="M4 4h6l2 3h8v13H4z" />
+                            </svg>
+                        </span>
+                        <span>Laporan</span>
                     </a>
                     <a href="{{ route('admin.reviews.index') }}" 
                        class="nav-link {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
-                        Rating & Ulasan
+                        <span class="nav-icon-circle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path d="m12 3 2.4 4.86 5.36.78-3.88 3.78.92 5.35L12 15.9l-4.8 2.87.92-5.35L4.24 8.64l5.36-.78z" />
+                            </svg>
+                        </span>
+                        <span>Rating & Ulasan</span>
                     </a>
                 @endif
 
@@ -343,7 +417,14 @@
                 @if($role === 'admin')
                     <a href="{{ route('layanan.index') }}"
                        class="nav-link {{ request()->routeIs('layanan.index') ? 'active' : '' }}">
-                        Layanan
+                        <span class="nav-icon-circle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="8" cy="8" r="3" />
+                                <circle cx="17" cy="7" r="2" />
+                                <circle cx="17" cy="17" r="3" />
+                            </svg>
+                        </span>
+                        <span>Layanan</span>
                     </a>
                 @endif
 
@@ -351,15 +432,35 @@
                 @if($role === 'admin')
                     <a href="{{ route('admin.team.index') }}" 
                        class="nav-link {{ request()->routeIs('admin.team.*') ? 'active' : '' }}">
-                        Tim Profesional
+                        <span class="nav-icon-circle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="8" cy="9" r="3" />
+                                <circle cx="17" cy="9" r="3" />
+                                <path d="M4 20c0-2.2 1.8-4 4-4" />
+                                <path d="M21 20c0-2.2-1.8-4-4-4" />
+                            </svg>
+                        </span>
+                        <span>Tim Profesional</span>
                     </a>
                     <a href="{{ route('admin.roles.index') }}" 
                        class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}">
-                        Role & Permission
+                        <span class="nav-icon-circle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="12" cy="7" r="3" />
+                                <path d="M5 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2" />
+                            </svg>
+                        </span>
+                        <span>Role & Permission</span>
                     </a>
                     <a href="{{ route('admin.profile') }}" 
                        class="nav-link {{ request()->routeIs('admin.profile') ? 'active' : '' }}">
-                        Profil
+                        <span class="nav-icon-circle">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <circle cx="12" cy="8" r="3.5" />
+                                <path d="M5 20c1.5-3 4-5 7-5s5.5 2 7 5" />
+                            </svg>
+                        </span>
+                        <span>Profil</span>
                     </a>
                 @endif
             @endauth
