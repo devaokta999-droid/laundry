@@ -40,6 +40,10 @@
             min-width:80px;
             text-align:center;
         }
+        .badge-lunas{
+            background:#22c55e;
+            color:#fff;
+        }
         .badge-belum{
             background:#ff4d4f;
             color:#fff;
@@ -229,6 +233,20 @@
             font-size:1.05rem;
             font-weight:700;
             color:#0f172a;
+        }
+        .nota-page-container .form-control,
+        .nota-page-container .form-select{
+            border-radius:12px;
+            border-color:rgba(209,213,219,0.9);
+            box-shadow:0 1px 2px rgba(15,23,42,0.04);
+        }
+        .nota-page-container .form-control:focus,
+        .nota-page-container .form-select:focus{
+            border-color:#0a84ff;
+            box-shadow:
+                0 0 0 1px rgba(59,130,246,0.25),
+                0 0 0 4px rgba(191,219,254,0.85);
+            outline:none;
         }
 
         @media (max-width: 768px){

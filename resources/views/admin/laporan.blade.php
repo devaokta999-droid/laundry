@@ -16,15 +16,15 @@
     html,body,#app, .container-full {
         height: 100%;
         background: linear-gradient(180deg, #ffffff 0%, var(--bg) 100%);
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
         color: var(--accent);
     }
 
     /* Fullscreen macOS-like window */
     .mac-window{
         width: 100%;
-        height: 100vh;
-        padding: 28px 24px 32px 24px;
+        min-height: calc(100vh - 80px);
+        padding: 24px 22px 30px 22px;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
@@ -38,11 +38,13 @@
         display:flex;
         align-items:center;
         gap:16px;
-        padding: 10px 12px;
-        border-radius: 12px;
-        background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(250,250,250,0.85));
-        box-shadow: var(--card-shadow);
-        border: 1px solid var(--glass-border);
+        padding: 10px 14px;
+        border-radius: 16px;
+        background:
+            radial-gradient(circle at 0% 0%, rgba(255,255,255,0.9), rgba(239,246,255,0.9)),
+            linear-gradient(180deg, rgba(255,255,255,0.85), rgba(248,250,252,0.95));
+        box-shadow: 0 20px 50px rgba(15,23,42,0.18);
+        border: 1px solid rgba(226,232,240,0.9);
     }
 
     .traffic {
@@ -67,8 +69,8 @@
         flex-direction:column;
         line-height:1;
     }
-    .title-text h3{ margin:0; font-size:40px; font-weight:700; }
-    .title-text p{ margin:0; font-size:20px; color:var(--muted); }
+    .title-text h3{ margin:0; font-size:26px; font-weight:800; letter-spacing:.02em; text-transform:uppercase; }
+    .title-text p{ margin:2px 0 0; font-size:13px; color:var(--muted); }
 
     /* Toolbar */
     .toolbar{
@@ -79,12 +81,12 @@
         flex-wrap: wrap;
     }
     .toolbar-left{ display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
-    .search-box{ display:flex; gap:8px; align-items:center; background:var(--panel); padding:6px 10px; border-radius:12px; border:1px solid var(--glass-border); box-shadow: 0 2px 6px rgba(15,23,42,0.03); }
-    .search-box input{ border:none; outline:none; width:320px; background:transparent; font-size:14px; }
+    .search-box{ display:flex; gap:8px; align-items:center; background:var(--panel); padding:7px 12px; border-radius:999px; border:1px solid var(--glass-border); box-shadow: 0 4px 14px rgba(15,23,42,0.06); }
+    .search-box input{ border:none; outline:none; width:280px; background:transparent; font-size:14px; }
 
     .filters{ display:flex; gap:8px; align-items:center; flex-wrap: wrap; }
-    .btn-filter{ padding:8px 12px; border-radius:10px; border:1px solid rgba(15,23,42,0.06); background:transparent; cursor:pointer; font-weight:600; transition:all 0.2s; }
-    .btn-filter.active{ background: linear-gradient(180deg,#eef2ff,#ffffff); box-shadow: var(--card-shadow); }
+    .btn-filter{ padding:7px 12px; border-radius:999px; border:1px solid rgba(148,163,184,0.4); background:rgba(255,255,255,0.7); cursor:pointer; font-weight:600; font-size:12px; transition:all 0.2s; }
+    .btn-filter.active{ background: linear-gradient(135deg,#e0ecff,#ffffff); box-shadow: 0 10px 24px rgba(37,99,235,0.28); border-color: rgba(59,130,246,0.6); }
 
     /* Summary cards */
     .stats{
@@ -96,11 +98,11 @@
 
     .card{
         padding:16px;
-        border-radius:18px;
-        border:1px solid rgba(15,23,42,0.5);
-        background: linear-gradient(135deg, #020617, #111827);
-        box-shadow: var(--card-shadow);
-        color:#f9fafb;
+        border-radius:20px;
+        border:1px solid rgba(226,232,240,0.9);
+        background: linear-gradient(145deg, #ffffff, #f3f4f6);
+        box-shadow: 0 14px 40px rgba(15,23,42,0.12);
+        color:#111827;
         transition: all 0.25s ease;
         transform: translateY(0);
         cursor: pointer;
@@ -127,8 +129,8 @@
         box-sizing: border-box;
     }
     .card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 28px 70px rgba(15,23,42,0.28);
+        transform: translateY(-4px);
+        box-shadow: 0 20px 50px rgba(15,23,42,0.18);
     }
     .card h6{
         margin:0;
@@ -136,19 +138,19 @@
         font-size:13px;
         text-transform:uppercase;
         letter-spacing:.08em;
-        color:#e5e7eb;
+        color:#4b5563;
     }
     .card h4{
         margin:10px 0 4px 0;
         font-size:24px;
         font-weight:800;
-        color:#f9fafb;
+        color:#0f172a;
     }
     .card p.small{
         margin:0;
         font-size:13px;
         font-weight:700;
-        color:#e5e7eb;
+        color:#6b7280;
     }
 
     /* 🌈 Warna khusus untuk tiap kartu pendapatan */
@@ -191,15 +193,15 @@
     .stats .card p.small { margin: 0; font-size: 13px; font-weight:700; }
 
     /* Table area - biarkan tinggi mengikuti konten, scroll pakai browser */
-    .content-panel{ flex:none; overflow:visible; padding:8px; border-radius:12px; background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0.75)); border:1px solid var(--glass-border); }
+    .content-panel{ flex:none; overflow:visible; padding:10px; border-radius:18px; background: linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.95)); border:1px solid rgba(226,232,240,0.9); box-shadow: 0 18px 45px rgba(15,23,42,0.14); }
     table{ width:100%; border-collapse:collapse; min-width:1080px; }
-    thead th{ text-align:center; padding:12px; font-weight:700; background:transparent; border-bottom:1px solid rgba(0,0,0,0.06); }
+    thead th{ text-align:center; padding:12px; font-weight:700; background:transparent; border-bottom:1px solid rgba(226,232,240,0.9); font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:#6b7280; }
     tbody td{ padding:12px; vertical-align:middle; }
 
-    .badge-lunas{ background:#e6ffef; color:#04683a; padding:6px 10px; border-radius:999px; font-weight:700; }
-    .badge-belum{ background:#fff4e6; color:#7a4b0b; padding:6px 10px; border-radius:999px; font-weight:700; }
-    .badge-cash{ background:#e6ffef; color:#04683a; padding:4px 8px; border-radius:8px; font-weight:700; display:inline-block; }
-    .badge-transfer{ background:#e6f0ff; color:#0b3d91; padding:4px 8px; border-radius:8px; font-weight:700; display:inline-block; }
+    .badge-lunas{ background:#e6ffef; color:#04683a; padding:6px 10px; border-radius:999px; font-weight:700; font-size:11px; }
+    .badge-belum{ background:#fff4e6; color:#7a4b0b; padding:6px 10px; border-radius:999px; font-weight:700; font-size:11px; }
+    .badge-cash{ background:#e6ffef; color:#04683a; padding:4px 8px; border-radius:999px; font-weight:700; display:inline-block; font-size:11px; }
+    .badge-transfer{ background:#e6f0ff; color:#0b3d91; padding:4px 8px; border-radius:999px; font-weight:700; display:inline-block; font-size:11px; }
 
     /* Responsive */
     @media(max-width:1100px){
@@ -208,37 +210,37 @@
         table{ min-width:760px; }
     }
 
-    /* Override: hilangkan shadow kartu */
+    /* Override akhir: haluskan shadow kartu */
     .card {
-        box-shadow: none !important;
+        box-shadow: 0 14px 40px rgba(15,23,42,0.12) !important;
     }
     .card:hover {
         transform: translateY(-4px);
-        box-shadow: none !important;
+        box-shadow: 0 20px 50px rgba(15,23,42,0.18) !important;
     }
 
-    /* Kartu pendapatan + ringkasan mingguan warna biru dengan teks jelas */
+    /* Kartu pendapatan + ringkasan mingguan dengan nuansa biru lembut */
     .card.harian,
     .card.mingguan,
     .card.bulanan,
     .card.tahunan,
     .card.weekly-card {
-        background: linear-gradient(135deg, #1d4ed8, #3b82f6) !important;
-        color:#f9fafb !important;
+        background: linear-gradient(135deg, #eff6ff, #dbeafe) !important;
+        color:#0f172a !important;
     }
 
-    /* Warna khusus: total sisa merah, cash hijau, transfer ungu */
+    /* Warna khusus: total sisa merah lembut, cash hijau lembut, transfer ungu lembut */
     .card.sisa-total {
-        background: linear-gradient(135deg, #7f1d1d, #ef4444) !important;
-        color:#f9fafb !important;
+        background: linear-gradient(135deg, #fef2f2, #fee2e2) !important;
+        color:#991b1b !important;
     }
     .card.cash-total {
-        background: linear-gradient(135deg,#022c22,#10b981) !important;
-        color:#f9fafb !important;
+        background: linear-gradient(135deg,#ecfdf5,#bbf7d0) !important;
+        color:#064e3b !important;
     }
     .card.transfer-total {
-        background: linear-gradient(135deg,#1e1b4b,#8b5cf6) !important;
-        color:#f9fafb !important;
+        background: linear-gradient(135deg,#eef2ff,#e0e7ff) !important;
+        color:#312e81 !important;
     }
 </style>
 

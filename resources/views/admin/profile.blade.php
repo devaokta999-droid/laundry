@@ -5,7 +5,7 @@
 @section('content')
 <style>
     .profile-shell {
-        max-width: 1780px;
+        max-width: 1480px;
         width: 100%;
         margin: 40px auto 56px;
         font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -60,12 +60,13 @@
     }
 
     .profile-body {
-        padding: 1.6rem 1.6rem 1.9rem;
+        padding: 1.7rem 1.9rem 2.1rem;
+        background: radial-gradient(circle at top left, rgba(248,250,252,0.88), rgba(239,246,255,0.94));
     }
     .profile-layout {
         display: grid;
         grid-template-columns: minmax(260px, 320px) minmax(0, 1.5fr);
-        gap: 20px;
+        gap: 22px;
         align-items: flex-start;
     }
     @media (max-width: 992px) {
@@ -79,7 +80,10 @@
         background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(246,248,255,0.95));
         border: 1px solid rgba(255,255,255,0.9);
         box-shadow: 0 14px 40px rgba(15,23,42,0.13);
-        padding: 1.3rem 1.5rem;
+        padding: 1.4rem 1.6rem;
+    }
+    .profile-card + .profile-card {
+        margin-top: 1.1rem;
     }
 
     .profile-avatar {
@@ -159,6 +163,7 @@
         font-size: .84rem;
         color: #6b7280;
         margin-bottom: 1rem;
+        line-height: 1.5;
     }
 
     .profile-form-group label {
@@ -173,12 +178,17 @@
         border: 1px solid rgba(148,163,184,0.55);
         font-size: .9rem;
         padding: .55rem .8rem;
+        background: rgba(255,255,255,0.9);
+        box-shadow: 0 1px 2px rgba(15,23,42,0.02);
     }
     .profile-form-group input:focus,
     .profile-form-group textarea:focus,
     .profile-form-group select:focus {
         border-color: #3b82f6;
-        box-shadow: 0 0 0 2px rgba(59,130,246,0.25);
+        box-shadow:
+            0 0 0 1px rgba(59,130,246,0.18),
+            0 0 0 4px rgba(191,219,254,0.9);
+        outline: none;
     }
 
     .profile-footer {
@@ -199,6 +209,34 @@
         background: linear-gradient(135deg, #0a84ff, #1d4ed8);
         box-shadow: 0 14px 32px rgba(37,99,235,0.55);
         transform: translateY(-1px);
+    }
+
+    /* Promo & payment item cards */
+    .promo-item,
+    .payment-item {
+        border-radius: 16px !important;
+        border: 1px solid rgba(226,232,240,0.9) !important;
+        background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(248,250,252,0.96)) !important;
+        box-shadow: 0 12px 32px rgba(15,23,42,0.08);
+    }
+    .promo-item strong,
+    .payment-item strong {
+        font-size: .9rem;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        color: #6b7280;
+    }
+    .promo-item .btn-outline-danger,
+    .payment-item .btn-outline-danger {
+        border-radius: 999px;
+        padding: .25rem .9rem;
+        font-size: .72rem;
+    }
+
+    .profile-card .btn.btn-outline-primary.btn-sm {
+        border-radius: 999px;
+        padding-inline: 1.1rem;
+        font-weight: 600;
     }
 </style>
 

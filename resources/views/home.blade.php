@@ -6,11 +6,14 @@
 <style>
 /* ---------- HERO ---------- */
 .mac-hero {
-    background: radial-gradient(circle at 0% 0%, #0a84ff 0, #0051cc 35%, #00152f 100%);
+    background:
+        radial-gradient(circle at 0% 0%, #0a84ff 0, #0051cc 35%, #00152f 100%);
     color: #fff;
     padding: 56px 60px;
     border-radius: 28px;
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+    box-shadow:
+        0 26px 70px rgba(15,23,42,0.45),
+        0 0 0 1px rgba(255,255,255,0.10);
     margin-top: 56px;
     position: relative;
     overflow: hidden;
@@ -72,7 +75,9 @@
     background: rgba(255,255,255,0.8);
 }
 .mac-hero-card {
-    background: rgba(5, 18, 40, 0.78);
+    background:
+        radial-gradient(circle at 0% 0%, rgba(255,255,255,0.16), transparent 55%),
+        rgba(5, 18, 40, 0.82);
     border-radius: 22px;
     padding: 20px 22px;
     border: 1px solid rgba(255,255,255,0.18);
@@ -178,8 +183,8 @@
     background: #fff;
     border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 10px 24px rgba(6,30,66,0.06);
-    border: 1px solid #f1f5fb;
+    box-shadow: 0 10px 24px rgba(6,30,66,0.09);
+    border: 1px solid rgba(226,232,240,0.9);
     transition: transform .22s ease, box-shadow .22s ease;
     min-height: 140px;
 }

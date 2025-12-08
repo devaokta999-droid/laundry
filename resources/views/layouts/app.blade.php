@@ -52,16 +52,20 @@
 
         .sidebar {
             position: fixed;
-            top: 30px;
-            left: 30px;
-            width: 260px;
-            height: calc(100vh - 60px);
+            top: 26px;
+            left: 26px;
+            width: 270px;
+            height: calc(100vh - 52px);
             backdrop-filter: var(--mac-blur);
-            background: radial-gradient(circle at 0% 0%, rgba(255,255,255,0.78), rgba(245,248,255,0.9));
-            border: 1px solid rgba(255,255,255,0.7);
-            border-radius: var(--mac-radius);
-            box-shadow: var(--mac-shadow);
-            padding: 1.5rem 1rem;
+            background:
+                radial-gradient(circle at 0% 0%, rgba(255,255,255,0.94), rgba(243,246,255,0.9)),
+                linear-gradient(180deg, rgba(255,255,255,0.94), rgba(226,232,240,0.85));
+            border: 1px solid rgba(255,255,255,0.85);
+            border-radius: 24px;
+            box-shadow:
+                0 24px 60px rgba(15,23,42,0.22),
+                0 0 0 1px rgba(148,163,184,0.18);
+            padding: 1.6rem 1.1rem 1.3rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -70,65 +74,93 @@
 
         .sidebar-header {
             text-align: center;
-            margin-bottom: 1.25rem;
-            padding: 0 .2rem;
+            margin-bottom: 1.4rem;
+            padding: 0 .35rem 0.6rem;
+            border-bottom: 1px solid rgba(226,232,240,0.8);
         }
 
-        .sidebar-header img {
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.1));
+        .sidebar-logo-icon{
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            margin: 0 auto .55rem;
+            overflow: hidden;
+            box-shadow: 0 8px 22px rgba(15,23,42,0.22);
+            border: 1px solid rgba(255,255,255,0.9);
+            background: radial-gradient(circle at 0% 0%, #ffffff, #e5e7eb);
+        }
+        .sidebar-logo-icon img{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
-            margin: 0 auto .25rem;
         }
 
         .sidebar-header h4 {
             color: var(--mac-accent);
-            font-weight: 700;
-            letter-spacing: .08em;
+            font-weight: 800;
+            letter-spacing: .14em;
             text-transform: uppercase;
-            font-size: .8rem;
-            margin-bottom: .15rem;
+            font-size: .78rem;
+            margin-bottom: .1rem;
         }
 
         .sidebar-header span {
-            font-size: .85rem;
+            font-size: .82rem;
             color: #6b7280;
         }
 
         .nav-section-label{
-            font-size: .75rem;
-            letter-spacing: .18em;
+            font-size: .72rem;
+            letter-spacing: .22em;
             text-transform: uppercase;
             color: #9ca3af;
-            margin: .75rem .35rem .25rem;
+            margin: .9rem .45rem .35rem;
         }
 
         .nav-link {
             color: var(--mac-text);
             font-weight: 500;
-            border-radius: 12px;
-            margin-bottom: 6px;
-            padding: 10px 15px;
+            border-radius: 999px;
+            margin-bottom: 4px;
+            padding: 8px 14px 8px 32px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             position: relative;
+            font-size: .88rem;
+            text-decoration: none;
         }
 
-        .nav-link:hover, .nav-link.active {
-            background: rgba(0,122,255,0.08);
+        .nav-link::before {
+            content: "";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: rgba(148,163,184,0.6);
+            box-shadow: 0 0 0 3px rgba(226,232,240,0.9);
+        }
+
+        .nav-link:hover {
+            background: rgba(15,23,42,0.04);
             color: var(--mac-accent);
         }
 
+        .nav-link.active {
+            background: linear-gradient(135deg, rgba(0,122,255,0.12), rgba(37,99,235,0.14));
+            color: var(--mac-accent);
+            box-shadow:
+                0 10px 24px rgba(37,99,235,0.30),
+                0 0 0 1px rgba(191,219,254,0.9);
+        }
+
         .nav-link.active::before{
-            content: "";
-            position: absolute;
-            left: 8px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 4px;
-            height: 18px;
-            border-radius: 999px;
             background: var(--mac-accent);
+            box-shadow: 0 0 0 4px rgba(191,219,254,0.9);
         }
 
         .btn-cashier {
@@ -194,15 +226,15 @@
         .sidebar-toggle {
             display: none;
             position: fixed;
-            top: 20px;
-            left: 20px;
-            background: var(--mac-accent);
+            top: 16px;
+            left: 16px;
+            background: rgba(15,23,42,0.92);
             color: white;
             border: none;
-            border-radius: 10px;
-            padding: 8px 12px;
+            border-radius: 999px;
+            padding: 7px 12px;
             z-index: 1100;
-            box-shadow: 0 3px 10px rgba(0,122,255,0.4);
+            box-shadow: 0 6px 18px rgba(15,23,42,0.45);
         }
 
         .content-wrapper {
@@ -224,8 +256,8 @@
                 transform: translateX(-120%);
                 transition: all 0.4s ease;
                 width: 230px;
-                top: 20px;
-                left: 20px;
+                top: 16px;
+                left: 16px;
                 height: 90vh;
             }
 
@@ -260,7 +292,9 @@
 <div class="sidebar" id="macSidebar">
     <div>
         <div class="sidebar-header mb-4">
-            <img src="{{ asset('images/' . $appLogo) }}" alt="Logo" width="52" class="mb-2 rounded-3 shadow-sm">
+            <div class="sidebar-logo-icon">
+                <img src="{{ asset('images/' . $appLogo) }}" alt="Logo">
+            </div>
             <h4>DEVA LAUNDRY</h4>
             <span>Premium Laundry Workspace</span>
         </div>

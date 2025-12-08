@@ -77,39 +77,87 @@
         filter: brightness(1.05);
         box-shadow: 0 18px 42px rgba(37,99,235,0.4);
     }
-    .team-table thead th {
-        border-bottom: none;
-        background: linear-gradient(135deg, #f5f5f7, #e5e7eb);
-        font-weight: 600;
-        font-size: 0.85rem;
-        color: #6b7280;
-        border-top: none;
+
+    .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 18px;
+        margin-top: 1.1rem;
     }
-    .team-table tbody td {
-        border-top: 1px solid rgba(226,232,240,0.9);
-        font-size: 0.9rem;
-        vertical-align: middle;
+    .team-card {
+        border-radius: 20px;
+        background: radial-gradient(circle at top left, #ffffff, #e5edff);
+        border: 1px solid rgba(209,213,219,0.9);
+        box-shadow: 0 20px 45px rgba(15,23,42,0.18);
+        padding: 16px 16px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
     }
-    .team-table tbody tr:hover {
-        background-color: rgba(15,23,42,0.02);
+    .team-card::before{
+        content:"";
+        position:absolute;
+        inset:-30%;
+        background: radial-gradient(circle at 0 0, rgba(239,246,255,0.9), transparent 60%);
+        opacity: 0.6;
+        pointer-events:none;
+    }
+    .team-card-inner{
+        position:relative;
+        z-index:1;
+        display:flex;
+        flex-direction:column;
+        gap:10px;
+        height:100%;
+    }
+    .team-card-header{
+        display:flex;
+        gap:12px;
+        align-items:center;
     }
     .team-avatar {
-        width: 64px;
-        height: 64px;
+        width: 60px;
+        height: 60px;
         border-radius: 999px;
         object-fit: cover;
-        box-shadow: 0 10px 25px rgba(15,23,42,0.25);
+        box-shadow: 0 12px 28px rgba(15,23,42,0.26);
         border: 2px solid #ffffff;
+        background: linear-gradient(135deg,#4f46e5,#0ea5e9);
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        font-weight:700;
+        color:#f9fafb;
+        font-size:1.2rem;
+    }
+    .team-card-title {
+        font-weight: 700;
+        font-size: 1rem;
+        color:#0f172a;
+        margin-bottom: 2px;
     }
     .badge-role {
         display:inline-flex;
         align-items:center;
-        padding: 0.25rem 0.6rem;
+        padding: 0.2rem 0.7rem;
         border-radius: 999px;
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         font-weight: 600;
-        background: rgba(15,23,42,0.04);
-        color:#111827;
+        background: rgba(59,130,246,0.08);
+        color:#1d4ed8;
+    }
+    .team-card-desc{
+        font-size: 0.85rem;
+        color:#4b5563;
+        line-height:1.5;
+    }
+    .team-card-footer{
+        margin-top:auto;
+        display:flex;
+        justify-content:flex-end;
+        gap:8px;
     }
     .btn-outline-secondary, .btn-outline-danger{
         border-radius: 999px;
@@ -120,6 +168,7 @@
     .btn-outline-secondary{
         border-color: rgba(148,163,184,0.8);
         color:#111827;
+        background: rgba(255,255,255,0.8);
     }
     .btn-outline-secondary:hover{
         background-color:#e5e7eb;
@@ -128,6 +177,7 @@
     .btn-outline-danger{
         border-color: rgba(248,113,113,0.9);
         color:#b91c1c;
+        background: rgba(254,242,242,0.9);
     }
     .btn-outline-danger:hover{
         background-color:#fee2e2;
@@ -164,58 +214,52 @@
                 <a href="{{ route('admin.team.create') }}" class="btn btn-sm btn-primary">+ Tambah Anggota Tim</a>
             </div>
 
-            @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
+    @if(session('success'))
+        <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
-            <p class="text-muted mb-3">
-                Hanya admin yang dapat menambah, mengedit, dan menghapus anggota tim yang tampil di halaman Tentang Kami.
-            </p>
+    <p class="text-muted mb-3">
+        Hanya admin yang dapat menambah, mengedit, dan menghapus anggota tim yang tampil di halaman Tentang Kami.
+    </p>
 
-            <div class="table-responsive">
-                <table class="table align-middle team-table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Foto</th>
-                            <th>Nama</th>
-                            <th>Jabatan</th>
-                            <th>Deskripsi Singkat</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($members as $m)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td>
-                                <td>
-                                    @if($m->photo)
-                                        <img src="{{ asset('images/'.$m->photo) }}" alt="{{ $m->name }}" width="60" height="60" class="rounded-circle" style="object-fit:cover;">
-                                    @else
-                                        <span class="text-muted">-</span>
-                                    @endif
-                                </td>
-                                <td>{{ $m->name }}</td>
-                                <td>{{ $m->position }}</td>
-                                <td style="max-width: 260px;">{{ Str::limit($m->description, 80) }}</td>
-                                <td>
-                                    <a href="{{ route('admin.team.edit', $m) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                                    <form action="{{ route('admin.team.destroy', $m) }}" method="POST" class="d-inline"
-                                          onsubmit="return confirm('Yakin ingin menghapus anggota tim ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-muted text-center">Belum ada anggota tim.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+    <div class="team-grid">
+        @forelse($members as $m)
+            <div class="team-card">
+                <div class="team-card-inner">
+                    <div class="team-card-header">
+                        @php
+                            $initial = strtoupper(mb_substr($m->name, 0, 1, 'UTF-8'));
+                        @endphp
+                        @if($m->photo)
+                            <img src="{{ asset('images/'.$m->photo) }}" alt="{{ $m->name }}" class="team-avatar">
+                        @else
+                            <div class="team-avatar">{{ $initial }}</div>
+                        @endif
+                        <div>
+                            <div class="team-card-title">{{ $m->name }}</div>
+                            <span class="badge-role">{{ $m->position }}</span>
+                        </div>
+                    </div>
+                    <div class="team-card-desc">
+                        {{ \Illuminate\Support\Str::limit($m->description, 100) }}
+                    </div>
+                    <div class="team-card-footer">
+                        <a href="{{ route('admin.team.edit', $m) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                        <form action="{{ route('admin.team.destroy', $m) }}" method="POST" class="d-inline"
+                              onsubmit="return confirm('Yakin ingin menghapus anggota tim ini?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
+                        </form>
+                    </div>
+                </div>
             </div>
+        @empty
+            <div class="w-100 text-center text-muted py-4">
+                Belum ada anggota tim.
+            </div>
+        @endforelse
+    </div>
         </div>
     </div>
 </div>
