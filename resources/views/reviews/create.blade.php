@@ -199,35 +199,30 @@
 
     .rating-stars {
         display: inline-flex;
-        gap: 8px;
+        gap: 4px;
     }
 
     .rating-star {
-        width: 38px;
-        height: 38px;
-        border-radius: 999px;
-        border: 1px solid #e5e7eb;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        border: none;
+        background: transparent;
+        padding: 0;
         cursor: pointer;
-        background: #f9fafb;
-        color: #9ca3af;
-        font-size: 1rem;
-        box-shadow: 0 4px 10px rgba(15,23,42,0.06);
+        color: #d1d5db; /* abu-abu untuk bintang kosong */
+        font-size: 1.5rem;
+        line-height: 1;
+        box-shadow: none;
     }
 
     .rating-star span {
         line-height: 1;
     }
 
-    .rating-star.active,
+    .rating-star.active {
+        color: #facc15; /* kuning untuk bintang terisi */
+    }
+
     .rating-star:hover {
-        background: linear-gradient(135deg, #fbbf24, #f97316);
-        border-color: rgba(234,179,8,0.9);
-        color: #111827;
-        transform: translateY(-2px);
-        box-shadow: 0 8px 18px rgba(251,191,36,0.45);
+        color: #fbbf24;
     }
 
     .rating-caption {
@@ -237,26 +232,31 @@
 
     .btn-primary.mac-btn {
         border-radius: 999px;
-        padding: 11px 18px;
-        font-weight: 700;
-        font-size: 0.97rem;
+        padding: 7px 14px;
+        font-weight: 600;
+        font-size: 0.86rem;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        background: linear-gradient(135deg, #005ef7 0%, #007aff 100%);
-        border: none;
-        box-shadow: 0 10px 24px rgba(37,99,235,0.4);
+        gap: 6px;
+        background: transparent;
+        color: #0f172a;
+        border: 1px solid rgba(148,163,184,0.75);
+        box-shadow: none;
     }
 
     .btn-primary.mac-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 18px 40px rgba(37,99,235,0.5);
+        background: rgba(15,23,42,0.03);
+        border-color: rgba(59,130,246,0.8);
+        color: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(15,23,42,0.12);
     }
 
     .btn-primary.mac-btn:active {
         transform: translateY(0);
-        box-shadow: 0 6px 16px rgba(37,99,235,0.45);
+        box-shadow: 0 2px 8px rgba(15,23,42,0.18);
+        background: rgba(15,23,42,0.02);
     }
 
     @media (max-width: 992px) {
@@ -339,7 +339,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('reviews.store') }}">
+            <form method="POST" action="{{ route('reviews.store') }}" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
                     <label for="name" class="form-label">Nama</label>
@@ -386,6 +386,20 @@
                         placeholder="Contoh: pakaian rapi, wangi pas, kurir ramah, atau hal lain yang kamu rasakan."
                         required
                     >{{ old('comment') }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="image" class="form-label">Tambahkan gambar (opsional)</label>
+                    <input
+                        type="file"
+                        id="image"
+                        name="image"
+                        class="form-control"
+                        accept="image/*"
+                    >
+                    <div class="form-text">
+                        Format gambar (JPG, PNG, dll), maks. 3 MB.
+                    </div>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center mt-3">

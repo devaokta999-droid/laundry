@@ -14,16 +14,20 @@
     .roles-shell {
         max-width: none;
         width: 100%;
-        margin: 24px 0 48px;
-        padding: 0;
+        margin: 32px 0 64px;
+        padding: 0 8px;
     }
 
     .roles-window {
         width: 100%;
         border-radius: 34px;
-        background: #ffffff;
-        border: 1px solid rgba(15, 23, 42, 0.08);
-        box-shadow: 0 24px 45px rgba(15, 23, 42, 0.18);
+        background: rgba(255, 255, 255, 0.96);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        box-shadow:
+            0 28px 80px rgba(15, 23, 42, 0.22),
+            0 0 0 1px rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(26px);
+        -webkit-backdrop-filter: blur(26px);
         overflow: hidden;
         position: relative;
     }
@@ -114,6 +118,29 @@
 
     .roles-summary strong {
         color: #0b1c4d;
+    }
+
+    .roles-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.25rem 0.85rem;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.03);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        font-size: 0.74rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #6b7280;
+        margin-bottom: 0.55rem;
+    }
+
+    .roles-pill-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.28);
     }
 
     .roles-note {
@@ -210,6 +237,13 @@
         padding: 1rem 1.2rem;
         text-align: center;
         color: #020202;
+    }
+
+    .roles-table thead th:nth-child(2),
+    .roles-table tbody td:nth-child(2),
+    .roles-table thead th:nth-child(3),
+    .roles-table tbody td:nth-child(3) {
+        text-align: left;
     }
 
     .roles-table .roles-avatar-wrap {

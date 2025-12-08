@@ -189,71 +189,61 @@
         color: #9ca3af;
     }
 
-    .layanan-table-wrapper {
-        border-radius: 22px;
-        overflow: hidden;
+    .layanan-grid-wrapper {
+        border-radius: 24px;
         border: 1px solid rgba(226, 232, 240, 0.95);
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), rgba(244, 247, 255, 0.95));
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(244, 247, 255, 0.98));
         box-shadow: 0 24px 50px rgba(15, 23, 42, 0.18);
+        padding: 1.4rem 1.4rem 1.6rem;
     }
 
-    .layanan-table {
-        margin-bottom: 0;
-        font-size: 0.94rem;
+    .layanan-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 1rem 1.25rem;
     }
 
-    .layanan-table thead {
-        background: #f8f9ff;
-        border-bottom: 2px solid rgba(15, 23, 42, 0.08);
-    }
-
-    .layanan-table thead th {
-        border-bottom: none;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        font-size: 0.74rem;
-        color: #030303;
-        text-align: center;
-    }
-
-    .layanan-table tbody tr {
+    .layanan-card {
+        position: relative;
+        border-radius: 20px;
         background: #ffffff;
-        transition: background 0.2s ease;
+        border: 1px solid rgba(226, 232, 240, 0.9);
+        box-shadow:
+            0 16px 40px rgba(15, 23, 42, 0.12),
+            0 0 0 1px rgba(255,255,255,0.8);
+        padding: 0.95rem 1.05rem 0.9rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
     }
 
-    .layanan-table tbody tr:nth-child(even) {
-        background: #f4f6ff;
-    }
-
-    .layanan-table tbody tr:hover {
-        background: rgba(10, 30, 120, 0.08);
-    }
-
-    .layanan-table td {
-        vertical-align: middle !important;
-        color: #020202;
-        padding: 1rem 1.25rem;
+    .layanan-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
 
     .layanan-name {
         font-weight: 700;
         color: #0b204a;
         font-size: 1rem;
+        margin-bottom: 0.15rem;
     }
 
     .layanan-description {
-        margin: 0 auto;
+        margin: 0;
         font-size: 0.86rem;
         color: #4b5268;
-        max-width: 540px;
     }
 
     .layanan-actions {
-        display: inline-flex;
+        display: flex;
         align-items: center;
+        justify-content: flex-end;
         gap: 0.35rem;
+        margin-top: 0.45rem;
         flex-wrap: wrap;
-        justify-content: center;
     }
 
     .btn-chip {
@@ -383,52 +373,41 @@
                     </div>
                 @endif
 
-                {{-- Tabel layanan --}}
-                <div class="table-responsive layanan-table-wrapper">
-                    <table class="table table-hover align-middle text-center layanan-table">
-                        <thead>
-                            <tr>
-                                <th width="6%">No</th>
-                                <th>Nama Layanan</th>
-                                <th>Deskripsi</th>
-                                <th width="22%">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($services as $service)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td class="layanan-name">{{ $service->name }}</td>
-                                    <td>
-                                        <p class="layanan-description mb-0">
-                                            {{ $service->description ?? '-' }}
-                                        </p>
-                                    </td>
-                                    <td>
-                                        <div class="layanan-actions">
-                                            <a href="{{ route('layanan.edit', $service->id) }}" class="btn-chip btn-chip-edit">
-                                                <span>Edit</span>
-                                            </a>
-                                            <form action="{{ route('layanan.destroy', $service->id) }}" method="POST" class="d-inline">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn-chip btn-chip-delete"
+                {{-- Daftar layanan (grid card Apple-style) --}}
+                <div class="layanan-grid-wrapper">
+                    @if($services->isEmpty())
+                        <div class="empty-state">
+                            <em>Belum ada layanan yang ditambahkan.</em>
+                        </div>
+                    @else
+                        <div class="layanan-grid">
+                            @foreach ($services as $service)
+                                <div class="layanan-card">
+                                    <div class="layanan-card-header">
+                                        <div>
+                                            <div class="layanan-name">{{ $service->name }}</div>
+                                            <p class="layanan-description mb-0">
+                                                {{ $service->description ?? '-' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="layanan-actions">
+                                        <a href="{{ route('layanan.edit', $service->id) }}" class="btn-chip btn-chip-edit">
+                                            <span>Edit</span>
+                                        </a>
+                                        <form action="{{ route('layanan.destroy', $service->id) }}" method="POST" class="d-inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn-chip btn-chip-delete"
                                                     onclick="return confirm('Yakin ingin menghapus layanan ini?')">
                                                 <span>Hapus</span>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="empty-state">
-                                        <em>Belum ada layanan yang ditambahkan.</em>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -464,24 +443,24 @@
         var searchInput = document.getElementById('serviceSearch');
         if (!searchInput) return;
 
-        var rows = Array.prototype.slice.call(
-            document.querySelectorAll('.layanan-table tbody tr')
+        var cards = Array.prototype.slice.call(
+            document.querySelectorAll('.layanan-card')
         );
 
         searchInput.addEventListener('input', function () {
             var q = (this.value || '').toLowerCase().trim();
 
-            rows.forEach(function (row) {
-                var nameEl = row.querySelector('.layanan-name');
-                var descEl = row.querySelector('.layanan-description');
+            cards.forEach(function (card) {
+                var nameEl = card.querySelector('.layanan-name');
+                var descEl = card.querySelector('.layanan-description');
 
                 var name = nameEl ? (nameEl.textContent || '').toLowerCase() : '';
                 var desc = descEl ? (descEl.textContent || '').toLowerCase() : '';
 
                 if (!q) {
-                    row.style.display = '';
+                    card.style.display = '';
                 } else {
-                    row.style.display = (name.indexOf(q) !== -1 || desc.indexOf(q) !== -1)
+                    card.style.display = (name.indexOf(q) !== -1 || desc.indexOf(q) !== -1)
                         ? ''
                         : 'none';
                 }

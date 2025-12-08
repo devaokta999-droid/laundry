@@ -25,7 +25,7 @@
 
     .mac-header {
         text-align: center;
-        background: rgba(255,255,255,0.82);
+        background: rgba(255,255,255,0.86);
         backdrop-filter: blur(18px);
         -webkit-backdrop-filter: blur(18px);
         border-radius: 26px;
@@ -34,12 +34,26 @@
         box-shadow: 0 22px 60px rgba(15,23,42,0.16);
         margin-bottom: 50px;
     }
-    .mac-header-eyebrow {
-        font-size: 0.76rem;
+    .mac-header-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 4px 11px;
+        border-radius: 999px;
+        background: rgba(15,23,42,0.03);
+        border: 1px solid rgba(148,163,184,0.35);
+        font-size: 0.78rem;
         letter-spacing: 0.18em;
         text-transform: uppercase;
-        color: #9ca3af;
-        margin-bottom: 0.35rem;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+    }
+    .mac-header-pill-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 0 4px rgba(34,197,94,0.25);
     }
     .mac-header h1 {
         font-size: 2.7rem;
@@ -160,7 +174,7 @@
             box-shadow: 0 0 0 0 rgba(15,156,245,0);
         }
     }
-    .mac-btn {
+    .mac-btn-pulse {
         animation: mac-btn-pulse 1.9s ease-out infinite;
     }
 
@@ -198,7 +212,10 @@
 <div class="contact-mac-wrapper">
     <div class="mac-container">
         <div class="mac-header">
-            <div class="mac-header-eyebrow">Support & Contact</div>
+            <div class="mac-header-pill">
+                <span class="mac-header-pill-dot"></span>
+                SUPPORT & CONTACT
+            </div>
             <h1>Hubungi Deva Laundry</h1>
             <p>Kami siap membantu Anda dengan layanan terbaik setiap hari.</p>
         </div>
@@ -233,7 +250,7 @@
 
                 <div class="mac-actions">
                     <a href="https://wa.me/{{ preg_replace('/\D/', '', $contactPhone) }}"
-                       target="_blank" class="mac-btn">
+                       target="_blank" class="mac-btn mac-btn-pulse">
                         <i class="fa-brands fa-whatsapp"></i>
                         <span>Chat via WhatsApp</span>
                     </a>

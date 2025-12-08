@@ -5,59 +5,263 @@
 @section('content')
 
 <style>
-    body { background: #eef1f7; }
-    .glass-card {
-        backdrop-filter: blur(12px);
-        background: rgba(255, 255, 255, 0.68);
-        border-radius: 18px;
-        padding: 25px;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.07);
-        border: 1px solid rgba(255,255,255,0.4);
+    .nota-edit-shell {
+        margin: 36px auto 42px;
+        max-width: 1480px;
+        padding: 0 1.4rem;
     }
-    .title-mac { font-size: 26px; font-weight: 700; color: #1a1a1a; margin-bottom: 20px; }
-    .label-mac { font-weight: 600; color: #333; }
-    .input-mac { border-radius: 12px !important; border: 1px solid #dcdcdc !important; padding: 10px 14px !important; }
-    .btn-mac { border-radius: 12px; padding: 10px 18px; font-weight: 600; }
-    .btn-primary-mac { background: #0071e3; border-color: #0071e3; color: #fff; }
+    .nota-edit-window {
+        border-radius: 26px;
+        background: radial-gradient(circle at 0% 0%, #ffffff 0, #eef2ff 40%, #e1e7ff 100%);
+        box-shadow:
+            0 26px 70px rgba(15,23,42,0.18),
+            0 0 0 1px rgba(255,255,255,0.9);
+        border: 1px solid rgba(255,255,255,0.9);
+        padding: 20px 22px 24px;
+    }
+    .nota-edit-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+    .nota-edit-title-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .nota-edit-traffic {
+        display: inline-flex;
+        gap: .4rem;
+    }
+    .nota-edit-traffic-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(0,0,0,0.08);
+        box-shadow: 0 1px 2px rgba(15,23,42,0.18);
+    }
+    .nota-edit-traffic-dot.red { background:#ff5f57; }
+    .nota-edit-traffic-dot.yellow { background:#febc2e; }
+    .nota-edit-traffic-dot.green { background:#28c840; }
+    .nota-edit-title-main {
+        font-size: 1.1rem;
+        font-weight: 800;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: #111827;
+    }
+    .nota-edit-subtitle {
+        font-size: .9rem;
+        color: #6b7280;
+    }
+    .nota-edit-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+    .nota-edit-chip {
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: .78rem;
+        background: rgba(255,255,255,0.7);
+        border: 1px solid rgba(209,213,219,0.9);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: #4b5563;
+    }
+    .nota-edit-chip strong {
+        font-weight: 600;
+        color: #111827;
+    }
+    .nota-edit-chip-status-lunas {
+        background: rgba(22,163,74,0.08);
+        border-color: rgba(22,163,74,0.4);
+        color: #166534;
+    }
+    .nota-edit-chip-status-belum {
+        background: rgba(248,113,113,0.08);
+        border-color: rgba(248,113,113,0.45);
+        color: #b91c1c;
+    }
+
+    .label-mac {
+        font-weight: 600;
+        color: #374151;
+        font-size: .88rem;
+    }
+    .input-mac {
+        border-radius: 12px !important;
+        border: 1px solid rgba(209,213,219,0.9) !important;
+        padding: 9px 13px !important;
+        font-size: .9rem;
+        box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+    }
+    .input-mac:focus {
+        border-color: #0a84ff !important;
+        box-shadow:
+            0 0 0 1px rgba(59,130,246,0.25),
+            0 0 0 4px rgba(191,219,254,0.85);
+        outline: none;
+    }
+    .btn-mac {
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-weight: 600;
+        font-size: .9rem;
+    }
+    .btn-primary-mac {
+        background: linear-gradient(135deg,#0a84ff,#0051cc);
+        border-color: rgba(255,255,255,0.6);
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(37,99,235,0.45);
+    }
+    .btn-primary-mac:hover {
+        background: linear-gradient(135deg,#5eb1ff,#0a84ff);
+        color: #fff;
+        box-shadow: 0 14px 32px rgba(37,99,235,0.5);
+    }
     .btn-outline-dark-mac {
-        border-radius: 12px; padding: 10px 18px; font-weight: 600;
-        border: 1px solid #444; color: #111; background: transparent;
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-weight: 600;
+        border: 1px solid rgba(148,163,184,0.8);
+        color: #111827;
+        background: rgba(255,255,255,0.8);
     }
-    .error-box { background:#ffecec; border:1px solid #f5c2c2; padding:12px; border-radius:8px; margin-bottom:16px; color:#a94442;}
-    .field-errors { color:#a94442; font-size:13px; margin-top:6px;}
+    .btn-outline-dark-mac:hover {
+        background: #e5f1ff;
+        border-color: #0a84ff;
+        color: #0f172a;
+    }
+
+    .error-box {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        padding: 12px;
+        border-radius: 10px;
+        margin-bottom: 16px;
+        color: #b91c1c;
+        font-size: .86rem;
+    }
+    .field-errors {
+        color: #b91c1c;
+        font-size: .8rem;
+        margin-top: 6px;
+    }
+
+    .nota-edit-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.8fr) minmax(280px, 0.9fr);
+        gap: 18px;
+        align-items: flex-start;
+    }
 
     /* Catalog styles */
     .catalog {
-        margin-top: 18px;
-        background: #fff;
-        border-radius: 12px;
-        padding: 12px;
-        border: 1px solid #e6e6e6;
+        margin-top: 4px;
+        background: rgba(255,255,255,0.96);
+        border-radius: 18px;
+        padding: 14px 14px 16px;
+        border: 1px solid rgba(226,232,240,0.9);
+        box-shadow: 0 12px 32px rgba(15,23,42,0.08);
     }
-    .catalog h6 { margin: 0 0 8px 0; font-weight:700; }
+    .catalog h6 {
+        margin: 0 0 8px 0;
+        font-weight: 700;
+        font-size: .9rem;
+        color: #111827;
+    }
     .catalog-table { max-height: 320px; overflow:auto; }
-    .catalog-table table { width:100%; }
+    .catalog-table table { width:100%; font-size:.86rem; }
     .catalog-row { cursor: pointer; transition: background .12s; }
-    .catalog-row:hover { background: #f4f7fb; }
-    .catalog-search { width:100%; margin-bottom:8px; padding:8px 10px; border-radius:10px; border:1px solid #ddd; }
+    .catalog-row:hover { background: #eef4ff; }
+    .catalog-search {
+        width:100%;
+        margin-bottom:8px;
+        padding:8px 10px;
+        border-radius:999px;
+        border:1px solid rgba(209,213,219,0.9);
+        font-size:.86rem;
+    }
+    .catalog-search:focus{
+        border-color:#0a84ff;
+        outline:none;
+        box-shadow:0 0 0 2px rgba(191,219,254,0.9);
+    }
 
-    @media(min-width: 992px) {
-        .layout-split {
-            display: grid;
-            grid-template-columns: 1fr 320px;
-            gap: 18px;
-            align-items: start;
+    #itemTable thead {
+        background: linear-gradient(135deg,#f3f4f6,#e5f1ff);
+    }
+    #itemTable thead th {
+        border-bottom: 1px solid rgba(209,213,219,0.9);
+        font-size: .78rem;
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        color: #6b7280;
+    }
+    #itemTable tbody td {
+        vertical-align: middle;
+        font-size: .9rem;
+    }
+    #itemTable tbody tr:nth-child(even){
+        background:#f9fafb;
+    }
+    #itemTable tbody tr:hover{
+        background:#eef4ff;
+    }
+
+    @media (max-width: 992px) {
+        .nota-edit-layout {
+            grid-template-columns: minmax(0, 1fr);
         }
     }
 </style>
 
-<div class="container mt-4">
-    <div class="glass-card">
-        <div class="title-mac">Edit Nota Laundry #{{ $nota->id }}</div>
+@php
+    $terbayar = $nota->payments ? $nota->payments->sum('amount') : 0;
+    $sisa_now = max(0, ($nota->total ?? 0) - $terbayar);
+@endphp
+
+<div class="nota-edit-shell">
+    <div class="nota-edit-window">
+        <div class="nota-edit-header">
+            <div class="nota-edit-title-wrap">
+                <div class="nota-edit-traffic" aria-hidden="true">
+                    <span class="nota-edit-traffic-dot red"></span>
+                    <span class="nota-edit-traffic-dot yellow"></span>
+                    <span class="nota-edit-traffic-dot green"></span>
+                </div>
+                <div>
+                    <div class="nota-edit-title-main">Edit Nota Laundry</div>
+                    <div class="nota-edit-subtitle">
+                        #{{ $nota->no_nota ?? 'INV-' . str_pad($nota->id, 5, '0', STR_PAD_LEFT) }}
+                        · {{ $nota->customer_name }}
+                    </div>
+                </div>
+            </div>
+            <div class="nota-edit-badges">
+                <div class="nota-edit-chip">
+                    <span>No. Nota</span>
+                    <strong>{{ $nota->no_nota ?? $nota->id }}</strong>
+                </div>
+                <div class="nota-edit-chip">
+                    <span>Total</span>
+                    <strong>Rp {{ number_format($nota->total ?? 0, 0, ',', '.') }}</strong>
+                </div>
+                <div class="nota-edit-chip {{ $sisa_now <= 0 ? 'nota-edit-chip-status-lunas' : 'nota-edit-chip-status-belum' }}">
+                    <span>Status</span>
+                    <strong>{{ $sisa_now <= 0 ? 'Lunas' : 'Belum Lunas' }}</strong>
+                </div>
+            </div>
+        </div>
 
         <div id="errorContainer" style="display:none;" class="error-box"></div>
 
-        <div class="layout-split">
+        <div class="nota-edit-layout">
             <div>
                 <form id="notaForm" action="{{ route('admin.nota.update', $nota->id) }}" method="POST">
                     @csrf

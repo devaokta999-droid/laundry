@@ -10,6 +10,7 @@ class Review extends Model
         'name',
         'rating',
         'comment',
+        'image_path',
         'is_visible',
     ];
 }

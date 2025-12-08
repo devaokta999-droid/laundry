@@ -4,202 +4,215 @@
 
 @section('content')
 <style>
-/* dYO^ macOS Modern Clean Style */
-body {
-    background: linear-gradient(135deg, #eaf3ff, #ffffff);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color: #333;
-}
-
-/* dYS Container utama */
-.mac-container {
-    max-width: 1920px;
-    width: 100%;
-    margin: 80px auto;
-    padding: 20px;
-}
-
-/* dY�z Header */
-.mac-header {
-    text-align: center;
-    background: rgba(255,255,255,0.75);
-    backdrop-filter: blur(14px);
-    border-radius: 22px;
-    padding: 50px 20px;
-    border: 1px solid rgba(255,255,255,0.4);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
-    margin-bottom: 50px;
-    transition: all 0.3s ease;
-}
-.mac-header:hover {
-    box-shadow: 0 10px 36px rgba(0,0,0,0.08);
-}
-.mac-header img {
-    width: 500px;
-    margin-bottom: 20px;
-    transition: transform 0.4s ease;
-}
-.mac-header img:hover {
-    transform: scale(1.08);
-}
-.mac-header h1 {
-    font-size: 2.8rem;
-    font-weight: 800;
-    color: #007aff;
-}
-.mac-header p {
-    color: #666;
-    font-size: 1.1rem;
-}
-
-/* dYc Dua kolom utama */
-.mac-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-    gap: 36px;
-}
-
-/* dY"o Card */
-.mac-card {
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(12px);
-    border-radius: 20px;
-    padding: 35px 30px;
-    border: 1px solid rgba(255,255,255,0.5);
-    box-shadow: 0 4px 18px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
-}
-.mac-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-}
-.mac-card h2 {
-    font-size: 1.6rem;
-    color: #007aff;
-    margin-bottom: 18px;
-}
-.mac-card ul {
-    padding-left: 20px;
-}
-.mac-card li {
-    margin-bottom: 8px;
-    color: #444;
-}
-
-/* dY'Z Tombol */
-.mac-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    border-radius: 50px;
-    padding: 0.8rem 1.6rem;
-    font-weight: 600;
-    font-size: 1rem;
-    color: white;
-    background: linear-gradient(135deg, #007aff, #0071e3);
-    transition: 0.25s ease;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-.mac-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
-}
-
-/* dY`� Tim Kami */
-.mac-team {
-    margin-top: 80px;
-    text-align: center;
-}
-.mac-team h2 {
-    font-size: 2rem;
-    font-weight: 800;
-    color: #007aff;
-    margin-bottom: 35px;
-}
-.mac-team-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 25px;
-}
-.mac-member {
-    background: rgba(255,255,255,0.85);
-    border-radius: 18px;
-    padding: 20px;
-    width: 210px;
-    text-align: center;
-    border: 1px solid rgba(255,255,255,0.5);
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-}
-.mac-member:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-}
-.mac-member img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 3px solid rgba(255,255,255,0.8);
-    margin-bottom: 10px;
-}
-.mac-member h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #333;
-}
-.mac-member p {
-    font-size: 0.9rem;
-    color: #555;
-}
-
-/* Jam operasional rapi */
-.mac-hours-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-size:0.95rem;
-    color:#374151;
-}
-.mac-hours-day{
-    width:80px;
-    font-weight:600;
-}
-.mac-hours-sep{
-    width:10px;
-}
-.mac-hours-time{
-    flex:1;
-}
-
-/* dY"� Responsif */
-@media (max-width: 768px) {
-    .mac-header h1 {
-        font-size: 2.2rem;
+    .about-shell {
+        max-width: 1720px;
+        margin: 72px auto 72px;
+        padding: 0 16px;
     }
-    .mac-card {
-        padding: 25px 20px;
+
+    .about-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.05fr);
+        gap: 32px;
+        align-items: center;
+        background: rgba(255,255,255,0.92);
+        border-radius: 28px;
+        padding: 38px 34px;
+        border: 1px solid rgba(148,163,184,0.28);
+        box-shadow: 0 24px 70px rgba(15,23,42,0.18);
+        margin-bottom: 40px;
     }
-}
+
+    .about-header-left {
+        text-align: left;
+    }
+
+    .about-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 4px 11px;
+        border-radius: 999px;
+        background: rgba(15,23,42,0.03);
+        border: 1px solid rgba(148,163,184,0.35);
+        font-size: 0.78rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #6b7280;
+        margin-bottom: 0.6rem;
+    }
+
+    .about-pill-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 0 4px rgba(34,197,94,0.25);
+    }
+
+    .about-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 0.35rem;
+    }
+
+    .about-subtitle {
+        color: #4b5563;
+        font-size: 1rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .about-tagline {
+        color: #6b7280;
+        font-size: 0.9rem;
+    }
+
+    .about-hero-logo {
+        width: 100%;
+        max-width: 420px;
+        border-radius: 24px;
+        box-shadow: 0 24px 50px rgba(15,23,42,0.25);
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .about-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 32px;
+    }
+
+    .about-card {
+        background: rgba(255,255,255,0.96);
+        border-radius: 22px;
+        padding: 30px 26px;
+        border: 1px solid rgba(226,232,240,0.9);
+        box-shadow: 0 16px 40px rgba(15,23,42,0.12);
+    }
+
+    .about-card h2 {
+        font-size: 1.5rem;
+        color: #007aff;
+        margin-bottom: 14px;
+        font-weight: 700;
+    }
+
+    .about-card ul {
+        padding-left: 18px;
+    }
+
+    .about-card li {
+        margin-bottom: 8px;
+        color: #444;
+        font-size: 0.95rem;
+    }
+
+    .about-hours-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+        color: #374151;
+    }
+
+    .about-hours-time {
+        flex: 1;
+    }
+
+    .about-contact-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border-radius: 999px;
+        padding: 0.7rem 1.5rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #ffffff;
+        background: linear-gradient(135deg, #0a84ff, #0054d6);
+        text-decoration: none;
+        box-shadow: 0 10px 26px rgba(15,23,42,0.22);
+    }
+
+    .about-contact-btn:hover {
+        background: linear-gradient(135deg, #4ea9ff, #0a84ff);
+        color: #ffffff;
+    }
+
+    .about-team {
+        margin-top: 56px;
+        text-align: center;
+    }
+
+    .about-team h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #007aff;
+        margin-bottom: 28px;
+    }
+
+    .about-team-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 24px;
+    }
+
+    .about-member {
+        background: rgba(255,255,255,0.96);
+        border-radius: 18px;
+        padding: 20px;
+        width: 210px;
+        text-align: center;
+        border: 1px solid rgba(226,232,240,0.9);
+        box-shadow: 0 10px 26px rgba(15,23,42,0.08);
+    }
+
+    .about-member img {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%;
+        border: 3px solid rgba(255,255,255,0.85);
+        margin-bottom: 10px;
+    }
+
+    .about-member-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .about-member-role {
+        font-size: 0.9rem;
+        color: #007aff;
+        font-weight: 500;
+        margin-bottom: 6px;
+    }
+
+    .about-member-desc {
+        font-size: 0.85rem;
+        color: #4b5563;
+    }
+
+    @media (max-width: 960px) {
+        .about-header {
+            grid-template-columns: minmax(0,1fr);
+        }
+
+        .about-title {
+            font-size: 2.2rem;
+        }
+    }
 </style>
 
-<div class="mac-container">
-    {{-- dY�z Header --}}
-    <div class="mac-header">
-        @php
-            $aboutLogo = \App\Models\SiteSetting::getValue('logo_path', 'header.png');
-        @endphp
-        <img src="{{ asset('images/' . $aboutLogo) }}" alt="Logo Deva Laundry">
-        <h1>{{ $aboutHeroTitle }}</h1>
-        <p>{{ $aboutHeroTagline }}</p>
-    </div>
-
-    {{-- dYc Dua Kolom --}}
+<div class="about-shell">
     @php
+        $aboutLogo = \App\Models\SiteSetting::getValue('logo_path', 'header.png');
         $hoursText = \App\Models\SiteSetting::getValue('about_hours', implode(PHP_EOL, [
-            'Senin �?" Minggu',
-            '08.30 �?" 17.00 WITA',
+            'Senin – Minggu',
+            '08.30 – 17.00 WITA',
         ]));
         $hoursRows = collect(preg_split('/\r\n|\r|\n/', $hoursText))
             ->map(fn($line) => trim($line))
@@ -207,9 +220,25 @@ body {
             ->values();
     @endphp
 
-    <div class="mac-grid">
-        {{-- Kolom Kiri --}}
-        <div class="mac-card">
+    <div class="about-header">
+        <div class="about-header-left">
+            <div class="about-pill">
+                <span class="about-pill-dot"></span>
+                TENTANG DEVA LAUNDRY
+            </div>
+            <div class="about-title">{{ $aboutHeroTitle }}</div>
+            <p class="about-subtitle">{{ $aboutHeroTagline }}</p>
+            <p class="about-tagline">
+                Laundry harian sampai pakaian spesial, kami tangani dengan standar yang konsisten dan rapi.
+            </p>
+        </div>
+        <div>
+            <img src="{{ asset('images/' . $aboutLogo) }}" alt="Logo Deva Laundry" class="about-hero-logo">
+        </div>
+    </div>
+
+    <div class="about-grid">
+        <div class="about-card">
             <h2>Visi Kami</h2>
             <p>{{ $vision }}</p>
 
@@ -220,69 +249,69 @@ body {
                 @endforeach
             </ul>
 
-            <div style="margin-top:25px; border-top:1px solid #eee; padding-top:15px;">
-                <h3 style="color:#007aff; font-weight:600;">Lokasi Kami</h3>
-                <p>{{ $locationText }}</p>
+            <div style="margin-top:22px; border-top:1px solid #e5e7eb; padding-top:14px;">
+                <h3 style="color:#007aff; font-weight:600; font-size:1.05rem;">Lokasi Kami</h3>
+                <p style="font-size:0.95rem; color:#4b5563;">{{ $locationText }}</p>
             </div>
         </div>
 
-        {{-- Kolom Kanan --}}
-        <div class="mac-card">
+        <div class="about-card">
             <h2>{{ $whyTitle }}</h2>
             @foreach($whyParagraphs as $p)
-                <p>{{ $p }}</p>
+                <p style="font-size:0.96rem; color:#374151;">{{ $p }}</p>
             @endforeach
 
-            <div class="mt-4">
-                <a href="{{ route('contact') }}" class="mac-btn">
-                    <i class="fa-solid fa-phone"></i> Hubungi Kami
+            <div class="mt-3">
+                <a href="{{ route('contact') }}" class="about-contact-btn">
+                    <i class="fa-solid fa-phone"></i>
+                    <span>Hubungi Kami</span>
                 </a>
             </div>
 
             <div style="margin-top:24px; padding-top:16px; border-top:1px solid #e5e7eb;">
-                <h3 style="font-size:1.1rem; font-weight:700; color:#007aff; margin-bottom:10px;">Jam Operasional</h3>
+                <h3 style="font-size:1.05rem; font-weight:700; color:#007aff; margin-bottom:10px;">Jam Operasional</h3>
                 @foreach($hoursRows as $line)
-                    <div class="mac-hours-row">
-                        <span class="mac-hours-time">{{ $line }}</span>
+                    <div class="about-hours-row">
+                        <span class="about-hours-time">{{ $line }}</span>
                     </div>
                 @endforeach
                 <p style="margin-top:8px; color:#6b7280; font-size:0.85rem;">
-                    Silakan datang pada jam operasional tersebut untuk pelayanan antar-jemput maupun drop-off langsung di outlet.
+                    Silakan datang pada jam tersebut untuk drop-off langsung di outlet atau layanan antar-jemput.
                 </p>
             </div>
         </div>
     </div>
 
-    {{-- dY`� Tim Kami --}}
-    <div class="mac-team">
+    <div class="about-team">
         <h2>Tim Profesional Kami</h2>
-        <div class="mac-team-grid">
+        <div class="about-team-grid">
             @forelse($teams as $tim)
-                <div class="mac-member">
+                <div class="about-member">
                     @if($tim->photo)
                         <img src="{{ asset('images/' . $tim->photo) }}" alt="{{ $tim->name }}">
                     @else
                         <img src="{{ asset('images/' . $aboutLogo) }}" alt="{{ $tim->name }}">
                     @endif
-                    <h4>{{ $tim->name }}</h4>
-                    <p style="color:#007aff; font-weight:500;">{{ $tim->position }}</p>
-                    <p style="font-size:0.85rem;">{{ $tim->description }}</p>
+                    <div class="about-member-name">{{ $tim->name }}</div>
+                    <div class="about-member-role">{{ $tim->position }}</div>
+                    <div class="about-member-desc">{{ $tim->description }}</div>
                 </div>
             @empty
-                {{-- fallback jika belum ada data tim di database --}}
-                <div class="mac-member">
+                <div class="about-member">
                     <img src="{{ asset('images/' . $aboutLogo) }}" alt="Deva Laundry">
-                    <h4>Tim Deva Laundry</h4>
-                    <p style="color:#007aff; font-weight:500;">Profesional & Berpengalaman</p>
-                    <p style="font-size:0.85rem;">Tim kami siap memberikan layanan terbaik untuk setiap pelanggan.</p>
+                    <div class="about-member-name">Tim Deva Laundry</div>
+                    <div class="about-member-role">Profesional & Berpengalaman</div>
+                    <div class="about-member-desc">
+                        Tim kami siap memberikan layanan terbaik untuk setiap pelanggan.
+                    </div>
                 </div>
             @endforelse
         </div>
     </div>
 </div>
 
-{{-- dY"- FontAwesome Icons --}}
 @push('scripts')
 <script src="https://kit.fontawesome.com/a2b1f3b59d.js" crossorigin="anonymous"></script>
 @endpush
 @endsection
+

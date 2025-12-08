@@ -234,6 +234,27 @@
             font-weight:700;
             color:#0f172a;
         }
+        .nota-header-pill{
+            display:inline-flex;
+            align-items:center;
+            gap:0.4rem;
+            padding:4px 11px;
+            border-radius:999px;
+            background:rgba(15,23,42,0.03);
+            border:1px solid rgba(148,163,184,0.35);
+            font-size:0.78rem;
+            letter-spacing:0.18em;
+            text-transform:uppercase;
+            color:#6b7280;
+            margin-bottom:6px;
+        }
+        .nota-header-pill-dot{
+            width:7px;
+            height:7px;
+            border-radius:999px;
+            background:#22c55e;
+            box-shadow:0 0 0 4px rgba(34,197,94,0.25);
+        }
         .nota-page-container .form-control,
         .nota-page-container .form-select{
             border-radius:12px;
@@ -256,14 +277,22 @@
             }
         }
     </style>
-    <h3 class="mb-2 text-primary fw-bold"> Nota Deva Laundry Satuan Digital</h3>
-    <div class="d-flex align-items-center mb-3">
-        <div class="traffic-lights me-2">
-            <span class="traffic-light red"></span>
-            <span class="traffic-light yellow"></span>
-            <span class="traffic-light green"></span>
+    <div class="d-flex flex-wrap justify-content-between align-items-start mb-3 gap-2">
+        <div>
+            <div class="nota-header-pill">
+                <span class="nota-header-pill-dot"></span>
+                NOTA DIGITAL
+            </div>
+            <h3 class="mb-1 text-primary fw-bold">Nota Deva Laundry Satuan Digital</h3>
+            <span class="text-muted" style="font-size:.9rem;">Buat nota baru, pantau total, dan kelola riwayat pembayaran.</span>
         </div>
-        <span class="text-muted" style="font-size:.9rem;">Buat nota baru dan kelola riwayat pembayaran.</span>
+        <div class="d-flex align-items-center mt-2 mt-md-0">
+            <div class="traffic-lights me-2">
+                <span class="traffic-light red"></span>
+                <span class="traffic-light yellow"></span>
+                <span class="traffic-light green"></span>
+            </div>
+        </div>
     </div>
 
     {{-- ✅ Notifikasi sukses & error --}}
@@ -427,8 +456,8 @@
                             {{-- Tombol Print langsung (kiri dari Cetak PDF) --}}
                             <a href="{{ route('admin.nota.print_direct', $n->id) }}" class="btn btn-sm btn-outline-secondary btn-mac-pill" target="_blank" title="Cetak langsung ke printer">Print</a>
 
-                            {{-- Tombol Show Nota --}}
-                            <a href="{{ route('admin.nota.show', $n->id) }}" class="btn btn-sm btn-outline-info btn-mac-pill" target="_blank" title="Lihat detail nota">Show Nota</a>
+                            {{-- Tombol Show Nota (pindah halaman di tab yang sama) --}}
+                            <a href="{{ route('admin.nota.show', $n->id) }}" class="btn btn-sm btn-outline-info btn-mac-pill" title="Lihat detail nota">Show Nota</a>
 
                             {{-- Badge Lunas / Belum Lunas --}}
                             @if($sisa_now <= 0)

@@ -72,6 +72,113 @@
         padding: 18px 18px 20px;
     }
 
+    .reviews-admin-analytics {
+        display: grid;
+        grid-template-columns: minmax(0, 2.1fr) minmax(220px, 1fr);
+        gap: 14px;
+        margin-bottom: 12px;
+        align-items: stretch;
+    }
+
+    .reviews-admin-analytics-card {
+        border-radius: 18px;
+        background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(241,245,255,0.96));
+        border: 1px solid rgba(226,232,240,0.9);
+        padding: 12px 14px;
+    }
+
+    .reviews-admin-analytics-title {
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: .16em;
+        color: #9ca3af;
+        margin-bottom: 6px;
+    }
+
+    .reviews-admin-bars {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .reviews-admin-bar-row {
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr) 42px;
+        gap: 6px;
+        align-items: center;
+        font-size: 0.8rem;
+        color: #4b5563;
+    }
+
+    .reviews-admin-bar-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .reviews-admin-bar-label span.star {
+        color: #f59e0b;
+        font-size: 0.9rem;
+    }
+
+    .reviews-admin-bar-track {
+        position: relative;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(229,231,235,0.9);
+        overflow: hidden;
+    }
+
+    .reviews-admin-bar-fill {
+        position: absolute;
+        inset: 0;
+        width: 0;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #0ea5e9, #6366f1);
+        transition: width .5s ease-out;
+    }
+
+    .reviews-admin-bar-value {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        color: #111827;
+    }
+
+    .reviews-admin-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .reviews-admin-kpi {
+        padding: 8px 10px;
+        border-radius: 14px;
+        background: rgba(249,250,251,0.9);
+        border: 1px solid rgba(226,232,240,0.9);
+        font-size: 0.8rem;
+        color: #6b7280;
+    }
+
+    .reviews-admin-kpi-label {
+        text-transform: uppercase;
+        letter-spacing: .12em;
+        font-size: 0.7rem;
+        color: #9ca3af;
+        margin-bottom: 2px;
+    }
+
+    .reviews-admin-kpi-value {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    @media (max-width: 992px) {
+        .reviews-admin-analytics {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
     .reviews-admin-toolbar {
         display: flex;
         align-items: center;
@@ -219,6 +326,69 @@
                 {{ session('success') }}
             </div>
         @endif
+
+        @php
+            $totalAll = $totalReviews ?? $reviews->total();
+            $avgRating = isset($averageRating) ? round($averageRating, 2) : null;
+            $visibleTotal = $visibleCount ?? null;
+            $distribution = collect($ratingDistribution ?? []);
+            $maxBucket = max($distribution->max() ?? 0, 1);
+        @endphp
+
+        <div class="reviews-admin-analytics">
+            <div class="reviews-admin-analytics-card">
+                <div class="reviews-admin-analytics-title">Distribusi Rating</div>
+                <div class="reviews-admin-bars" id="reviewsBars">
+                    @for($r = 5; $r >= 1; $r--)
+                        @php
+                            $count = (int) $distribution->get($r, 0);
+                            $percent = $maxBucket > 0 ? ($count / $maxBucket) * 100 : 0;
+                        @endphp
+                        <div class="reviews-admin-bar-row" data-rating-row="{{ $r }}">
+                            <div class="reviews-admin-bar-label">
+                                <span class="star">★</span>
+                                <span>{{ $r }}</span>
+                            </div>
+                            <div class="reviews-admin-bar-track">
+                                <div class="reviews-admin-bar-fill" style="width: {{ $percent }}%;"></div>
+                            </div>
+                            <div class="reviews-admin-bar-value">{{ $count }}</div>
+                        </div>
+                    @endfor
+                </div>
+            </div>
+            <div class="reviews-admin-analytics-card">
+                <div class="reviews-admin-analytics-title">Ringkasan Cepat</div>
+                <div class="reviews-admin-kpi-grid">
+                    <div class="reviews-admin-kpi">
+                        <div class="reviews-admin-kpi-label">Rata-rata rating</div>
+                        <div class="reviews-admin-kpi-value">
+                            @if($avgRating)
+                                {{ number_format($avgRating, 2) }}<span style="font-size:.8rem;">/5</span>
+                            @else
+                                -
+                            @endif
+                        </div>
+                    </div>
+                    <div class="reviews-admin-kpi">
+                        <div class="reviews-admin-kpi-label">Total ulasan</div>
+                        <div class="reviews-admin-kpi-value">{{ $totalAll }}</div>
+                    </div>
+                    <div class="reviews-admin-kpi">
+                        <div class="reviews-admin-kpi-label">Ulasan tampil</div>
+                        <div class="reviews-admin-kpi-value">
+                            {{ $visibleTotal ?? '-' }}
+                        </div>
+                    </div>
+                    <div class="reviews-admin-kpi">
+                        <div class="reviews-admin-kpi-label">Terakhir diperbarui</div>
+                        <div class="reviews-admin-kpi-value" style="font-size:.84rem;font-weight:600;">
+                            {{ now()->format('d M Y, H:i') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="reviews-admin-toolbar">
             <div class="reviews-admin-pill">

@@ -5,29 +5,50 @@
 @section('content')
 <style>
     .mac-shell {
-        padding: 60px 0;
-        max-width: 1750px;
+        padding: 72px 0 64px;
+        max-width: 1720px;
         margin: 0 auto;
     }
     .mac-panel {
-        border-radius: 30px;
-        padding: 32px;
-        background: rgba(255,255,255,0.9);
-        border: 1px solid rgba(255,255,255,0.5);
-        box-shadow: 0 35px 80px rgba(15,23,42,0.15);
+        border-radius: 32px;
+        padding: 26px 28px;
+        background: #ffffff;
+        border: 1px solid rgba(226,232,240,0.9);
+        box-shadow: 0 26px 70px rgba(15,23,42,0.16);
     }
     .mac-panel-gradient {
-        background: linear-gradient(145deg, #f5f7ff, #e0e7ff);
+        background: linear-gradient(145deg, #f5f7ff, #e0f2ff);
+    }
+    .mac-panel-header-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 4px 11px;
+        border-radius: 999px;
+        background: rgba(15,23,42,0.03);
+        border: 1px solid rgba(148,163,184,0.35);
+        font-size: 0.78rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #6b7280;
+        margin-bottom: 6px;
+    }
+    .mac-panel-header-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: #22c55e;
+        box-shadow: 0 0 0 4px rgba(34,197,94,0.25);
     }
     .mac-panel-title {
-        font-size: 2rem;
+        font-size: 1.8rem;
         font-weight: 800;
         color: #0e1c4a;
-        margin: 0;
+        margin: 0 0 4px;
     }
     .mac-panel-subtitle {
         color: #5b6480;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
     }
     .mac-search {
         margin-top: 1rem;
@@ -41,11 +62,9 @@
         font-size: 0.85rem;
         border-radius: 999px;
         border: 1px solid rgba(37, 99, 235, 0.15);
-        background: radial-gradient(circle at 0 0, #ffffff, #eef2ff);
-        box-shadow:
-            0 10px 25px rgba(15,23,42,0.12),
-            inset 0 1px 0 rgba(255,255,255,0.9);
-        color: #0f172a;
+        background: #ffffff;
+        box-shadow: 0 8px 20px rgba(15,23,42,0.10);
+        color: #111827;
         font-weight: 500;
         outline: none;
         appearance: none;
@@ -91,12 +110,19 @@
     }
     .mac-panel-card {
         margin-top: 0;
+        border-radius: 30px;
+        background: #ffffff;
+        border: 1px solid rgba(226,232,240,0.9);
+        box-shadow: 0 24px 60px rgba(15,23,42,0.12);
     }
     .mac-table {
         min-width: 900px;
     }
     .mac-table-header th {
         background: #f3f4f7;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: .12em;
     }
     .mac-badge {
         padding: 4px 12px;
@@ -123,32 +149,38 @@
     }
 </style>
 <div class="mac-shell">
-        <div class="mac-panel mac-panel-gradient mb-4">
-        <div>
-            <h1 class="mac-panel-title">Status Laundry Customer</h1>
-            <p class="mac-panel-subtitle">Pantau semua order Status mengikuti kolom dari database.</p>
-        </div>
-        <div class="mac-search">
-            <input
-                type="text"
-                name="keyword"
-                form="statusSearch"
-                class="form-control mac-input"
-                placeholder="Nama atau nomor telepon"
-                value="{{ request('keyword') }}">
+    <div class="mac-panel mac-panel-gradient mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+            <div>
+                <div class="mac-panel-header-pill">
+                    <span class="mac-panel-header-dot"></span>
+                    STATUS LAUNDRY · ADMIN
+                </div>
+                <h1 class="mac-panel-title">Status Laundry Customer</h1>
+                <p class="mac-panel-subtitle">Pantau dan kelola status semua pesanan laundry dari satu tampilan.</p>
+            </div>
+            <div class="mac-search">
+                <input
+                    type="text"
+                    name="keyword"
+                    form="statusSearch"
+                    class="form-control mac-input"
+                    placeholder="Nama atau nomor telepon"
+                    value="{{ request('keyword') }}">
 
-            <select
-                name="status"
-                form="statusSearch"
-                class="form-select mac-input mac-select">
-                <option value="">Semua status</option>
-                <option value="selesai" {{ request('status') === 'selesai' ? 'selected' : '' }}>Selesai</option>
-                <option value="proses" {{ request('status') === 'proses' ? 'selected' : '' }}>Sedang diproses</option>
-            </select>
+                <select
+                    name="status"
+                    form="statusSearch"
+                    class="form-select mac-input mac-select">
+                    <option value="">Semua status</option>
+                    <option value="selesai" {{ request('status') === 'selesai' ? 'selected' : '' }}>Selesai</option>
+                    <option value="proses" {{ request('status') === 'proses' ? 'selected' : '' }}>Sedang diproses</option>
+                </select>
 
-            <div class="mac-search-actions">
-                <button form="statusSearch" type="submit" class="btn btn-primary mac-btn"> Cari </button>
-                <a href="{{ route('admin.orders.status') }}" class="btn btn-outline-secondary mac-btn">Reset</a>
+                <div class="mac-search-actions">
+                    <button form="statusSearch" type="submit" class="btn btn-primary mac-btn"> Cari </button>
+                    <a href="{{ route('admin.orders.status') }}" class="btn btn-outline-secondary mac-btn">Reset</a>
+                </div>
             </div>
         </div>
         <form id="statusSearch" method="GET" class="d-none"></form>

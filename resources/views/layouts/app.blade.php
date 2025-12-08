@@ -504,22 +504,12 @@
 <script>
     const sidebar = document.getElementById('macSidebar');
     const toggleBtn = document.getElementById('sidebarToggle');
-    const pageContent = document.getElementById('page-content');
 
-    toggleBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('active');
-    });
-
-    const links = document.querySelectorAll('.nav-link, .btn, .dropdown-item');
-    links.forEach(link => {
-        link.addEventListener('click', function(e) {
-            const url = this.getAttribute('href');
-            if (!url || url.startsWith('#') || this.classList.contains('dropdown-toggle')) return;
-            e.preventDefault();
-            pageContent.classList.add('fade-out');
-            setTimeout(() => window.location.href = url, 400);
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
         });
-    });
+    }
 </script>
 
 @stack('scripts')

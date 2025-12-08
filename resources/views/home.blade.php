@@ -28,6 +28,27 @@
 .mac-hero-copy {
     max-width: 540px;
 }
+.mac-hero-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: rgba(15,23,42,0.18);
+    border: 1px solid rgba(148,163,184,0.35);
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(243,244,246,0.9);
+    margin-bottom: 10px;
+}
+.mac-hero-pill-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #22c55e;
+    box-shadow: 0 0 0 4px rgba(34,197,94,0.35);
+}
 .mac-eyebrow {
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -333,27 +354,49 @@
     margin-right: auto;
 }
 
-/* ---------- PAYMENT LOGOS (Apple-like minimal) ---------- */
+/* ---------- PAYMENT LOGOS (Apple-like minimal + marquee) ---------- */
 .pay-section {
     padding: 24px 0 36px;
     background: #f5f7ff;
     border-radius: 24px;
     box-shadow: 0 16px 46px rgba(15,23,42,0.05);
 }
+.pay-marquee {
+    overflow: hidden;
+    position: relative;
+}
 .pay-row {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: 16px 20px;
+    position: relative;
+    overflow: hidden;
+    padding-inline: 16px;
+}
+.pay-row-track {
+    display: flex;
+    gap: 40px;
     align-items: center;
-    justify-items: center;
+    will-change: transform;
+    animation-duration: 28s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+.pay-row-top {
+    /* baris atas bergerak ke kiri */
+}
+.pay-row-bottom {
+    margin-top: 18px;
+}
+.pay-row-track-left {
+    animation-name: pay-marquee-left;
+}
+.pay-row-track-right {
+    animation-name: pay-marquee-right;
 }
 .pay-logo-card {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    max-width: 170px;
-    min-height: 68px;
+    min-width: 150px;
+    min-height: 64px;
     transition: transform .14s ease-out, filter .14s ease-out;
 }
 .pay-logo-card img {
@@ -367,19 +410,28 @@
     transform: translateY(-3px);
     filter: drop-shadow(0 10px 26px rgba(15,23,42,0.24));
 }
-@media (max-width: 991.98px) {
-    .pay-row {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 18px 22px;
+@media (max-width: 767.98px) {
+    .pay-logo-card {
+        min-width: 130px;
+        min-height: 60px;
     }
 }
-@media (max-width: 767.98px) {
-    .pay-row {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+@keyframes pay-marquee-left {
+    0% {
+        transform: translateX(0);
     }
-    .pay-logo-card {
-        max-width: 170px;
-        min-height: 64px;
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes pay-marquee-right {
+    0% {
+        transform: translateX(-50%);
+    }
+    100% {
+        transform: translateX(0);
     }
 }
 
@@ -520,7 +572,10 @@
     <section class="mac-hero">
         <div class="mac-hero-inner">
             <div class="mac-hero-copy">
-                <p class="mac-eyebrow">{{ $heroEyebrow }}</p>
+                <div class="mac-hero-pill">
+                    <span class="mac-hero-pill-dot"></span>
+                    {{ $heroEyebrow }}
+                </div>
                 <h1>{{ $heroTitle }}</h1>
                 <p class="lead">{{ $heroSubtitle }}</p>
                 <div class="cta mac-hero-cta">
@@ -623,6 +678,13 @@
                 <div class="review-col">
                     <div class="review-card">
                         <div class="review-quote-icon">“</div>
+                        @if(!empty($review->image_path))
+                            <div class="mb-3">
+                                <img src="{{ asset('storage/' . $review->image_path) }}"
+                                     alt="Foto ulasan dari {{ $review->name }}"
+                                     style="max-width: 100%; border-radius: 16px; box-shadow: 0 10px 30px rgba(15,23,42,0.18); object-fit: cover;">
+                            </div>
+                        @endif
                         <p class="review-text">{{ $review->comment }}</p>
                         <div class="review-stars">
                             @for($i = 1; $i <= 5; $i++)
@@ -652,24 +714,77 @@
             Kami mendukung berbagai metode pembayaran digital agar proses transaksi di Deva Laundry terasa cepat dan praktis.
         </p>
     </div>
-    <div class="pay-row">
-        @forelse($paymentMethods as $method)
-            <div class="pay-logo-card">
-                @if(!empty($method['logo_url'] ?? ''))
-                    <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
-                @else
-                    <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
-                        {{ $method['name'] ?? 'Metode Pembayaran' }}
-                    </span>
-                @endif
+    @php
+        $methods = collect($paymentMethods ?? []);
+        $half = (int) ceil(max($methods->count(), 1) / 2);
+        $topRow = $methods->slice(0, $half);
+        $bottomRow = $methods->slice($half);
+    @endphp
+    <div class="pay-marquee">
+        <div class="pay-row pay-row-top">
+            @if($methods->isEmpty())
+                <div class="pay-row-track">
+                    <div class="pay-logo-card">
+                        <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
+                            Metode pembayaran belum diatur.
+                        </span>
+                    </div>
+                </div>
+            @else
+                <div class="pay-row-track pay-row-track-left">
+                    @foreach($topRow as $method)
+                        <div class="pay-logo-card">
+                            @if(!empty($method['logo_url'] ?? ''))
+                                <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
+                            @else
+                                <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
+                                    {{ $method['name'] ?? 'Metode Pembayaran' }}
+                                </span>
+                            @endif
+                        </div>
+                    @endforeach
+                    @foreach($topRow as $method)
+                        <div class="pay-logo-card">
+                            @if(!empty($method['logo_url'] ?? ''))
+                                <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
+                            @else
+                                <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
+                                    {{ $method['name'] ?? 'Metode Pembayaran' }}
+                                </span>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+        @if($methods->count() > 1)
+            <div class="pay-row pay-row-bottom">
+                <div class="pay-row-track pay-row-track-right">
+                    @foreach($bottomRow as $method)
+                        <div class="pay-logo-card">
+                            @if(!empty($method['logo_url'] ?? ''))
+                                <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
+                            @else
+                                <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
+                                    {{ $method['name'] ?? 'Metode Pembayaran' }}
+                                </span>
+                            @endif
+                        </div>
+                    @endforeach
+                    @foreach($bottomRow as $method)
+                        <div class="pay-logo-card">
+                            @if(!empty($method['logo_url'] ?? ''))
+                                <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
+                            @else
+                                <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
+                                    {{ $method['name'] ?? 'Metode Pembayaran' }}
+                                </span>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
             </div>
-        @empty
-            <div class="pay-logo-card">
-                <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
-                    Metode pembayaran belum diatur.
-                </span>
-            </div>
-        @endforelse
+        @endif
     </div>
 </div>
 
@@ -708,6 +823,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Auto slideshow for testimonials (manual scroll tetap bisa)
         var slider = document.getElementById('reviewSliderInner');
         if (slider) {
             var total = slider.children.length;
@@ -716,8 +832,8 @@
 
             if (total > visibleCount) {
                 function scrollToPage(page) {
-                    var containerWidth = slider.clientWidth;
-                    var target = page * containerWidth;
+                    var cardWidth = slider.children[0].clientWidth + 24; // width + gap
+                    var target = page * cardWidth;
                     slider.scrollTo({
                         left: target,
                         behavior: 'smooth'
@@ -725,7 +841,7 @@
                 }
 
                 function nextPage() {
-                    var maxPage = Math.ceil(total / visibleCount) - 1;
+                    var maxPage = Math.max(total - visibleCount, 0);
                     currentPage = (currentPage + 1) % (maxPage + 1);
                     scrollToPage(currentPage);
                 }
@@ -739,6 +855,32 @@
                 avatar.classList.add('variant-' + variant);
             });
         }
+
+        // Auto-scroll untuk baris payment (manual scroll tetap bisa)
+        function autoScrollRow(selector, direction) {
+            var row = document.querySelector(selector);
+            if (!row) return;
+
+            var step = 1; // px per tick
+            var interval = 25; // ms
+
+            setInterval(function () {
+                if (!row) return;
+                var maxScroll = row.scrollWidth - row.clientWidth;
+                if (maxScroll <= 0) return;
+
+                var next = row.scrollLeft + step * direction;
+                if (next < 0) {
+                    next = maxScroll;
+                } else if (next > maxScroll) {
+                    next = 0;
+                }
+                row.scrollLeft = next;
+            }, interval);
+        }
+
+        autoScrollRow('.pay-row-top', 1);   // geser ke kiri
+        autoScrollRow('.pay-row-bottom', -1); // geser ke kanan
     });
 </script>
 @endsection
