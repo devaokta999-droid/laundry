@@ -222,7 +222,7 @@
 .review-shell {
     background: radial-gradient(circle at 0% 0%, #ffffff 0, #eef2ff 40%, #e0e7ff 100%);
     border-radius: 26px;
-    padding: 26px 26px 40px;
+    padding: 26px 26px 46px;
     box-shadow:
         0 26px 60px rgba(15,23,42,0.14),
         0 0 0 1px rgba(255,255,255,0.8);
@@ -249,7 +249,7 @@
     position: relative;
     background: rgba(255,255,255,0.96);
     border-radius: 18px;
-    padding: 18px 18px 38px;
+    padding: 20px 18px 54px;
     box-shadow:
         0 18px 40px rgba(15,23,42,0.08),
         0 0 0 1px rgba(226,232,240,0.9);
@@ -265,25 +265,25 @@
         0 0 0 1px rgba(191,219,254,0.9);
 }
 .review-quote-icon {
-    font-size: 2.4rem;
+    font-size: 2.6rem;
     line-height: 1;
     color: #e5e7eb;
-    margin-bottom: 12px;
+    margin-bottom: 6px;
 }
 .review-text {
-    font-size: 0.9rem;
-    color: #374151;
+    font-size: 0.92rem;
+    color: #111827;
     line-height: 1.7;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
 }
 .review-stars {
     display: flex;
     justify-content: center;
-    gap: 3px;
+    gap: 4px;
     margin-bottom: 20px;
 }
 .review-star {
-    font-size: 0.98rem;
+    font-size: 1rem;
 }
 .review-star.filled {
     color: #fbbf24;
@@ -294,15 +294,15 @@
 .review-footer {
     position: absolute;
     left: 50%;
-    bottom: -42px;
+    bottom: -46px;
     transform: translateX(-50%);
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 .review-avatar {
-    width: 52px;
-    height: 52px;
+    width: 56px;
+    height: 56px;
     border-radius: 999px;
     display: flex;
     align-items: center;
@@ -327,8 +327,8 @@
 }
 .review-name {
     font-weight: 700;
-    color: #0f766e;
-    font-size: 0.9rem;
+    color: #0f172a;
+    font-size: 0.92rem;
 }
 @media (max-width: 1199.98px) {
     .review-col {
@@ -356,82 +356,65 @@
 
 /* ---------- PAYMENT LOGOS (Apple-like minimal + marquee) ---------- */
 .pay-section {
-    padding: 24px 0 36px;
-    background: #f5f7ff;
-    border-radius: 24px;
-    box-shadow: 0 16px 46px rgba(15,23,42,0.05);
+    padding: 32px 34px 40px;
+    background: radial-gradient(circle at 0 0, #f9fbff 0, #eef2ff 45%, #e5edff 100%);
+    border-radius: 26px;
+    box-shadow:
+        0 24px 60px rgba(15,23,42,0.10),
+        0 0 0 1px rgba(255,255,255,0.90);
+}
+.pay-section-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+.pay-section-header {
+    text-align: center;
 }
 .pay-marquee {
-    overflow: hidden;
-    position: relative;
+    width: 100%;
+    margin-top: 12px;
 }
 .pay-row {
     position: relative;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     padding-inline: 16px;
+}
+.pay-row::-webkit-scrollbar {
+    display: none;
 }
 .pay-row-track {
     display: flex;
-    gap: 40px;
     align-items: center;
-    will-change: transform;
-    animation-duration: 28s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-}
-.pay-row-top {
-    /* baris atas bergerak ke kiri */
-}
-.pay-row-bottom {
-    margin-top: 18px;
-}
-.pay-row-track-left {
-    animation-name: pay-marquee-left;
-}
-.pay-row-track-right {
-    animation-name: pay-marquee-right;
+    gap: 40px;
+    padding-block: 4px;
 }
 .pay-logo-card {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 150px;
-    min-height: 64px;
-    transition: transform .14s ease-out, filter .14s ease-out;
+    min-width: 140px;
+    min-height: 70px;
+    padding: 0 6px;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+    transition: transform .18s ease-out;
 }
 .pay-logo-card img {
-    max-height: 54px;
-    max-width: 140px;
+    max-height: 78px;
+    max-width: 200px;
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 6px 14px rgba(15,23,42,0.18));
 }
 .pay-logo-card:hover {
-    transform: translateY(-3px);
-    filter: drop-shadow(0 10px 26px rgba(15,23,42,0.24));
+    transform: translateY(-4px) scale(1.04);
 }
 @media (max-width: 767.98px) {
-    .pay-logo-card {
-        min-width: 130px;
-        min-height: 60px;
-    }
-}
-
-@keyframes pay-marquee-left {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-50%);
-    }
-}
-
-@keyframes pay-marquee-right {
-    0% {
-        transform: translateX(-50%);
-    }
-    100% {
-        transform: translateX(0);
+    .pay-section {
+        padding: 24px 18px 30px;
     }
 }
 
@@ -706,87 +689,91 @@
 @endif
 
 {{-- ---------- PAYMENT METHODS ---------- --}}
-  <div class="container-fluid home-wide-container pay-section">
-    <div class="mac-section-header">
-        <div class="mac-section-eyebrow">Payment</div>
-        <h3 class="mac-title">Metode Pembayaran</h3>
-        <p class="mac-section-subtitle">
-            Kami mendukung berbagai metode pembayaran digital agar proses transaksi di Deva Laundry terasa cepat dan praktis.
-        </p>
-    </div>
-    @php
-        $methods = collect($paymentMethods ?? []);
-        $half = (int) ceil(max($methods->count(), 1) / 2);
-        $topRow = $methods->slice(0, $half);
-        $bottomRow = $methods->slice($half);
-    @endphp
-    <div class="pay-marquee">
-        <div class="pay-row pay-row-top">
-            @if($methods->isEmpty())
-                <div class="pay-row-track">
-                    <div class="pay-logo-card">
-                        <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
-                            Metode pembayaran belum diatur.
-                        </span>
-                    </div>
-                </div>
-            @else
-                <div class="pay-row-track pay-row-track-left">
-                    @foreach($topRow as $method)
-                        <div class="pay-logo-card">
-                            @if(!empty($method['logo_url'] ?? ''))
-                                <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
-                            @else
-                                <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
-                                    {{ $method['name'] ?? 'Metode Pembayaran' }}
-                                </span>
-                            @endif
-                        </div>
-                    @endforeach
-                    @foreach($topRow as $method)
-                        <div class="pay-logo-card">
-                            @if(!empty($method['logo_url'] ?? ''))
-                                <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
-                            @else
-                                <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
-                                    {{ $method['name'] ?? 'Metode Pembayaran' }}
-                                </span>
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-        </div>
-        @if($methods->count() > 1)
-            <div class="pay-row pay-row-bottom">
-                <div class="pay-row-track pay-row-track-right">
-                    @foreach($bottomRow as $method)
-                        <div class="pay-logo-card">
-                            @if(!empty($method['logo_url'] ?? ''))
-                                <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
-                            @else
-                                <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
-                                    {{ $method['name'] ?? 'Metode Pembayaran' }}
-                                </span>
-                            @endif
-                        </div>
-                    @endforeach
-                    @foreach($bottomRow as $method)
-                        <div class="pay-logo-card">
-                            @if(!empty($method['logo_url'] ?? ''))
-                                <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
-                            @else
-                                <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
-                                    {{ $method['name'] ?? 'Metode Pembayaran' }}
-                                </span>
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @endif
-    </div>
-</div>
+  <div class="container-fluid home-wide-container">
+      <section class="pay-section">
+          <div class="pay-section-inner">
+              <div class="mac-section-header pay-section-header">
+                  <div class="mac-section-eyebrow">Payment</div>
+                  <h3 class="mac-title">Metode Pembayaran</h3>
+                  <p class="mac-section-subtitle">
+                      Kami mendukung berbagai metode pembayaran digital agar proses transaksi di Deva Laundry terasa cepat dan praktis.
+                  </p>
+              </div>
+              @php
+                  $methods = collect($paymentMethods ?? []);
+                  $half = (int) ceil(max($methods->count(), 1) / 2);
+                  $topRow = $methods->slice(0, $half);
+                  $bottomRow = $methods->slice($half);
+              @endphp
+              <div class="pay-marquee">
+                  <div class="pay-row pay-row-top">
+                      @if($methods->isEmpty())
+                          <div class="pay-row-track">
+                              <div class="pay-logo-card">
+                                  <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
+                                      Metode pembayaran belum diatur.
+                                  </span>
+                              </div>
+                          </div>
+                      @else
+                          <div class="pay-row-track">
+                              @foreach($topRow as $method)
+                                  <div class="pay-logo-card">
+                                      @if(!empty($method['logo_url'] ?? ''))
+                                          <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
+                                      @else
+                                          <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
+                                              {{ $method['name'] ?? 'Metode Pembayaran' }}
+                                          </span>
+                                      @endif
+                                  </div>
+                              @endforeach
+                              @foreach($topRow as $method)
+                                  <div class="pay-logo-card">
+                                      @if(!empty($method['logo_url'] ?? ''))
+                                          <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
+                                      @else
+                                          <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
+                                              {{ $method['name'] ?? 'Metode Pembayaran' }}
+                                          </span>
+                                      @endif
+                                  </div>
+                              @endforeach
+                          </div>
+                      @endif
+                  </div>
+                  @if($methods->count() > 1)
+                      <div class="pay-row pay-row-bottom">
+                          <div class="pay-row-track">
+                              @foreach($bottomRow as $method)
+                                  <div class="pay-logo-card">
+                                      @if(!empty($method['logo_url'] ?? ''))
+                                          <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
+                                      @else
+                                          <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
+                                              {{ $method['name'] ?? 'Metode Pembayaran' }}
+                                          </span>
+                                      @endif
+                                  </div>
+                              @endforeach
+                              @foreach($bottomRow as $method)
+                                  <div class="pay-logo-card">
+                                      @if(!empty($method['logo_url'] ?? ''))
+                                          <img src="{{ $method['logo_url'] }}" alt="{{ $method['name'] ?? 'Metode Pembayaran' }}">
+                                      @else
+                                          <span class="fw-semibold" style="color:#111827;font-size:0.95rem;">
+                                              {{ $method['name'] ?? 'Metode Pembayaran' }}
+                                          </span>
+                                      @endif
+                                  </div>
+                              @endforeach
+                          </div>
+                      </div>
+                  @endif
+              </div>
+          </div>
+      </section>
+  </div>
 
 {{-- ---------- FOOTER ---------- --}}
 <div class="container-fluid home-wide-container">

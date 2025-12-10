@@ -1,0 +1,42 @@
+
+    @media (max-width: 992px) {
+        .roles-window-body {
+            padding: 1.5rem 1.4rem 1.8rem;
+        }
+
+        .roles-header-main {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .roles-table thead th,
+        .roles-table td {
+            font-size: 0.72rem;
+        }
+    }
+</style>
+<div class="roles-shell">
+    <div class="roles-window">
+        <div class="roles-window-header">
+            <div class="traffic-lights">
+                <span class="traffic-light red"></span>
+                <span class="traffic-light yellow"></span>
+                <span class="traffic-light green"></span>
+            </div>
+            <div class="roles-window-title">Role & Permission · Deva Laundry</div>
+        </div>
+        <div class="roles-window-body">
+            <div class="roles-header-main">
+                <div>
+                    <h3>Kelola Role & Permission</h3>
+                    <p>Atur akses Admin, Kasir, Karyawan, dan pengguna lain.</p>
+                </div>
+                <a href="{{ route('admin.roles.create') }}" class="btn-apple">
+                    <span>+ Tambah User dengan Role</span>
+                </a>
+            </div>
+
+            @if(session('success'))
+                <div id="rolesSuccessMessage" class="d-none">{{ session('success') }}</div>
+            @endif
+            @if(session('error'))

@@ -13,9 +13,9 @@
 
     .roles-shell {
         max-width: none;
-        width: 100%;
-        margin: 32px 0 64px;
-        padding: 0 8px;
+        width: calc(100% + 40px);
+        margin: 32px -20px 64px;
+        padding: 0 12px;
     }
 
     .roles-window {
@@ -394,7 +394,6 @@
             <p class="roles-note mb-1">
                 <strong>Ringkasan hak akses:</strong><br>
                 - <strong>Admin</strong> dapat mengakses semua menu dan fitur.<br>
-                - <strong>Karyawan</strong> hanya dapat mengakses menu <strong>Layanan</strong>, <strong>Nota</strong>, dan <strong>Laporan</strong>.<br>
                 - <strong>Kasir</strong> hanya dapat mengakses menu <strong>Nota</strong> saja.
             </p>
 
