@@ -477,12 +477,15 @@
             const discountedRemaining = Math.max(0, Math.round(baseRemaining - dAmount));
 
             const tender = parseCurrency(cashGiven) || 0;
-            const applied = Math.min(tender, discountedRemaining || 0);
+            // gunakan nilai "Jumlah Bayar" yang sedang tampil,
+            // bukan nilai uang cash yang sedang diketik
+            const payValue = payAmount ? parseCurrency(payAmount) : discountedRemaining;
+            const applied = Math.min(payValue, discountedRemaining || 0);
             const kembali = Math.max(0, tender - applied);
 
             if (discountAmount) discountAmount.value = formatCurrency(dAmount);
-            if (payAmount) payAmount.value = formatCurrency(applied || discountedRemaining);
-            changeAmount.value = kembali > 0 ? formatCurrency(kembali) : (cashGiven.value ? formatCurrency(0) : '');
+            // jangan ubah payAmount di sini, agar tidak ikut "mengetik" saat Uang Diterima diisi
+            changeAmount.value = tender > 0 ? formatCurrency(kembali) : '';
         }
 
         // Initialize discounted display and live calculation
@@ -502,10 +505,13 @@
                     const dAmount = Math.round((base * (percent/100)));
                     const dTotal = Math.max(0, Math.round(base - dAmount));
                     if (discountAmount) discountAmount.value = formatCurrency(dAmount);
+                    // Jumlah Bayar selalu mengikuti total setelah diskon
+                    if (payAmount) {
+                        payAmount.value = formatCurrency(dTotal);
+                    }
+                    // Jika cash, cukup hitung ulang kembalian saja
                     if (paymentType.value === 'cash') {
                         updateChangeShow();
-                    } else if (payAmount) {
-                        payAmount.value = formatCurrency(dTotal);
                     }
                 });
             }
@@ -521,10 +527,11 @@
                         const dAmount = Math.round((base * (percentVal/100)));
                         const dTotal = Math.max(0, Math.round(base - dAmount));
                         if (discountAmount) discountAmount.value = formatCurrency(dAmount);
+                        if (payAmount) {
+                            payAmount.value = formatCurrency(dTotal);
+                        }
                         if (paymentType.value === 'cash') {
                             updateChangeShow();
-                        } else if (payAmount) {
-                            payAmount.value = formatCurrency(dTotal);
                         }
                     }catch(e){}
                 });
