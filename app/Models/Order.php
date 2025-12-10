@@ -26,6 +26,7 @@ class Order extends Model
         'pickup_time',
         'delivery_date',
         'delivery_time',
+        'delivered_at',
         'status',
         'nota_id',
     ];
@@ -39,6 +40,7 @@ class Order extends Model
         'pickup_time' => 'datetime',
         'delivery_date' => 'datetime',
         'delivery_time' => 'datetime',
+        'delivered_at' => 'datetime',
     ];
 
     /**

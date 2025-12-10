@@ -138,6 +138,10 @@
         background: #36b3ff;
         color: #0b172d;
     }
+    .mac-badge-muted {
+        background: #e5e7eb;
+        color: #374151;
+    }
     .mac-service {
         display: flex;
         justify-content: space-between;
@@ -175,6 +179,15 @@
                     <option value="">Semua status</option>
                     <option value="selesai" {{ request('status') === 'selesai' ? 'selected' : '' }}>Selesai</option>
                     <option value="proses" {{ request('status') === 'proses' ? 'selected' : '' }}>Sedang diproses</option>
+                </select>
+
+                <select
+                    name="delivery"
+                    form="statusSearch"
+                    class="form-select mac-input mac-select">
+                    <option value="">Semua pengiriman</option>
+                    <option value="sudah" {{ request('delivery') === 'sudah' ? 'selected' : '' }}>Sudah dikirim</option>
+                    <option value="belum" {{ request('delivery') === 'belum' ? 'selected' : '' }}>Belum dikirim</option>
                 </select>
 
                 <div class="mac-search-actions">
@@ -269,6 +282,10 @@
                             $message = implode("\n", array_filter($messageLines, function ($line) {
                                 return $line !== '';
                             }));
+
+                            $isDelivered = (bool) $order->delivered_at;
+                            $deliveryBadgeClass = $isDelivered ? 'mac-badge-success' : 'mac-badge-muted';
+                            $deliveryLabel = $isDelivered ? 'Sudah dikirim' : 'Belum dikirim';
                         @endphp
                         <tr>
                             <td>#{{ $order->id }}</td>
@@ -299,6 +316,18 @@
                                 @else
                                     <a href="{{ route('admin.orders.status.create_nota', $order->id) }}" class="btn btn-sm btn-primary mac-btn-sm">Buat Nota</a>
                                 @endif
+
+                                <div class="mt-2">
+                                    <span class="mac-badge {{ $deliveryBadgeClass }}">{{ $deliveryLabel }}</span>
+                                    @if(!$isDelivered)
+                                        <form method="POST" action="{{ route('admin.orders.status.delivered', $order->id) }}" class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-outline-success mac-btn-sm ms-1">
+                                                Sudah dikirim
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -325,6 +354,13 @@
         statusSelect.addEventListener('change', function () {
             searchForm.submit();
         });
+
+        var deliverySelect = document.querySelector('select[name="delivery"][form="statusSearch"]');
+        if (deliverySelect) {
+            deliverySelect.addEventListener('change', function () {
+                searchForm.submit();
+            });
+        }
     });
 </script>
 @endsection

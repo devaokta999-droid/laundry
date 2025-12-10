@@ -51,8 +51,39 @@ class StatusController extends Controller
             $orders = $orders->where('status', '!=', 'selesai');
         }
 
+        // Filter tambahan berdasarkan status pengiriman (delivered_at)
+        $deliveryFilter = $request->input('delivery', '');
+        if ($deliveryFilter === 'sudah') {
+            $orders = $orders->whereNotNull('delivered_at');
+        } elseif ($deliveryFilter === 'belum') {
+            $orders = $orders->whereNull('delivered_at');
+        }
+
         $orders = $orders->paginate(20)->withQueryString();
         return view('admin.status-orders', compact('orders'));
+    }
+
+    public function markDelivered(Request $request, Order $order)
+    {
+        $user = $request->user();
+        if (!$user || !in_array($user->role, ['admin', 'kasir'], true)) {
+            abort(403, 'Akses ditolak - hanya admin atau kasir yang dapat mengubah status pengiriman.');
+        }
+
+        if (!$order->delivered_at) {
+            $order->delivered_at = now();
+            $order->save();
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'order_id' => $order->id,
+                'delivered_at' => optional($order->delivered_at)->toDateTimeString(),
+            ]);
+        }
+
+        return back()->with('success', 'Order telah ditandai sebagai sudah dikirim.');
     }
 
     public function createNota(Request $request, Order $order)

@@ -5,9 +5,9 @@
 @section('content')
 <style>
     .mac-shell-public {
-        padding: 72px 0 64px;
-        max-width: 1720px;
-        margin: 0 auto;
+        padding: 48px 0 56px;
+        max-width: none;
+        margin: 0;
     }
 
     .mac-shell-public-inner {
@@ -246,6 +246,83 @@
         opacity: 0.95;
     }
 
+    /* Stepper progress (Cucian selesai -> Proses pengiriman -> Laundry sudah diterima) */
+    .mac-order-stepper {
+        margin-top: 12px;
+        margin-bottom: 4px;
+    }
+    .mac-stepper {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0;
+    }
+    .mac-stepper-step {
+        flex: 1;
+        text-align: center;
+        position: relative;
+        font-size: 0.8rem;
+        color: #9ca3af;
+    }
+    .mac-stepper-step:not(:last-child)::after {
+        content: "";
+        position: absolute;
+        top: 14px;
+        left: 50%;
+        right: -50%;
+        height: 2px;
+        background: #e5e7eb;
+        z-index: 0;
+    }
+    .mac-stepper-circle {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        border: 2px solid #e5e7eb;
+        background: #f9fafb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.78rem;
+        font-weight: 600;
+        margin: 0 auto 3px;
+        position: relative;
+        z-index: 1;
+        color: #9ca3af;
+    }
+    .mac-stepper-label {
+        font-size: 0.78rem;
+        margin-top: 2px;
+    }
+    .mac-stepper-step.mac-is-done .mac-stepper-circle {
+        background: #22c55e;
+        border-color: #22c55e;
+        color: #ffffff;
+        box-shadow: 0 0 0 2px rgba(187,247,208,0.8);
+    }
+    .mac-stepper-step.mac-is-done:not(:last-child)::after {
+        background: linear-gradient(90deg, #22c55e, #a3e635);
+    }
+    .mac-stepper-step.mac-is-current .mac-stepper-circle {
+        background: #ecfdf5;
+        border-color: #22c55e;
+        color: #15803d;
+        box-shadow: 0 0 0 2px rgba(187,247,208,0.9);
+    }
+    /* Jika langkah sudah selesai DAN sedang aktif (contoh: Laundry sudah diterima),
+       tampilkan penuh hijau seperti langkah selesai lainnya. */
+    .mac-stepper-step.mac-is-done.mac-is-current .mac-stepper-circle {
+        background: #22c55e;
+        border-color: #22c55e;
+        color: #ffffff;
+        box-shadow: 0 0 0 2px rgba(187,247,208,0.9);
+    }
+    .mac-stepper-step.mac-is-done .mac-stepper-label,
+    .mac-stepper-step.mac-is-current .mac-stepper-label {
+        color: #111827;
+        font-weight: 600;
+    }
+
     .mac-order-progress {
         margin-top: 10px;
         display: flex;
@@ -272,6 +349,13 @@
     .mac-order-progress-label {
         font-size: 0.78rem;
         color: #d1d5db;
+    }
+
+    @media (min-width: 992px) {
+        /* Perlebar area konten status publik agar mendekati sidebar di desktop */
+        .mac-shell-public {
+            margin: 0 -1.5rem;
+        }
     }
 
     @media (min-width: 576px) {
@@ -355,11 +439,14 @@
                             $serviceText = $serviceSummary->isNotEmpty()
                                 ? $serviceSummary->implode(', ')
                                 : 'Tidak ada informasi layanan.';
-                            $isFinished = $order->status === 'selesai';
+                            // Status "Selesai" publik hanya muncul jika laundry sudah diterima (delivered_at terisi)
+                            $isDelivered = (bool) $order->delivered_at;
+                            $isFinished = $isDelivered;
                             $statusLabel = $isFinished ? 'Selesai' : 'Sedang Diproses';
                             $badgeClass = $isFinished ? 'mac-badge-success' : 'mac-badge-info';
                             $nota = $order->nota;
                             $formattedTotal = '-';
+                            $hasNota = (bool) $nota;
                             if ($nota) {
                                 $sisa = (int) ($nota->sisa ?? 0);
                                 if ($sisa <= 0) {
@@ -368,8 +455,29 @@
                                     $formattedTotal = 'Rp ' . number_format($sisa, 0, ',', '.');
                                 }
                             }
-                            $progressPercent = $isFinished ? 100 : 55;
-                            $progressText = $isFinished ? 'Cucian sudah siap diambil / diantar.' : 'Cucian sedang dikerjakan oleh tim kami.';
+
+                            // Alur publik:
+                            // 0) Belum selesai -> cucian masih dikerjakan
+                            // 1) Cucian selesai (nota sudah dibuat)
+                            // 2) Proses pengiriman (sesudah cucian selesai, sebelum/selama pengantaran)
+                            // 3) Laundry sudah diterima customer (setelah tombol "Sudah dikirim" diklik di admin)
+                            $currentStep = 0;
+                            $progressText = 'Cucian sedang dikerjakan oleh tim kami.';
+
+                            if ($hasNota) {
+                                // Langkah 1 dianggap selesai, langkah aktif di tahap pengiriman
+                                $currentStep = 2;
+                                $progressText = 'Cucian sudah selesai dan sedang / siap dikirim.';
+                            }
+
+                            if ($isDelivered) {
+                                $currentStep = 3;
+                                $progressText = 'Laundry sudah diterima customer. Terima kasih telah menggunakan Deva Laundry.';
+                            }
+
+                            $progressPercent = $currentStep > 0
+                                ? min(100, intval(($currentStep / 3) * 100))
+                                : 10;
                         @endphp
                         <div class="mac-order-card">
                             <div class="mac-order-card-inner">
@@ -399,6 +507,23 @@
                                     <div>
                                         <div class="mac-order-field-label">Status Pembayaran</div>
                                         <div class="mac-order-field-value">{{ $formattedTotal }}</div>
+                                    </div>
+                                </div>
+
+                                <div class="mac-order-stepper">
+                                    <div class="mac-stepper">
+                                        <div class="mac-stepper-step {{ $currentStep >= 1 ? 'mac-is-done' : '' }} {{ $currentStep === 1 ? 'mac-is-current' : '' }}">
+                                            <div class="mac-stepper-circle">1</div>
+                                            <div class="mac-stepper-label">Cucian selesai</div>
+                                        </div>
+                                        <div class="mac-stepper-step {{ $currentStep >= 2 ? 'mac-is-done' : '' }} {{ $currentStep === 2 ? 'mac-is-current' : '' }}">
+                                            <div class="mac-stepper-circle">2</div>
+                                            <div class="mac-stepper-label">Proses pengiriman</div>
+                                        </div>
+                                        <div class="mac-stepper-step {{ $currentStep >= 3 ? 'mac-is-done' : '' }} {{ $currentStep === 3 ? 'mac-is-current' : '' }}">
+                                            <div class="mac-stepper-circle">3</div>
+                                            <div class="mac-stepper-label">Laundry sudah diterima</div>
+                                        </div>
                                     </div>
                                 </div>
 

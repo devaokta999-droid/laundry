@@ -190,6 +190,10 @@ Route::prefix('admin')
             app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir');
             return app(StatusController::class)->admin($request);
         })->name('orders.status');
+        Route::post('orders/{order}/delivered', function (Request $request, Order $order) {
+            app(RoleMiddleware::class)->handle($request, function () {}, 'admin', 'kasir');
+            return app(StatusController::class)->markDelivered($request, $order);
+        })->name('orders.status.delivered');
         Route::get('orders/{order}/create-nota', function (Request $request, Order $order) {
             app(RoleMiddleware::class)->handle($request, function () {}, 'admin');
             return app(StatusController::class)->createNota($request, $order);
